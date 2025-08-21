@@ -1,6 +1,5 @@
-"use client";
 import * as React from "react"
-import useEmblaCarousel from "embla-carousel-react";
+import useEmblaCarousel from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -18,18 +17,15 @@ function useCarousel() {
   return context
 }
 
-const Carousel = React.forwardRef((
-  {
-    orientation = "horizontal",
-    opts,
-    setApi,
-    plugins,
-    className,
-    children,
-    ...props
-  },
-  ref
-) => {
+const Carousel = React.forwardRef(({
+  orientation = "horizontal",
+  opts,
+  setApi,
+  plugins,
+  className,
+  children,
+  ...props
+}, ref) => {
   const [carouselRef, api] = useEmblaCarousel({
     ...opts,
     axis: orientation === "horizontal" ? "x" : "y",
@@ -83,7 +79,7 @@ const Carousel = React.forwardRef((
 
     return () => {
       api?.off("select", onSelect)
-    };
+    }
   }, [api, onSelect])
 
   return (
@@ -109,7 +105,7 @@ const Carousel = React.forwardRef((
         {children}
       </div>
     </CarouselContext.Provider>
-  );
+  )
 })
 Carousel.displayName = "Carousel"
 
@@ -127,7 +123,7 @@ const CarouselContent = React.forwardRef(({ className, ...props }, ref) => {
         )}
         {...props} />
     </div>
-  );
+  )
 })
 CarouselContent.displayName = "CarouselContent"
 
@@ -145,7 +141,7 @@ const CarouselItem = React.forwardRef(({ className, ...props }, ref) => {
         className
       )}
       {...props} />
-  );
+  )
 })
 CarouselItem.displayName = "CarouselItem"
 
@@ -157,16 +153,20 @@ const CarouselPrevious = React.forwardRef(({ className, variant = "outline", siz
       ref={ref}
       variant={variant}
       size={size}
-      className={cn("absolute  h-8 w-8 rounded-full", orientation === "horizontal"
-        ? "-left-12 top-1/2 -translate-y-1/2"
-        : "-top-12 left-1/2 -translate-x-1/2 rotate-90", className)}
+      className={cn(
+        "absolute  h-8 w-8 rounded-full",
+        orientation === "horizontal"
+          ? "-left-12 top-1/2 -translate-y-1/2"
+          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+        className
+      )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}>
       <ArrowLeft className="h-4 w-4" />
       <span className="sr-only">Previous slide</span>
     </Button>
-  );
+  )
 })
 CarouselPrevious.displayName = "CarouselPrevious"
 
@@ -178,17 +178,27 @@ const CarouselNext = React.forwardRef(({ className, variant = "outline", size = 
       ref={ref}
       variant={variant}
       size={size}
-      className={cn("absolute h-8 w-8 rounded-full", orientation === "horizontal"
-        ? "-right-12 top-1/2 -translate-y-1/2"
-        : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90", className)}
+      className={cn(
+        "absolute h-8 w-8 rounded-full",
+        orientation === "horizontal"
+          ? "-right-12 top-1/2 -translate-y-1/2"
+          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+        className
+      )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}>
       <ArrowRight className="h-4 w-4" />
       <span className="sr-only">Next slide</span>
     </Button>
-  );
+  )
 })
 CarouselNext.displayName = "CarouselNext"
 
-export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext };
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+}
