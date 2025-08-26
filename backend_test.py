@@ -10,8 +10,8 @@ import uuid
 import time
 from datetime import datetime
 
-# Configuration - Using production URL for admin testing
-BASE_URL = "https://wordmaster-admin.preview.emergentagent.com/api"
+# Configuration - Using internal URL for backend testing as requested
+BASE_URL = "http://localhost:3000/api"
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
