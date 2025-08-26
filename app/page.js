@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from "react"
-import { Search, Menu, X, Star, MapPin, Wifi, Car, Camera, Heart, Share2 } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { Search, Menu, X, Star, MapPin, Wifi, Car, Camera, Heart, Share2, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +22,351 @@ const WhatsAppButton = ({ listing, className = "" }) => {
     >
       WhatsApp
     </Button>
+  )
+}
+
+// Modern Navbar Component
+const ModernNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
+  const categories = [
+    { name: 'Mansões', path: '/mansoes', icon: '🏖️' },
+    { name: 'Iates', path: '/iates', icon: '🛥️' },
+    { name: 'Escuna', path: '/escuna', icon: '⛵' },
+    { name: 'Transfer', path: '/transfer', icon: '✈️' },
+    { name: 'Buggy', path: '/buggy', icon: '🚗' },
+    { name: 'Câmbio', path: '/cambio', icon: '💱' }
+  ]
+
+  return (
+    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-md">
+              <span className="text-white font-bold text-lg">W</span>
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Wordmaster
+              </h1>
+              <p className="text-xs text-gray-500 -mt-1">Beach Búzios</p>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
+            {categories.map((category) => (
+              <Link
+                key={category.name}
+                href={category.path}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+              >
+                <span className="text-lg group-hover:scale-110 transition-transform duration-200">
+                  {category.icon}
+                </span>
+                <span className="font-medium">{category.name}</span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="hidden sm:flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50"
+              onClick={() => window.open('https://wa.me/5521976860759', '_blank')}
+            >
+              <Phone className="w-4 h-4" />
+              <span>Contato</span>
+            </Button>
+            
+            <Link href="/admin">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="hidden sm:flex border-blue-200 text-blue-700 hover:bg-blue-50"
+              >
+                Admin
+              </Button>
+            </Link>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm" 
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden py-4 border-t border-gray-100 bg-white/95 backdrop-blur-md">
+            <div className="flex flex-col space-y-2">
+              {categories.map((category) => (
+                <Link
+                  key={category.name}
+                  href={category.path}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-lg">{category.icon}</span>
+                  <span className="font-medium">{category.name}</span>
+                </Link>
+              ))}
+              <div className="flex space-x-2 px-4 pt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1 border-green-200 text-green-700 hover:bg-green-50"
+                  onClick={() => window.open('https://wa.me/5521976860759', '_blank')}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Contato
+                </Button>
+                <Link href="/admin" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+                  >
+                    Admin
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  )
+}
+
+// Auto-rotating Hero Carousel
+const HeroCarousel = () => {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const intervalRef = useRef(null)
+  
+  const slides = [
+    {
+      title: "Mansões de Luxo em Búzios",
+      subtitle: "Propriedades exclusivas com vista para o mar",
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&h=600&fit=crop&crop=center",
+      cta: "Ver Mansões",
+      link: "/mansoes"
+    },
+    {
+      title: "Iates & Embarcações Premium",
+      subtitle: "Experiências náuticas inesquecíveis",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1400&h=600&fit=crop&crop=center",
+      cta: "Ver Iates",
+      link: "/iates"
+    },
+    {
+      title: "Transfer & Táxi Aéreo",
+      subtitle: "Chegue com conforto e exclusividade",
+      image: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=1400&h=600&fit=crop&crop=center",
+      cta: "Ver Transfers",
+      link: "/transfer"
+    },
+    {
+      title: "Passeios de Escuna",
+      subtitle: "Descubra as praias paradisíacas de Búzios",
+      image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1400&h=600&fit=crop&crop=center",
+      cta: "Ver Passeios",
+      link: "/escuna"
+    }
+  ]
+
+  // Auto rotation
+  useEffect(() => {
+    const startInterval = () => {
+      intervalRef.current = setInterval(() => {
+        setCurrentSlide(prev => (prev + 1) % slides.length)
+      }, 5000) // Change slide every 5 seconds
+    }
+
+    startInterval()
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [slides.length])
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index)
+    // Restart interval when user manually changes slide
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+    }
+    setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        setCurrentSlide(prev => (prev + 1) % slides.length)
+      }, 5000)
+    }, 100)
+  }
+
+  const nextSlide = () => {
+    goToSlide((currentSlide + 1) % slides.length)
+  }
+
+  const prevSlide = () => {
+    goToSlide(currentSlide === 0 ? slides.length - 1 : currentSlide - 1)
+  }
+
+  return (
+    <div className="relative h-[70vh] min-h-[500px] overflow-hidden rounded-3xl mx-4 mt-6 shadow-2xl">
+      {/* Slides */}
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+            index === currentSlide 
+              ? 'opacity-100 transform translate-x-0' 
+              : index < currentSlide 
+                ? 'opacity-0 transform -translate-x-full' 
+                : 'opacity-0 transform translate-x-full'
+          }`}
+        >
+          <img
+            src={slide.image}
+            alt={slide.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          
+          {/* Content */}
+          <div className="absolute inset-0 flex items-center">
+            <div className="container mx-auto px-6 lg:px-8">
+              <div className="max-w-2xl text-white">
+                <h1 className="text-4xl lg:text-6xl font-bold mb-4 leading-tight">
+                  {slide.title}
+                </h1>
+                <p className="text-xl lg:text-2xl mb-8 opacity-90">
+                  {slide.subtitle}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href={slide.link}>
+                    <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+                      {slide.cta}
+                    </Button>
+                  </Link>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="border-white text-white hover:bg-white hover:text-gray-900 px-8"
+                    onClick={() => window.open('https://wa.me/5521976860759', '_blank')}
+                  >
+                    <Phone className="w-5 h-5 mr-2" />
+                    Falar Conosco
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {/* Navigation Arrows */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200"
+      >
+        <ChevronLeft className="w-6 h-6" />
+      </button>
+      <button
+        onClick={nextSlide}
+        className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200"
+      >
+        <ChevronRight className="w-6 h-6" />
+      </button>
+
+      {/* Dots Indicator */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-200 ${
+              index === currentSlide 
+                ? 'bg-white scale-125' 
+                : 'bg-white/50 hover:bg-white/75'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Enhanced Search Section
+const SearchSection = () => {
+  const [searchQuery, setSearchQuery] = useState('')
+  
+  const searchSuggestions = [
+    'Mansão em Geribá',
+    'Iate para festa',
+    'Transfer aeroporto',
+    'Táxi aéreo',
+    'Escuna tour',
+    'Casa na praia',
+    'Buggy passeio'
+  ]
+
+  return (
+    <section className="py-16 bg-gradient-to-br from-blue-50 to-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            O que você está procurando?
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Busque por mansões, iates, transfers, passeios e muito mais
+          </p>
+        </div>
+
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+            <Input
+              type="text"
+              placeholder="Ex: Mansão em Geribá, Iate de luxo, Táxi aéreo..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-14 pr-6 py-4 text-lg rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-0 shadow-lg"
+            />
+            <Button 
+              size="lg"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 rounded-xl px-8"
+            >
+              Buscar
+            </Button>
+          </div>
+
+          {/* Search Suggestions */}
+          <div className="mt-6">
+            <p className="text-sm text-gray-500 mb-3">Sugestões populares:</p>
+            <div className="flex flex-wrap gap-2">
+              {searchSuggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSearchQuery(suggestion)}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
