@@ -303,8 +303,9 @@ async function handleRoute(request, { params }) {
       await db.collection('amenities').deleteMany({})
       await db.collection('amenities').insertMany(amenities)
 
-      // Sample listings
+      // Sample listings - 6 mansions, 3 yachts, 1 schooner, 2 transfers, 3 buggies
       const sampleListings = [
+        // MANSIONS (6)
         {
           id: uuidv4(),
           category: 'mansao',
@@ -336,6 +337,153 @@ async function handleRoute(request, { params }) {
         },
         {
           id: uuidv4(),
+          category: 'mansao',
+          slug: 'casa-luxo-ferradura',
+          title: 'Casa de Luxo na Ferradura',
+          subtitle: 'Paraíso tropical exclusivo',
+          description: 'Casa espetacular na Praia da Ferradura com arquitetura moderna e acabamentos de primeira. Piscina infinita com vista para o mar e área gourmet completa.',
+          city: 'Búzios',
+          neighborhood: 'Ferradura',
+          guests: 8,
+          bedrooms: 4,
+          bathrooms: 5,
+          area_m2: 350,
+          attributes: {
+            pool: true,
+            oceanfront: true,
+            parking: 3,
+            jacuzzi: false,
+            garden: true
+          },
+          base_price: 2000.00,
+          price_label: 'R$ 2.000/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'mansao',
+          slug: 'vila-joao-fernandes',
+          title: 'Vila Exclusiva João Fernandes',
+          subtitle: 'Sofisticação em cada detalhe',
+          description: 'Vila de alto padrão localizada próxima à famosa Praia João Fernandes. Design contemporâneo com materiais nobres e vista panorâmica do mar.',
+          city: 'Búzios',
+          neighborhood: 'João Fernandes',
+          guests: 12,
+          bedrooms: 6,
+          bathrooms: 7,
+          area_m2: 500,
+          attributes: {
+            pool: true,
+            oceanfront: true,
+            parking: 5,
+            jacuzzi: true,
+            garden: true
+          },
+          base_price: 3200.00,
+          price_label: 'R$ 3.200/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'mansao',
+          slug: 'casa-praia-tartaruga',
+          title: 'Casa de Praia Tartaruga',
+          subtitle: 'Charme rústico sofisticado',
+          description: 'Charmosa casa de praia com decoração rústica sofisticada, localizada a poucos metros da Praia da Tartaruga. Ideal para quem busca tranquilidade e contato com a natureza.',
+          city: 'Búzios',
+          neighborhood: 'Tartaruga',
+          guests: 6,
+          bedrooms: 3,
+          bathrooms: 4,
+          area_m2: 280,
+          attributes: {
+            pool: true,
+            oceanfront: false,
+            parking: 2,
+            jacuzzi: false,
+            garden: true
+          },
+          base_price: 1500.00,
+          price_label: 'R$ 1.500/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'mansao',
+          slug: 'mansao-centro-buzios',
+          title: 'Mansão no Centro de Búzios',
+          subtitle: 'Localização privilegiada',
+          description: 'Mansão elegante localizada no coração de Búzios, próxima à Rua das Pedras e principais atrações. Combina comodidade urbana com luxo residencial.',
+          city: 'Búzios',
+          neighborhood: 'Centro',
+          guests: 14,
+          bedrooms: 7,
+          bathrooms: 8,
+          area_m2: 600,
+          attributes: {
+            pool: true,
+            oceanfront: false,
+            parking: 6,
+            jacuzzi: true,
+            garden: true
+          },
+          base_price: 2800.00,
+          price_label: 'R$ 2.800/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'mansao',
+          slug: 'casa-ossos-vista-mar',
+          title: 'Casa dos Ossos com Vista Mar',
+          subtitle: 'Exclusividade e privacidade',
+          description: 'Casa exclusiva na Praia dos Ossos com vista espetacular da baía. Propriedade única com design arquitetônico diferenciado e total privacidade.',
+          city: 'Búzios',
+          neighborhood: 'Ossos',
+          guests: 8,
+          bedrooms: 4,
+          bathrooms: 5,
+          area_m2: 380,
+          attributes: {
+            pool: true,
+            oceanfront: true,
+            parking: 3,
+            jacuzzi: true,
+            garden: false
+          },
+          base_price: 2200.00,
+          price_label: 'R$ 2.200/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+
+        // YACHTS (3)
+        {
+          id: uuidv4(),
           category: 'iate',
           slug: 'iate-luxo-45-pes',
           title: 'Iate de Luxo - 45 pés',
@@ -363,17 +511,325 @@ async function handleRoute(request, { params }) {
           is_active: true,
           created_at: new Date(),
           updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'iate',
+          slug: 'lancha-luxo-38-pes',
+          title: 'Lancha de Luxo - 38 pés',
+          subtitle: 'Aventura e conforto',
+          description: 'Lancha esportiva de alto padrão, perfeita para passeios rápidos e aventuras náuticas. Com som de qualidade e comodidades para até 10 pessoas.',
+          city: 'Búzios',
+          neighborhood: 'Marina',
+          guests: 10,
+          bedrooms: 1,
+          bathrooms: 1,
+          area_m2: null,
+          attributes: {
+            length_ft: 38,
+            cabins: 1,
+            crew: 1,
+            sound_system: true,
+            bar: false,
+            sun_deck: true
+          },
+          base_price: 2800.00,
+          price_label: 'R$ 2.800/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'iate',
+          slug: 'mega-iate-60-pes',
+          title: 'Mega Iate - 60 pés',
+          subtitle: 'Luxo absoluto no mar',
+          description: 'Mega iate de luxo para experiências exclusivas. Com tripulação completa, chef a bordo e todas as comodidades para uma experiência inesquecível.',
+          city: 'Búzios',
+          neighborhood: 'Marina',
+          guests: 20,
+          bedrooms: 4,
+          bathrooms: 4,
+          area_m2: null,
+          attributes: {
+            length_ft: 60,
+            cabins: 4,
+            crew: 4,
+            sound_system: true,
+            bar: true,
+            sun_deck: true
+          },
+          base_price: 6500.00,
+          price_label: 'R$ 6.500/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+
+        // SCHOONER (1)
+        {
+          id: uuidv4(),
+          category: 'escuna',
+          slug: 'escuna-buzios-tradicional',
+          title: 'Escuna Búzios Tradicional',
+          subtitle: 'Passeio clássico pelas praias',
+          description: 'Passeio tradicional de escuna pelas principais praias de Búzios. Inclui paradas para banho nas águas cristalinas e vista das famosas praias paradisíacas.',
+          city: 'Búzios',
+          neighborhood: 'Porto',
+          guests: 60,
+          bedrooms: null,
+          bathrooms: 2,
+          area_m2: null,
+          attributes: {
+            capacity: 60,
+            route: 'Praia da Tartaruga, João Fernandes, Azeda',
+            duration: '3 horas',
+            includes_drinks: true
+          },
+          base_price: 120.00,
+          price_label: 'R$ 120/pessoa',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+
+        // TRANSFERS (2)
+        {
+          id: uuidv4(),
+          category: 'transfer',
+          slug: 'transfer-santos-dumont-buzios',
+          title: 'Transfer Santos Dumont - Búzios',
+          subtitle: 'Conforto e pontualidade',
+          description: 'Transfer executivo do Aeroporto Santos Dumont para Búzios em veículo de luxo com ar condicionado. Motorista experiente e serviço de primeira classe.',
+          city: 'Rio de Janeiro - Búzios',
+          neighborhood: 'Santos Dumont',
+          guests: 4,
+          bedrooms: null,
+          bathrooms: null,
+          area_m2: null,
+          attributes: {
+            origin: 'Santos Dumont',
+            destination: 'Búzios',
+            type: 'executivo',
+            duration: '2h30min'
+          },
+          base_price: 450.00,
+          price_label: 'R$ 450/trecho',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'transfer',
+          slug: 'transfer-galeao-buzios',
+          title: 'Transfer Galeão - Búzios',
+          subtitle: 'Viagem confortável e segura',
+          description: 'Transfer do Aeroporto do Galeão para Búzios com veículo executivo. Inclui acompanhamento do voo e ajuda com bagagens.',
+          city: 'Rio de Janeiro - Búzios',
+          neighborhood: 'Galeão',
+          guests: 4,
+          bedrooms: null,
+          bathrooms: null,
+          area_m2: null,
+          attributes: {
+            origin: 'Galeão',
+            destination: 'Búzios',
+            type: 'executivo',
+            duration: '3h00min'
+          },
+          base_price: 520.00,
+          price_label: 'R$ 520/trecho',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+
+        // BUGGIES (3)
+        {
+          id: uuidv4(),
+          category: 'buggy',
+          slug: 'buggy-4x4-trilhas',
+          title: 'Buggy 4x4 para Trilhas',
+          subtitle: 'Aventura off-road em Búzios',
+          description: 'Buggy 4x4 equipado para trilhas e aventuras off-road. Perfeito para explorar as praias mais selvagens e trilhas escondidas de Búzios.',
+          city: 'Búzios',
+          neighborhood: 'Centro',
+          guests: 4,
+          bedrooms: null,
+          bathrooms: null,
+          area_m2: null,
+          attributes: {
+            seats: 4,
+            transmission: 'manual',
+            type: '4x4',
+            fuel: 'gasolina'
+          },
+          base_price: 350.00,
+          price_label: 'R$ 350/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'buggy',
+          slug: 'buggy-praias-tour',
+          title: 'Buggy Tour das Praias',
+          subtitle: 'Conheça todas as praias',
+          description: 'Buggy confortável para tour pelas praias de Búzios. Inclui roteiro pelas principais praias com paradas para fotos e banho de mar.',
+          city: 'Búzios',
+          neighborhood: 'Centro',
+          guests: 4,
+          bedrooms: null,
+          bathrooms: null,
+          area_m2: null,
+          attributes: {
+            seats: 4,
+            transmission: 'automático',
+            type: 'tour',
+            fuel: 'flex'
+          },
+          base_price: 280.00,
+          price_label: 'R$ 280/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: uuidv4(),
+          category: 'buggy',
+          slug: 'buggy-familia-conforto',
+          title: 'Buggy Família Confort',
+          subtitle: 'Ideal para família',
+          description: 'Buggy confortável e seguro, ideal para passeios em família. Com cobertura e equipamentos de segurança para maior tranquilidade.',
+          city: 'Búzios',
+          neighborhood: 'Centro',
+          guests: 6,
+          bedrooms: null,
+          bathrooms: null,
+          area_m2: null,
+          attributes: {
+            seats: 6,
+            transmission: 'automático',
+            type: 'família',
+            fuel: 'flex'
+          },
+          base_price: 320.00,
+          price_label: 'R$ 320/dia',
+          whatsapp_e164: '5521976860759',
+          broker_name: 'Adson Carlos dos Santos',
+          is_featured: false,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
         }
       ]
 
       await db.collection('listings').deleteMany({})
       await db.collection('listings').insertMany(sampleListings)
 
+      // Sample promotions
+      const samplePromotions = [
+        {
+          id: uuidv4(),
+          listing_id: sampleListings[0].id, // Mansão Vista Mar
+          title: 'Oferta Especial - Vista Mar',
+          description: 'Desconto especial para reservas de 3 dias ou mais',
+          discount_percent: 15,
+          fixed_price: null,
+          starts_at: new Date('2024-12-01'),
+          ends_at: new Date('2025-02-28'),
+          is_active: true
+        },
+        {
+          id: uuidv4(),
+          listing_id: sampleListings[7].id, // Iate 45 pés
+          title: 'Promoção Verão - Iate Luxo',
+          description: 'Preço especial para temporada de verão',
+          discount_percent: null,
+          fixed_price: 3200.00,
+          starts_at: new Date('2024-12-15'),
+          ends_at: new Date('2025-03-15'),
+          is_active: true
+        }
+      ]
+
+      await db.collection('promotions').deleteMany({})
+      await db.collection('promotions').insertMany(samplePromotions)
+
+      // Sample reviews
+      const sampleReviews = [
+        {
+          id: uuidv4(),
+          listing_id: sampleListings[0].id,
+          author_name: 'Marina Silva',
+          content: 'Lugar incrível! A vista é de tirar o fôlego e a propriedade é exatamente como nas fotos. O Adson foi super atencioso.',
+          rating: 5,
+          created_at: new Date('2024-12-15'),
+          is_approved: true
+        },
+        {
+          id: uuidv4(),
+          listing_id: sampleListings[0].id,
+          author_name: 'Carlos Roberto',
+          content: 'Experiência perfeita em Búzios. A localização é privilegiada e as comodidades são de primeiro mundo.',
+          rating: 5,
+          created_at: new Date('2024-12-10'),
+          is_approved: true
+        },
+        {
+          id: uuidv4(),
+          listing_id: sampleListings[7].id,
+          author_name: 'Ana Paula',
+          content: 'Passeio incrível de iate! O capitão foi muito profissional e a experiência foi inesquecível.',
+          rating: 5,
+          created_at: new Date('2024-12-12'),
+          is_approved: true
+        },
+        {
+          id: uuidv4(),
+          listing_id: sampleListings[1].id,
+          author_name: 'João Santos',
+          content: 'Casa maravilhosa na Ferradura. Tudo muito limpo e organizado. Recomendo!',
+          rating: 4,
+          created_at: new Date('2024-12-08'),
+          is_approved: false
+        }
+      ]
+
+      await db.collection('reviews').deleteMany({})
+      await db.collection('reviews').insertMany(sampleReviews)
+
       return handleCORS(NextResponse.json({ 
         message: "Database seeded successfully",
         counts: {
           amenities: amenities.length,
-          listings: sampleListings.length
+          listings: sampleListings.length,
+          promotions: samplePromotions.length,
+          reviews: sampleReviews.length
         }
       }))
     }
