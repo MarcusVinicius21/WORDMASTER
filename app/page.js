@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import Link from "next/link"
 
 // WhatsApp Component
 const WhatsAppButton = ({ listing, className = "" }) => {
   const whatsappNumber = "5521976860759"
-  const message = `Olá! Tenho interesse em "${listing.title}". Vi no site: ${window.location.origin}`
+  const message = `Olá! Tenho interesse em "${listing.title}". Vi no site: ${typeof window !== 'undefined' ? window.location.origin : ''}`
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
   
   return (
@@ -92,21 +93,21 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">W</span>
             </div>
             <span className="font-bold text-xl text-gray-900">Wordmaster Beach</span>
-          </div>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#mansoes" className="text-gray-700 hover:text-blue-600 font-medium">Mansões</a>
-            <a href="#transfer" className="text-gray-700 hover:text-blue-600 font-medium">Transfer Aeroporto</a>
-            <a href="#escuna" className="text-gray-700 hover:text-blue-600 font-medium">Passeios de Escuna</a>
-            <a href="#iates" className="text-gray-700 hover:text-blue-600 font-medium">Iates e Lanchas</a>
-            <a href="#buggy" className="text-gray-700 hover:text-blue-600 font-medium">Aluguel de Buggy</a>
-            <a href="#cambio" className="text-gray-700 hover:text-blue-600 font-medium">Câmbio</a>
+            <Link href="/mansoes" className="text-gray-700 hover:text-blue-600 font-medium">Mansões</Link>
+            <Link href="/transfer" className="text-gray-700 hover:text-blue-600 font-medium">Transfer Aeroporto</Link>
+            <Link href="/escuna" className="text-gray-700 hover:text-blue-600 font-medium">Passeios de Escuna</Link>
+            <Link href="/iates" className="text-gray-700 hover:text-blue-600 font-medium">Iates e Lanchas</Link>
+            <Link href="/buggy" className="text-gray-700 hover:text-blue-600 font-medium">Aluguel de Buggy</Link>
+            <Link href="/cambio" className="text-gray-700 hover:text-blue-600 font-medium">Câmbio</Link>
           </div>
 
           {/* Right Side */}
@@ -115,7 +116,9 @@ const Navigation = () => {
             <Button variant="outline" onClick={() => window.open('https://wa.me/5521976860759?text=Quero anunciar minha propriedade', '_blank')}>
               Anuncie sua propriedade
             </Button>
-            <Button variant="ghost">Login</Button>
+            <Link href="/login">
+              <Button variant="ghost">Login</Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -130,12 +133,12 @@ const Navigation = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-2">
-            <a href="#mansoes" className="block py-2 text-gray-700 hover:text-blue-600">Mansões</a>
-            <a href="#transfer" className="block py-2 text-gray-700 hover:text-blue-600">Transfer Aeroporto</a>
-            <a href="#escuna" className="block py-2 text-gray-700 hover:text-blue-600">Passeios de Escuna</a>
-            <a href="#iates" className="block py-2 text-gray-700 hover:text-blue-600">Iates e Lanchas</a>
-            <a href="#buggy" className="block py-2 text-gray-700 hover:text-blue-600">Aluguel de Buggy</a>
-            <a href="#cambio" className="block py-2 text-gray-700 hover:text-blue-600">Câmbio</a>
+            <Link href="/mansoes" className="block py-2 text-gray-700 hover:text-blue-600">Mansões</Link>
+            <Link href="/transfer" className="block py-2 text-gray-700 hover:text-blue-600">Transfer Aeroporto</Link>
+            <Link href="/escuna" className="block py-2 text-gray-700 hover:text-blue-600">Passeios de Escuna</Link>
+            <Link href="/iates" className="block py-2 text-gray-700 hover:text-blue-600">Iates e Lanchas</Link>
+            <Link href="/buggy" className="block py-2 text-gray-700 hover:text-blue-600">Aluguel de Buggy</Link>
+            <Link href="/cambio" className="block py-2 text-gray-700 hover:text-blue-600">Câmbio</Link>
           </div>
         )}
       </div>
@@ -145,49 +148,129 @@ const Navigation = () => {
 
 // Listing Card Component
 const ListingCard = ({ listing }) => {
+  const categoryMap = {
+    mansao: 'mansoes',
+    iate: 'iates',
+    escuna: 'escuna',
+    transfer: 'transfer',
+    buggy: 'buggy'
+  }
+
+  const listingUrl = `/${categoryMap[listing.category]}/${listing.slug}`
+
   return (
     <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden">
-      <div className="relative">
-        <img 
-          src={listing.images[0]} 
-          alt={listing.title}
-          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        {listing.isPromoted && (
-          <Badge className="absolute top-3 left-3 bg-red-500 text-white">
-            Promoção
-          </Badge>
-        )}
-        <div className="absolute top-3 right-3 flex space-x-2">
-          <Heart className="w-6 h-6 text-white hover:text-red-500 cursor-pointer" />
-          <Share2 className="w-6 h-6 text-white hover:text-blue-500 cursor-pointer" />
-        </div>
-      </div>
-      
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-lg truncate">{listing.title}</h3>
-          <div className="flex items-center space-x-1">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium">{listing.rating}</span>
+      <Link href={listingUrl}>
+        <div className="relative">
+          <img 
+            src={listing.images?.[0] || "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"} 
+            alt={listing.title}
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {listing.isPromoted && (
+            <Badge className="absolute top-3 left-3 bg-red-500 text-white">
+              Promoção
+            </Badge>
+          )}
+          <div className="absolute top-3 right-3 flex space-x-2">
+            <Heart className="w-6 h-6 text-white hover:text-red-500 cursor-pointer" />
+            <Share2 className="w-6 h-6 text-white hover:text-blue-500 cursor-pointer" />
           </div>
         </div>
-        
-        <div className="flex items-center text-gray-600 mb-2">
-          <MapPin className="w-4 h-4 mr-1" />
-          <span className="text-sm">{listing.neighborhood}</span>
-        </div>
-        
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{listing.description}</p>
+      </Link>
+      
+      <CardContent className="p-4">
+        <Link href={listingUrl}>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-lg truncate">{listing.title}</h3>
+            <div className="flex items-center space-x-1">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-medium">{listing.rating || '4.8'}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center text-gray-600 mb-2">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span className="text-sm">{listing.neighborhood}</span>
+          </div>
+          
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{listing.description}</p>
+        </Link>
         
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-bold text-xl">{listing.priceLabel}</span>
+            <span className="font-bold text-xl">{listing.price_label}</span>
           </div>
           <WhatsAppButton listing={listing} className="text-sm px-4 py-2" />
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+// Promotions Carousel Component
+const PromotionsCarousel = ({ listings }) => {
+  const featuredListings = listings.filter(listing => listing.is_featured || listing.isPromoted)
+  
+  if (featuredListings.length === 0) return null
+
+  return (
+    <section className="py-16 bg-gradient-to-br from-blue-50 to-cyan-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Ofertas Especiais</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Descubra nossas promoções exclusivas e propriedades em destaque para suas férias dos sonhos em Búzios
+          </p>
+        </div>
+        
+        <Carousel className="w-full max-w-5xl mx-auto">
+          <CarouselContent>
+            {featuredListings.map((listing, index) => (
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                <div className="p-1">
+                  <Card className="group cursor-pointer hover:shadow-2xl transition-all duration-300 overflow-hidden border-0 shadow-lg">
+                    <Link href={`/${listing.category === 'mansao' ? 'mansoes' : listing.category}/${listing.slug}`}>
+                      <div className="relative">
+                        <img 
+                          src={listing.images?.[0] || "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"} 
+                          alt={listing.title}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {(listing.isPromoted || listing.is_featured) && (
+                          <Badge className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+                            {listing.isPromoted ? 'Promoção' : 'Destaque'}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <CardContent className="p-4">
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-1">{listing.title}</h3>
+                        <div className="flex items-center text-gray-600 mb-3">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          <span className="text-sm">{listing.neighborhood}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="font-bold text-xl text-blue-600">{listing.price_label}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm font-medium">{listing.rating || '4.8'}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Link>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+    </section>
   )
 }
 
@@ -220,11 +303,11 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Categorias</h3>
             <ul className="space-y-2 text-gray-300">
-              <li>Mansões de Alto Padrão</li>
-              <li>Iates e Lanchas</li>
-              <li>Passeios de Escuna</li>
-              <li>Transfer Aeroporto</li>
-              <li>Aluguel de Buggy</li>
+              <li><Link href="/mansoes">Mansões de Alto Padrão</Link></li>
+              <li><Link href="/iates">Iates e Lanchas</Link></li>
+              <li><Link href="/escuna">Passeios de Escuna</Link></li>
+              <li><Link href="/transfer">Transfer Aeroporto</Link></li>
+              <li><Link href="/buggy">Aluguel de Buggy</Link></li>
             </ul>
           </div>
           
@@ -251,62 +334,97 @@ const Footer = () => {
 export default function HomePage() {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Sample listings data - will be replaced with API
-  const sampleListings = [
-    {
-      id: 1,
-      title: "Mansão Vista Mar em Geribá",
-      neighborhood: "Geribá",
-      category: "mansao",
-      description: "Luxuosa mansão com vista deslumbrante para o mar, piscina privativa e acesso direto à praia.",
-      priceLabel: "R$ 2.500/dia",
-      rating: 4.95,
-      images: [
-        "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-      ],
-      isPromoted: true,
-      amenities: ["pool", "wifi", "parking", "ocean_view"]
-    },
-    {
-      id: 2,
-      title: "Iate de Luxo - 45 pés",
-      neighborhood: "Marina",
-      category: "iate",
-      description: "Iate moderno com capitão incluso, ideal para passeios e eventos especiais.",
-      priceLabel: "R$ 3.800/dia",
-      rating: 4.88,
-      images: [
-        "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
-      ],
-      isPromoted: false,
-      amenities: ["captain", "sound_system", "bar", "sun_deck"]
-    },
-    {
-      id: 3,
-      title: "Casa de Praia Ferradura",
-      neighborhood: "Praia da Ferradura",
-      category: "mansao",
-      description: "Casa aconchegante a poucos metros da praia, perfeita para famílias.",
-      priceLabel: "R$ 1.200/dia",
-      rating: 4.92,
-      images: [
-        "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-      ],
-      isPromoted: false,
-      amenities: ["beach_access", "wifi", "bbq", "parking"]
-    }
-  ]
-
+  // API integration
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setListings(sampleListings)
-      setLoading(false)
-    }, 1000)
+    const fetchListings = async () => {
+      try {
+        const response = await fetch('/api/listings?featured=true&limit=6')
+        if (!response.ok) {
+          throw new Error('Failed to fetch listings')
+        }
+        const data = await response.json()
+        
+        // Add sample images to listings
+        const listingsWithImages = data.listings.map((listing, index) => ({
+          ...listing,
+          images: [
+            index === 0 
+              ? "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
+              : index === 1
+              ? "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
+              : "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
+            "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
+          ],
+          rating: 4.8 + (Math.random() * 0.4),
+          isPromoted: listing.is_featured && Math.random() > 0.5
+        }))
+        
+        setListings(listingsWithImages)
+      } catch (err) {
+        console.error('Error fetching listings:', err)
+        setError(err.message)
+        // Fallback to sample data
+        setListings([
+          {
+            id: 1,
+            title: "Mansão Vista Mar em Geribá",
+            neighborhood: "Geribá",
+            category: "mansao",
+            slug: "mansao-vista-mar-geriba",
+            description: "Luxuosa mansão com vista deslumbrante para o mar, piscina privativa e acesso direto à praia.",
+            price_label: "R$ 2.500/dia",
+            rating: 4.95,
+            images: [
+              "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
+              "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
+            ],
+            isPromoted: true,
+            is_featured: true,
+            amenities: ["pool", "wifi", "parking", "ocean_view"]
+          },
+          {
+            id: 2,
+            title: "Iate de Luxo - 45 pés",
+            neighborhood: "Marina",
+            category: "iate",
+            slug: "iate-luxo-45-pes",
+            description: "Iate moderno com capitão incluso, ideal para passeios e eventos especiais.",
+            price_label: "R$ 3.800/dia",
+            rating: 4.88,
+            images: [
+              "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
+              "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
+            ],
+            isPromoted: false,
+            is_featured: true,
+            amenities: ["captain", "sound_system", "bar", "sun_deck"]
+          },
+          {
+            id: 3,
+            title: "Casa de Praia Ferradura",
+            neighborhood: "Praia da Ferradura",
+            category: "mansao",
+            slug: "casa-praia-ferradura",
+            description: "Casa aconchegante a poucos metros da praia, perfeita para famílias.",
+            price_label: "R$ 1.200/dia",
+            rating: 4.92,
+            images: [
+              "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
+              "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
+            ],
+            isPromoted: true,
+            is_featured: false,
+            amenities: ["beach_access", "wifi", "bbq", "parking"]
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchListings()
   }, [])
 
   return (
@@ -347,6 +465,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Promotions Carousel */}
+      <PromotionsCarousel listings={listings} />
+
       {/* Categories Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -354,21 +475,21 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {[
-              { name: "Mansões", icon: "🏖️", href: "#mansoes" },
-              { name: "Iates", icon: "🛥️", href: "#iates" },
-              { name: "Escuna", icon: "⛵", href: "#escuna" },
-              { name: "Transfer", icon: "✈️", href: "#transfer" },
-              { name: "Buggy", icon: "🚗", href: "#buggy" },
-              { name: "Câmbio", icon: "💱", href: "#cambio" }
+              { name: "Mansões", icon: "🏖️", href: "/mansoes" },
+              { name: "Iates", icon: "🛥️", href: "/iates" },
+              { name: "Escuna", icon: "⛵", href: "/escuna" },
+              { name: "Transfer", icon: "✈️", href: "/transfer" },
+              { name: "Buggy", icon: "🚗", href: "/buggy" },
+              { name: "Câmbio", icon: "💱", href: "/cambio" }
             ].map((category, index) => (
-              <a 
+              <Link 
                 key={index}
                 href={category.href}
                 className="bg-white rounded-2xl p-6 text-center hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               >
                 <div className="text-4xl mb-4">{category.icon}</div>
                 <h3 className="font-semibold text-lg">{category.name}</h3>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -389,9 +510,14 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 mb-4">Erro ao carregar propriedades</p>
+              <Button onClick={() => window.location.reload()}>Tentar novamente</Button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {listings.map((listing) => (
+              {listings.slice(0, 6).map((listing) => (
                 <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
