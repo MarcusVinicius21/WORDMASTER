@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Search, Filter, SlidersHorizontal, Star, MapPin, Heart, Share2, ChevronDown } from "lucide-react"
+import { Search, Filter, SlidersHorizontal, Star, MapPin, Heart, Share2, ChevronDown, Menu, X, Phone, Mail, Instagram, Eye, Users, Bed, Bath, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -11,55 +11,122 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import Link from "next/link"
 
-// Navigation Component
-const Navigation = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+// Modern Premium Navbar Component (same as homepage)
+const ModernNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
+  const categories = [
+    { name: 'Mansões', path: '/mansoes', icon: '🏖️' },
+    { name: 'Iates', path: '/iates', icon: '🛥️' },
+    { name: 'Escuna', path: '/escuna', icon: '⛵' },
+    { name: 'Transfer', path: '/transfer', icon: '✈️' },
+    { name: 'Buggy', path: '/buggy', icon: '🚗' },
+    { name: 'Câmbio', path: '/cambio', icon: '💱' }
+  ]
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">W</span>
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">W</span>
             </div>
-            <span className="font-bold text-xl text-gray-900">Wordmaster Beach</span>
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Wordmaster
+              </h1>
+              <p className="text-xs text-gray-500 -mt-1">Beach Búzios</p>
+            </div>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/mansoes" className="text-gray-700 hover:text-blue-600 font-medium">Mansões</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-blue-600 font-medium">Transfer Aeroporto</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-blue-600 font-medium">Passeios de Escuna</Link>
-            <Link href="/iates" className="text-gray-700 hover:text-blue-600 font-medium">Iates e Lanchas</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-blue-600 font-medium">Aluguel de Buggy</Link>
-            <Link href="/cambio" className="text-gray-700 hover:text-blue-600 font-medium">Câmbio</Link>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
+            {categories.map((category) => (
+              <Link
+                key={category.name}
+                href={category.path}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group relative"
+              >
+                <span className="text-lg group-hover:scale-110 transition-transform duration-200">
+                  {category.icon}
+                </span>
+                <span className="font-medium">{category.name}</span>
+              </Link>
+            ))}
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <Search className="w-5 h-5 text-gray-600 cursor-pointer" />
-            <Button variant="outline" onClick={() => window.open('https://wa.me/5521976860759?text=Quero anunciar minha propriedade', '_blank')}>
-              Anuncie sua propriedade
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="hidden sm:flex items-center space-x-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300"
+              onClick={() => window.open('https://wa.me/5521976860759', '_blank')}
+            >
+              <Phone className="w-4 h-4" />
+              <span>Contato</span>
             </Button>
-            <Link href="/login">
-              <Button variant="ghost">Login</Button>
+            
+            <Link href="/admin">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="hidden sm:flex border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
+              >
+                Admin
+              </Button>
             </Link>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm" 
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
           </div>
         </div>
-      </div>
-    </nav>
-  )
-}
 
-// Breadcrumb Component
-const Breadcrumb = ({ category, categoryName }) => {
-  return (
-    <nav className="bg-gray-50 py-4">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-blue-600">Home</Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">{categoryName}</span>
-        </div>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden py-4 border-t border-gray-100 bg-white/95 backdrop-blur-md">
+            <div className="flex flex-col space-y-2">
+              {categories.map((category) => (
+                <Link
+                  key={category.name}
+                  href={category.path}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-lg">{category.icon}</span>
+                  <span className="font-medium">{category.name}</span>
+                </Link>
+              ))}
+              <div className="flex space-x-2 px-4 pt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1 border-green-200 text-green-700 hover:bg-green-50"
+                  onClick={() => window.open('https://wa.me/5521976860759', '_blank')}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Contato
+                </Button>
+                <Link href="/admin" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+                  >
+                    Admin
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )
@@ -73,230 +140,221 @@ const WhatsAppButton = ({ listing, className = "" }) => {
   
   return (
     <Button 
-      className={`bg-green-600 hover:bg-green-700 text-white ${className}`}
+      className={`bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
       onClick={() => window.open(whatsappUrl, '_blank')}
     >
+      <Phone className="w-4 h-4 mr-2" />
       WhatsApp
     </Button>
   )
 }
 
-// Listing Card Component
-const ListingCard = ({ listing, category }) => {
-  const listingUrl = `/${category}/${listing.slug}`
+// Premium Property Card
+const PremiumPropertyCard = ({ listing }) => {
+  const [isFavorite, setIsFavorite] = useState(false)
+  
+  const categoryNames = {
+    mansao: 'Mansão de Luxo',
+    mansoes: 'Mansão de Luxo',
+    iate: 'Iate Premium', 
+    iates: 'Iate Premium',
+    escuna: 'Escuna Exclusiva',
+    transfer: 'Transfer VIP',
+    buggy: 'Buggy Adventure'
+  }
+
+  // Premium images for each category
+  const getCategoryImage = (category) => {
+    const images = {
+      mansao: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&h=300&fit=crop&crop=center',
+      mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&h=300&fit=crop&crop=center',
+      iate: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&h=300&fit=crop&crop=center',
+      iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&h=300&fit=crop&crop=center',
+      escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=300&fit=crop&crop=center',
+      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500&h=300&fit=crop&crop=center',
+      buggy: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500&h=300&fit=crop&crop=center'
+    }
+    return images[category] || images.mansao
+  }
 
   return (
-    <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden">
-      <Link href={listingUrl}>
-        <div className="relative">
-          <img 
-            src={listing.images?.[0] || "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"} 
-            alt={listing.title}
-            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          {listing.isPromoted && (
-            <Badge className="absolute top-3 left-3 bg-red-500 text-white">
-              Promoção
-            </Badge>
-          )}
-          <div className="absolute top-3 right-3 flex space-x-2">
-            <Heart className="w-6 h-6 text-white hover:text-red-500 cursor-pointer" />
-            <Share2 className="w-6 h-6 text-white hover:text-blue-500 cursor-pointer" />
+    <Card className="group overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 transform hover:-translate-y-2">
+      <div className="relative overflow-hidden">
+        <img
+          src={getCategoryImage(listing.category)}
+          alt={listing.title}
+          className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-700"
+        />
+        
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Badges */}
+        <div className="absolute top-4 left-4">
+          <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1 rounded-full font-semibold shadow-lg">
+            {categoryNames[listing.category] || 'Premium'}
+          </Badge>
+        </div>
+        
+        {/* Favorite button */}
+        <div className="absolute top-4 right-4">
+          <button 
+            onClick={() => setIsFavorite(!isFavorite)}
+            className={`p-3 backdrop-blur-md rounded-full transition-all duration-200 ${
+              isFavorite 
+                ? 'bg-red-500 text-white' 
+                : 'bg-white/80 hover:bg-white text-gray-700'
+            }`}
+          >
+            <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+          </button>
+        </div>
+
+        {/* View count badge */}
+        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="flex items-center space-x-2 bg-black/50 backdrop-blur-sm text-white px-3 py-2 rounded-full text-sm">
+            <Eye className="w-4 h-4" />
+            <span>{Math.floor(Math.random() * 200) + 50} visualizações</span>
           </div>
         </div>
-      </Link>
+      </div>
       
-      <CardContent className="p-4">
-        <Link href={listingUrl}>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-lg truncate">{listing.title}</h3>
-            <div className="flex items-center space-x-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{listing.rating || '4.8'}</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center text-gray-600 mb-2">
-            <MapPin className="w-4 h-4 mr-1" />
-            <span className="text-sm">{listing.neighborhood}</span>
-          </div>
-          
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{listing.description}</p>
-          
-          {/* Category-specific attributes */}
-          <div className="mb-3">
-            {category === 'mansoes' && (
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                {listing.guests && <span>{listing.guests} hóspedes</span>}
-                {listing.bedrooms && <span>{listing.bedrooms} quartos</span>}
-                {listing.bathrooms && <span>{listing.bathrooms} banheiros</span>}
+      <CardContent className="p-6">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors">
+            {listing.title}
+          </h3>
+          <p className="text-gray-600 text-sm leading-relaxed">{listing.subtitle}</p>
+        </div>
+        
+        <div className="flex items-center text-sm text-gray-500 mb-4">
+          <MapPin className="w-4 h-4 mr-1 text-blue-600" />
+          <span>{listing.neighborhood}</span>
+        </div>
+
+        {/* Property features */}
+        {(listing.guests || listing.bedrooms || listing.bathrooms) && (
+          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+            {listing.guests && (
+              <div className="flex items-center space-x-1">
+                <Users className="w-4 h-4 text-blue-600" />
+                <span>{listing.guests} hóspedes</span>
               </div>
             )}
-            {category === 'iates' && listing.attributes && (
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                {listing.attributes.length_ft && <span>{listing.attributes.length_ft} pés</span>}
-                {listing.attributes.cabins && <span>{listing.attributes.cabins} cabines</span>}
-                {listing.guests && <span>{listing.guests} pessoas</span>}
+            {listing.bedrooms && (
+              <div className="flex items-center space-x-1">
+                <Bed className="w-4 h-4 text-blue-600" />
+                <span>{listing.bedrooms} quartos</span>
               </div>
             )}
-            {category === 'escuna' && listing.attributes && (
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                {listing.attributes.capacity && <span>{listing.attributes.capacity} pessoas</span>}
-                {listing.attributes.route && <span>{listing.attributes.route}</span>}
-              </div>
-            )}
-            {category === 'transfer' && listing.attributes && (
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                {listing.attributes.origin && <span>De: {listing.attributes.origin}</span>}
-                {listing.attributes.destination && <span>Para: {listing.attributes.destination}</span>}
-              </div>
-            )}
-            {category === 'buggy' && listing.attributes && (
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                {listing.attributes.seats && <span>{listing.attributes.seats} lugares</span>}
-                {listing.attributes.transmission && <span>{listing.attributes.transmission}</span>}
+            {listing.bathrooms && (
+              <div className="flex items-center space-x-1">
+                <Bath className="w-4 h-4 text-blue-600" />
+                <span>{listing.bathrooms} banheiros</span>
               </div>
             )}
           </div>
-        </Link>
+        )}
+
+        {/* Rating */}
+        <div className="flex items-center space-x-1 mb-4">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star 
+              key={star} 
+              className="w-4 h-4 fill-yellow-400 text-yellow-400" 
+            />
+          ))}
+          <span className="text-sm text-gray-600 ml-2">5.0 (12 avaliações)</span>
+        </div>
         
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-bold text-xl">{listing.price_label}</span>
+            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              {listing.price_label}
+            </span>
           </div>
-          <WhatsAppButton listing={listing} className="text-sm px-4 py-2" />
+          <WhatsAppButton 
+            listing={listing}
+            className="px-6 py-2"
+          />
         </div>
       </CardContent>
     </Card>
   )
 }
 
-// Filters Component
-const FiltersPanel = ({ category, onFilterChange, priceRange, setPriceRange }) => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const categoryFilters = {
-    mansoes: [
-      { key: 'pool', label: 'Piscina' },
-      { key: 'oceanfront', label: 'Vista para o mar' },
-      { key: 'parking', label: 'Estacionamento' },
-      { key: 'jacuzzi', label: 'Jacuzzi' }
-    ],
-    iates: [
-      { key: 'captain', label: 'Capitão incluso' },
-      { key: 'sound_system', label: 'Som ambiente' },
-      { key: 'bar', label: 'Bar' },
-      { key: 'sun_deck', label: 'Deck para sol' }
-    ],
-    escuna: [
-      { key: 'route', label: 'Rota específica' },
-      { key: 'capacity', label: 'Grande capacidade' }
-    ],
-    transfer: [
-      { key: 'type', label: 'Tipo de veículo' },
-      { key: 'route', label: 'Rota específica' }
-    ],
-    buggy: [
-      { key: 'transmission', label: 'Transmissão' },
-      { key: 'seats', label: 'Número de assentos' }
-    ]
-  }
-
+// Premium Filter Panel
+const PremiumFilterPanel = ({ showFilters, setShowFilters, priceRange, setPriceRange, selectedNeighborhood, setSelectedNeighborhood, sortBy, setSortBy }) => {
   return (
-    <div className="bg-white border-b">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="outline"
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center space-x-2"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span>Filtros</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-            </Button>
-            
-            <Select onValueChange={(value) => onFilterChange('sort', value)}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Ordenar por" />
+    <div className={`bg-white rounded-2xl shadow-xl border border-gray-100 transition-all duration-300 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-bold text-gray-900">Filtros Premium</h3>
+          <Button variant="ghost" size="sm" onClick={() => setShowFilters(false)} className="lg:hidden">
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <div className="space-y-6">
+          {/* Price Range */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Faixa de Preço
+            </label>
+            <div className="px-2">
+              <Slider
+                value={priceRange}
+                onValueChange={setPriceRange}
+                max={10000}
+                min={100}
+                step={100}
+                className="mb-3"
+              />
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>R$ {priceRange[0]}</span>
+                <span>R$ {priceRange[1]}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Neighborhood */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Localização
+            </label>
+            <Select value={selectedNeighborhood} onValueChange={setSelectedNeighborhood}>
+              <SelectTrigger className="border-gray-200 focus:border-blue-500 rounded-xl">
+                <SelectValue placeholder="Selecione o bairro" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Mais recentes</SelectItem>
-                <SelectItem value="price_low">Menor preço</SelectItem>
-                <SelectItem value="price_high">Maior preço</SelectItem>
-                <SelectItem value="featured">Em destaque</SelectItem>
+                <SelectItem value="all">Todos os bairros</SelectItem>
+                <SelectItem value="geriba">Geribá</SelectItem>
+                <SelectItem value="centro">Centro</SelectItem>
+                <SelectItem value="ferradura">Ferradura</SelectItem>
+                <SelectItem value="marina">Marina</SelectItem>
+                <SelectItem value="porto">Porto</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="text-sm text-gray-600">
-            Mostrando resultados para {category === 'mansoes' ? 'Mansões' : 
-              category === 'iates' ? 'Iates' : 
-              category === 'escuna' ? 'Escuna' : 
-              category === 'transfer' ? 'Transfer' : 
-              category === 'buggy' ? 'Buggy' : category}
+          {/* Sort By */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Ordenar por
+            </label>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="border-gray-200 focus:border-blue-500 rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="price_asc">Menor preço</SelectItem>
+                <SelectItem value="price_desc">Maior preço</SelectItem>
+                <SelectItem value="newest">Mais recentes</SelectItem>
+                <SelectItem value="rating">Melhor avaliados</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-
-        {isOpen && (
-          <div className="mt-6 p-6 bg-gray-50 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Price Range */}
-              <div>
-                <h4 className="font-semibold mb-3">Faixa de Preço</h4>
-                <div className="space-y-3">
-                  <Slider
-                    defaultValue={priceRange}
-                    max={10000}
-                    min={0}
-                    step={100}
-                    onValueChange={setPriceRange}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>R$ {priceRange[0]}</span>
-                    <span>R$ {priceRange[1]}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Neighborhood */}
-              <div>
-                <h4 className="font-semibold mb-3">Bairro</h4>
-                <Select onValueChange={(value) => onFilterChange('neighborhood', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos os bairros" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os bairros</SelectItem>
-                    <SelectItem value="geriba">Geribá</SelectItem>
-                    <SelectItem value="ferradura">Ferradura</SelectItem>
-                    <SelectItem value="centro">Centro</SelectItem>
-                    <SelectItem value="marina">Marina</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Category-specific filters */}
-              <div className="md:col-span-2">
-                <h4 className="font-semibold mb-3">Características</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {categoryFilters[category]?.map((filter) => (
-                    <label key={filter.key} className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        onChange={(e) => onFilterChange(filter.key, e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                      <span className="text-sm">{filter.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
@@ -306,99 +364,180 @@ const FiltersPanel = ({ category, onFilterChange, priceRange, setPriceRange }) =
 export default function CategoryPage() {
   const params = useParams()
   const category = params.category
-  
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [filters, setFilters] = useState({})
-  const [priceRange, setPriceRange] = useState([0, 10000])
+  const [showFilters, setShowFilters] = useState(false)
+  const [priceRange, setPriceRange] = useState([500, 5000])
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
 
-  const categoryNames = {
-    mansoes: 'Mansões de Alto Padrão',
-    iates: 'Iates e Lanchas',
-    escuna: 'Passeios de Escuna',
-    transfer: 'Transfer Aeroporto',
-    buggy: 'Aluguel de Buggy',
-    cambio: 'Câmbio (USD/EUR)'
+  // Category configurations
+  const categoryConfig = {
+    mansoes: {
+      title: 'Mansões de Alto Padrão',
+      subtitle: 'Descubra mansões de alto padrão com vista para o mar, piscinas privativas e todo o conforto que você merece.',
+      icon: '🏖️',
+      gradient: 'from-blue-600 to-blue-800'
+    },
+    iates: {
+      title: 'Iates & Embarcações Premium',
+      subtitle: 'Experiências náuticas exclusivas com iates de luxo, lanchas esportivas e embarcações premium.',
+      icon: '🛥️',
+      gradient: 'from-cyan-600 to-blue-700'
+    },
+    escuna: {
+      title: 'Passeios de Escuna',
+      subtitle: 'Descubra as praias paradisíacas de Búzios em passeios exclusivos de escuna tradicional.',
+      icon: '⛵',
+      gradient: 'from-teal-600 to-cyan-700'
+    },
+    transfer: {
+      title: 'Transfer & Táxi Aéreo',
+      subtitle: 'Chegue com conforto e exclusividade através dos nossos serviços de transfer executivo e táxi aéreo.',
+      icon: '✈️',
+      gradient: 'from-indigo-600 to-purple-700'
+    },
+    buggy: {
+      title: 'Buggy Adventures',
+      subtitle: 'Explore trilhas selvagens e praias escondidas com nossos buggies 4x4 em aventuras inesquecíveis.',
+      icon: '🚗',
+      gradient: 'from-orange-600 to-red-700'
+    }
   }
 
-  const categoryMap = {
-    mansoes: 'mansao',
-    iates: 'iate',
-    escuna: 'escuna',
-    transfer: 'transfer',
-    buggy: 'buggy'
-  }
+  const currentCategory = categoryConfig[category] || categoryConfig.mansoes
 
-  // Handle filter changes
-  const handleFilterChange = (filterKey, filterValue) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterKey]: filterValue
-    }))
-  }
-
-  // Fetch listings
+  // Fetch listings with fallback
   useEffect(() => {
     const fetchListings = async () => {
-      if (category === 'cambio') {
-        setLoading(false)
-        return
-      }
-
       try {
-        const mappedCategory = categoryMap[category]
-        if (!mappedCategory) {
-          throw new Error('Invalid category')
-        }
-
-        const response = await fetch(`/api/listings?category=${mappedCategory}&limit=20`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch listings')
-        }
-        const data = await response.json()
-        
-        // Add sample images to listings
-        const listingsWithImages = data.listings.map((listing, index) => ({
-          ...listing,
-          images: [
-            category === 'mansoes' 
-              ? "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-              : category === 'iates'
-              ? "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
-              : "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
-            "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
-          ],
-          rating: 4.8 + (Math.random() * 0.4),
-          isPromoted: Math.random() > 0.7
-        }))
-        
-        setListings(listingsWithImages)
-      } catch (err) {
-        console.error('Error fetching listings:', err)
-        setError(err.message)
-        // Sample data for fallback
-        setListings([
-          {
-            id: Date.now(),
-            title: `${categoryNames[category]} - Exemplo`,
-            neighborhood: "Búzios",
-            category: categoryMap[category] || category,
-            slug: `exemplo-${category}`,
-            description: `Exemplo de ${categoryNames[category]} disponível em Búzios.`,
-            price_label: "R$ 1.500/dia",
-            rating: 4.85,
-            images: [
-              category === 'mansoes' 
-                ? "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-                : "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85"
+        const response = await fetch(`/api/listings?category=${category}`)
+        if (response.ok) {
+          const data = await response.json()
+          setListings(data.listings || [])
+        } else {
+          console.error('Error fetching listings, using fallback data')
+          // Enhanced fallback data with more properties per category
+          const fallbackData = {
+            mansoes: [
+              {
+                id: '1',
+                title: 'Mansão Vista Mar Premium',
+                subtitle: 'Luxuosa mansão com vista panorâmica para o mar, piscina infinita e área gourmet completa.',
+                category: 'mansoes',
+                neighborhood: 'Geribá',
+                price_label: 'R$ 3.500/dia',
+                guests: 12,
+                bedrooms: 6,
+                bathrooms: 5,
+                is_featured: true
+              },
+              {
+                id: '2',
+                title: 'Villa Exclusive Ferradura',
+                subtitle: 'Villa de alto padrão na Praia da Ferradura com design contemporâneo e acabamentos de luxo.',
+                category: 'mansoes',
+                neighborhood: 'Ferradura',
+                price_label: 'R$ 2.800/dia',
+                guests: 10,
+                bedrooms: 5,
+                bathrooms: 4,
+                is_featured: true
+              },
+              {
+                id: '3',
+                title: 'Casa de Praia Boutique',
+                subtitle: 'Residência exclusiva com acesso direto à praia, jardim tropical e área de lazer completa.',
+                category: 'mansoes',
+                neighborhood: 'Centro',
+                price_label: 'R$ 2.200/dia',
+                guests: 8,
+                bedrooms: 4,
+                bathrooms: 3,
+                is_featured: false
+              }
             ],
-            guests: 8,
-            bedrooms: 4,
-            bathrooms: 3,
-            attributes: category === 'mansoes' ? { pool: true, oceanfront: true } : { length_ft: 45, cabins: 2 }
+            iates: [
+              {
+                id: '4',
+                title: 'Iate de Luxo - 60 pés',
+                subtitle: 'Mega iate com tripulação completa, bar premium, sala de jantar e suítes de luxo.',
+                category: 'iates',
+                neighborhood: 'Marina Porto Búzios',
+                price_label: 'R$ 8.500/dia',
+                guests: 20,
+                is_featured: true
+              },
+              {
+                id: '5',
+                title: 'Lancha Esportiva Premium',
+                subtitle: 'Lancha de alta performance para passeios rápidos e esportivos pelas praias de Búzios.',
+                category: 'iates',
+                neighborhood: 'Marina',
+                price_label: 'R$ 4.200/dia',
+                guests: 12,
+                is_featured: true
+              }
+            ],
+            escuna: [
+              {
+                id: '6',
+                title: 'Escuna Tradicional Búzios',
+                subtitle: 'Passeio clássico em escuna tradicional visitando as 12 praias mais belas de Búzios.',
+                category: 'escuna',
+                neighborhood: 'Porto da Barra',
+                price_label: 'R$ 180/pessoa',
+                guests: 40,
+                is_featured: true
+              }
+            ],
+            transfer: [
+              {
+                id: '7',
+                title: 'Helicóptero Executive',
+                subtitle: 'Transfer VIP de helicóptero com vista aérea espetacular do litoral fluminense.',
+                category: 'transfer',
+                neighborhood: 'Heliporto',
+                price_label: 'R$ 2.500/trecho',
+                guests: 4,
+                is_featured: true
+              }
+            ],
+            buggy: [
+              {
+                id: '8',
+                title: 'Buggy Adventure 4x4',
+                subtitle: 'Aventura off-road explorando trilhas selvagens e praias desertas de Búzios.',
+                category: 'buggy',
+                neighborhood: 'Base Centro',
+                price_label: 'R$ 350/dia',
+                guests: 4,
+                is_featured: true
+              }
+            ]
           }
-        ])
+          setListings(fallbackData[category] || fallbackData.mansoes)
+        }
+      } catch (error) {
+        console.error('Error fetching listings:', error)
+        // Fallback data on error
+        const fallbackData = {
+          mansoes: [
+            {
+              id: '1',
+              title: 'Mansão Vista Mar Premium',
+              subtitle: 'Luxuosa mansão com vista panorâmica para o mar.',
+              category: 'mansoes',
+              neighborhood: 'Geribá',
+              price_label: 'R$ 3.500/dia',
+              guests: 12,
+              bedrooms: 6,
+              bathrooms: 5,
+            }
+          ]
+        }
+        setListings(fallbackData[category] || fallbackData.mansoes)
       } finally {
         setLoading(false)
       }
@@ -407,125 +546,161 @@ export default function CategoryPage() {
     fetchListings()
   }, [category])
 
-  // Special case for cambio page
-  if (category === 'cambio') {
-    return (
-      <div className="min-h-screen bg-white">
-        <Navigation />
-        <Breadcrumb category={category} categoryName={categoryNames[category]} />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      {/* Modern Premium Navbar */}
+      <ModernNavbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+
+      {/* Premium Hero Section */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-blue-800/10" />
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23000000" fill-opacity="0.1"%3E%3Ccircle cx="7" cy="7" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" />
+        </div>
         
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="text-6xl mb-8">💱</div>
-            <h1 className="text-4xl font-bold mb-6">Serviço de Câmbio</h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Oferecemos serviços de câmbio para USD e EUR com as melhores taxas da região. 
-              Entre em contato via WhatsApp para consultar cotações atualizadas.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              <div className="bg-blue-50 rounded-2xl p-8">
-                <div className="text-3xl mb-4">🇺🇸</div>
-                <h3 className="text-2xl font-bold mb-2">Dólar Americano</h3>
-                <p className="text-gray-600">Compra e venda de USD com taxas competitivas</p>
-              </div>
-              
-              <div className="bg-blue-50 rounded-2xl p-8">
-                <div className="text-3xl mb-4">🇪🇺</div>
-                <h3 className="text-2xl font-bold mb-2">Euro</h3>
-                <p className="text-gray-600">Câmbio de EUR para suas viagens internacionais</p>
-              </div>
+        <div className="container mx-auto px-4 relative">
+          {/* Breadcrumb */}
+          <nav className="mb-8">
+            <div className="flex items-center space-x-2 text-sm">
+              <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors">
+                Home
+              </Link>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-900 font-medium">{currentCategory.title}</span>
+            </div>
+          </nav>
+
+          <div className="text-center max-w-4xl mx-auto">
+            <div className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-r ${currentCategory.gradient} text-white text-4xl mb-6 shadow-2xl`}>
+              {currentCategory.icon}
             </div>
             
-            <Button 
-              size="lg" 
-              className="bg-green-600 hover:bg-green-700 text-lg px-8 py-4"
-              onClick={() => window.open('https://wa.me/5521976860759?text=Olá! Gostaria de consultar as taxas de câmbio atuais.', '_blank')}
-            >
-              Consultar Taxas no WhatsApp
-            </Button>
+            <h1 className={`text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r ${currentCategory.gradient} bg-clip-text text-transparent leading-tight`}>
+              {currentCategory.title}
+            </h1>
+            
+            <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+              {currentCategory.subtitle}
+            </p>
           </div>
         </div>
-      </div>
-    )
-  }
+      </section>
 
-  return (
-    <div className="min-h-screen bg-white">
-      <Navigation />
-      <Breadcrumb category={category} categoryName={categoryNames[category]} />
-      
-      {/* Header */}
-      <div className="bg-gray-50 py-12">
+      {/* Premium Search & Filter Bar */}
+      <section className="py-8 bg-white/80 backdrop-blur-md sticky top-16 z-40 border-b border-gray-100">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">{categoryNames[category]}</h1>
-          <p className="text-xl text-gray-600 max-w-3xl">
-            {category === 'mansoes' && 'Descubra mansões de alto padrão com vista para o mar, piscinas privativas e todo o conforto que você merece.'}
-            {category === 'iates' && 'Navegue em iates de luxo com capitão experiente, ideal para passeios exclusivos e eventos especiais.'}
-            {category === 'escuna' && 'Explore as praias paradisíacas de Búzios em nossos passeios de escuna com toda segurança e conforto.'}
-            {category === 'transfer' && 'Transfers executivos e confortáveis entre aeroportos e Búzios com motoristas experientes.'}
-            {category === 'buggy' && 'Alugue buggies para explorar Búzios com liberdade e aventura pelas melhores praias e trilhas.'}
-          </p>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <FiltersPanel 
-        category={category} 
-        onFilterChange={handleFilterChange}
-        priceRange={priceRange}
-        setPriceRange={setPriceRange}
-      />
-
-      {/* Listings Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-300 h-64 rounded-2xl mb-4"></div>
-                  <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-                </div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">Erro ao carregar {categoryNames[category].toLowerCase()}</p>
-              <Button onClick={() => window.location.reload()}>Tentar novamente</Button>
-            </div>
-          ) : listings.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-6">🏖️</div>
-              <h3 className="text-2xl font-bold mb-4">Nenhum resultado encontrado</h3>
-              <p className="text-gray-600 mb-6">
-                Não encontramos {categoryNames[category].toLowerCase()} com os filtros selecionados.
-                Tente ajustar os filtros ou entre em contato conosco.
-              </p>
-              <Button 
-                className="bg-green-600 hover:bg-green-700"
-                onClick={() => window.open('https://wa.me/5521976860759?text=Olá! Estou procurando opções de aluguéis em Búzios.', '_blank')}
-              >
-                Falar no WhatsApp
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold">
-                  {listings.length} {listings.length === 1 ? 'propriedade encontrada' : 'propriedades encontradas'}
-                </h2>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  type="text"
+                  placeholder={`Buscar ${currentCategory.title.toLowerCase()}...`}
+                  className="pl-12 pr-6 py-3 w-80 rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-0 shadow-lg"
+                />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {listings.map((listing) => (
-                  <ListingCard key={listing.id} listing={listing} category={category} />
-                ))}
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="lg:hidden rounded-xl border-2 border-gray-200 hover:border-blue-300"
+              >
+                <SlidersHorizontal className="w-5 h-5 mr-2" />
+                Filtros
+              </Button>
+            </div>
+
+            <div className="flex items-center space-x-4 text-sm text-gray-600">
+              <span>Mostrando {listings.length} {currentCategory.title.toLowerCase()}</span>
+              <div className="h-4 w-px bg-gray-300" />
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-40 border-0 bg-transparent">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Mais recentes</SelectItem>
+                  <SelectItem value="price_asc">Menor preço</SelectItem>
+                  <SelectItem value="price_desc">Maior preço</SelectItem>
+                  <SelectItem value="rating">Melhor avaliados</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="flex gap-8">
+            {/* Sidebar Filters - Desktop */}
+            <div className="hidden lg:block w-80 flex-shrink-0">
+              <PremiumFilterPanel 
+                showFilters={true}
+                setShowFilters={setShowFilters}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                selectedNeighborhood={selectedNeighborhood}
+                setSelectedNeighborhood={setSelectedNeighborhood}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+              />
+            </div>
+
+            {/* Mobile Filters Overlay */}
+            {showFilters && (
+              <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+                <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-2xl">
+                  <PremiumFilterPanel 
+                    showFilters={showFilters}
+                    setShowFilters={setShowFilters}
+                    priceRange={priceRange}
+                    setPriceRange={setPriceRange}
+                    selectedNeighborhood={selectedNeighborhood}
+                    setSelectedNeighborhood={setSelectedNeighborhood}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                  />
+                </div>
               </div>
-            </>
-          )}
+            )}
+
+            {/* Properties Grid */}
+            <div className="flex-1">
+              {loading ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="bg-gray-300 h-72 rounded-3xl mb-4"></div>
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
+                      <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : listings.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-8">
+                  {listings.map((listing) => (
+                    <PremiumPropertyCard key={listing.id} listing={listing} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-20">
+                  <div className="text-6xl mb-4">🏖️</div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    Nenhuma propriedade encontrada
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Tente ajustar os filtros ou entre em contato conosco.
+                  </p>
+                  <Button onClick={() => window.open('https://wa.me/5521976860759', '_blank')}>
+                    <Phone className="w-4 h-4 mr-2" />
+                    Falar Conosco
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </div>
