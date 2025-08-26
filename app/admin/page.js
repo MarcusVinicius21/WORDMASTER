@@ -689,11 +689,14 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings }) => {
           is_featured: formData.is_featured || false
         }
         
-        // Add to local listings
-        setListings(prev => [newListing, ...prev])
+        // Add to local listings using the passed setListings function
+        if (setListings) {
+          setListings(prev => [newListing, ...prev])
+          console.log('Propriedade adicionada à lista local:', newListing.title)
+        }
         
         alert('Propriedade criada localmente com sucesso! (Será sincronizada quando a API estiver disponível)')
-        onCreated()
+        onCreated() // This will refresh the listings
         onClose() 
         resetForm()
       }
