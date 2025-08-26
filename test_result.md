@@ -510,9 +510,22 @@ metadata:
 
 test_plan:
   current_focus:
-    - "API Integration"
+    - "Homepage Enhanced Features"
+    - "Promotions Carousel"
+    - "API Integration Homepage"
+    - "Category Pages - Mansoes"
+    - "Category Pages - Iates"
+    - "Category Pages - Escuna"
+    - "Category Pages - Transfer"
+    - "Category Pages - Buggy"
+    - "Category Pages - Cambio"
+    - "Listing Detail Pages"
+    - "Gallery Mosaic with Lightbox"
+    - "Enhanced WhatsApp Integration"
+    - "Navigation Menu Updates"
+    - "Enhanced Mobile Responsiveness"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
