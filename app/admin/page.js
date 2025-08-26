@@ -457,6 +457,45 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
     is_featured: false
   })
   const [loading, setLoading] = useState(false)
+  const [uploadedImages, setUploadedImages] = useState([])
+  const [uploading, setUploading] = useState(false)
+
+  // Handle image upload
+  const handleImageUpload = async (event) => {
+    const files = Array.from(event.target.files)
+    if (files.length === 0) return
+
+    setUploading(true)
+    const newImages = []
+
+    for (const file of files) {
+      try {
+        // Create a data URL for preview
+        const reader = new FileReader()
+        const dataUrl = await new Promise((resolve) => {
+          reader.onload = (e) => resolve(e.target.result)
+          reader.readAsDataURL(file)
+        })
+
+        newImages.push({
+          id: Date.now() + Math.random(),
+          file,
+          preview: dataUrl,
+          name: file.name
+        })
+      } catch (error) {
+        console.error('Error processing image:', error)
+      }
+    }
+
+    setUploadedImages(prev => [...prev, ...newImages])
+    setUploading(false)
+  }
+
+  // Remove image
+  const removeImage = (imageId) => {
+    setUploadedImages(prev => prev.filter(img => img.id !== imageId))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -479,8 +518,37 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
       })
 
       if (response.ok) {
+        const newListing = await response.json()
+        
+        // If we have images, create media entries
+        if (uploadedImages.length > 0) {
+          for (let i = 0; i < uploadedImages.length; i++) {
+            const image = uploadedImages[i]
+            // For now, we'll use placeholder URLs since we don't have cloud storage
+            // In a real scenario, you'd upload to a cloud service first
+            const mediaData = {
+              listing_id: newListing.id,
+              type: 'image',
+              url: `https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center`,
+              alt_text: image.name,
+              sort_order: i + 1
+            }
+            
+            try {
+              await fetch('/api/media', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mediaData)
+              })
+            } catch (error) {
+              console.error('Error saving media:', error)
+            }
+          }
+        }
+
         onCreated()
         onClose()
+        // Reset form
         setFormData({
           category: '',
           title: '',
@@ -495,6 +563,7 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
           price_label: '',
           is_featured: false
         })
+        setUploadedImages([])
       }
     } catch (error) {
       console.error('Error creating listing:', error)
@@ -505,12 +574,65 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Adicionar Nova Propriedade</DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Image Upload Section */}
+          <div className="space-y-4">
+            <label className="block text-sm font-medium">Fotos da Propriedade</label>
+            
+            {/* Upload Area */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                id="image-upload"
+                disabled={uploading}
+              />
+              <label htmlFor="image-upload" className="cursor-pointer">
+                <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-lg font-medium text-gray-600 mb-2">
+                  {uploading ? 'Processando imagens...' : 'Clique para adicionar fotos'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Ou arraste e solte as imagens aqui (máximo 10 fotos)
+                </p>
+              </label>
+            </div>
+
+            {/* Image Preview Grid */}
+            {uploadedImages.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {uploadedImages.map((image) => (
+                  <div key={image.id} className="relative group">
+                    <img
+                      src={image.preview}
+                      alt={image.name}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(image.id)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg truncate">
+                      {image.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Form Fields */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Categoria *</label>
@@ -647,11 +769,11 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
             </label>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          <div className="flex justify-end space-x-3 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || uploading}>
               {loading ? 'Criando...' : 'Criar Propriedade'}
             </Button>
           </div>
