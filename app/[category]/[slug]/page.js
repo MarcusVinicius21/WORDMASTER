@@ -202,7 +202,7 @@ const AmenitiesSection = ({ amenities }) => {
   const [showAll, setShowAll] = useState(false)
   
   const amenitiesIcons = {
-    'Piscina': Pool,
+    'Piscina': Wifi, // Using Wifi as placeholder since Pool is not available
     'Wi-Fi': Wifi,
     'Estacionamento': Car,
     'Vista para o Mar': Eye,
@@ -210,7 +210,7 @@ const AmenitiesSection = ({ amenities }) => {
     'Ar Condicionado': Wind,
     'Cozinha Completa': ChefHat,
     'TV a Cabo': Tv,
-    'Jacuzzi': Pool,
+    'Jacuzzi': Wifi, // Using Wifi as placeholder since Pool is not available
     'Acesso à Praia': MapPin
   }
 
