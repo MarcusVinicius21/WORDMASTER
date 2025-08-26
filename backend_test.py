@@ -49,6 +49,8 @@ class BackendTester:
                 response = requests.post(url, headers=self.headers, json=data, timeout=30)
             elif method.upper() == 'PUT':
                 response = requests.put(url, headers=self.headers, json=data, timeout=30)
+            elif method.upper() == 'PATCH':
+                response = requests.patch(url, headers=self.headers, json=data, timeout=30)
             elif method.upper() == 'DELETE':
                 response = requests.delete(url, headers=self.headers, timeout=30)
             else:
