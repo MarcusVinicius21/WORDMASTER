@@ -549,7 +549,7 @@ const ListingsManagement = () => {
 }
 
 // Create Listing Modal Component
-const CreateListingModal = ({ open, onClose, onCreated }) => {
+const CreateListingModal = ({ open, onClose, onCreated, setListings }) => {
   const [formData, setFormData] = useState({
     category: '',
     title: '',
