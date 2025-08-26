@@ -333,6 +333,61 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json(cleanEvent, { status: 201 }))
     }
 
+    // **MEDIA ENDPOINTS**
+
+    // Create media - POST /api/media
+    if (route === '/media' && method === 'POST') {
+      const body = await request.json()
+      
+      // Validate required fields
+      const required = ['listing_id', 'type', 'url']
+      for (const field of required) {
+        if (!body[field]) {
+          return handleCORS(NextResponse.json(
+            { error: `${field} is required` }, 
+            { status: 400 }
+          ))
+        }
+      }
+
+      const media = {
+        id: uuidv4(),
+        listing_id: body.listing_id,
+        type: body.type,
+        url: body.url,
+        alt_text: body.alt_text || '',
+        sort_order: body.sort_order || 1,
+        created_at: new Date()
+      }
+
+      await db.collection('listing_media').insertOne(media)
+
+      const { _id, ...cleanMedia } = media
+      return handleCORS(NextResponse.json(cleanMedia, { status: 201 }))
+    }
+
+    // Get media for listing - GET /api/media?listing_id=xxx
+    if (route === '/media' && method === 'GET') {
+      const url = new URL(request.url)
+      const listingId = url.searchParams.get('listing_id')
+      
+      if (!listingId) {
+        return handleCORS(NextResponse.json(
+          { error: "listing_id is required" }, 
+          { status: 400 }
+        ))
+      }
+
+      const media = await db.collection('listing_media')
+        .find({ listing_id: listingId })
+        .sort({ sort_order: 1 })
+        .toArray()
+
+      return handleCORS(NextResponse.json({
+        media: media.map(({ _id, ...rest }) => rest)
+      }))
+    }
+
     // **SEED DATA ENDPOINT**
 
     // Seed database - POST /api/seed
