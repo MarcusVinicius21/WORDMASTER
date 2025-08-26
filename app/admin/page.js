@@ -94,25 +94,33 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        console.log('Dashboard: Fetching stats...')
         const [listingsRes, reviewsRes] = await Promise.all([
           fetch('/api/listings'),
           fetch('/api/reviews')
         ])
 
+        console.log('Dashboard: Listings response status:', listingsRes.status)
+
         if (listingsRes.ok) {
           const listingsData = await listingsRes.json()
-          const activeListings = listingsData.listings.filter(l => l.is_active).length
-          const onPromotion = listingsData.listings.filter(l => l.is_featured).length
+          console.log('Dashboard: Received listings data:', listingsData)
+          const activeListings = listingsData.listings?.filter(l => l.is_active).length || 0
+          const onPromotion = listingsData.listings?.filter(l => l.is_featured).length || 0
+          
+          console.log('Dashboard: Stats calculated - Total:', listingsData.listings?.length, 'Active:', activeListings, 'Featured:', onPromotion)
           
           setStats(prev => ({
             ...prev,
-            totalListings: listingsData.listings.length,
+            totalListings: listingsData.listings?.length || 0,
             activeListings,
             onPromotion
           }))
+        } else {
+          console.error('Dashboard: Failed to fetch listings:', listingsRes.status)
         }
       } catch (error) {
-        console.error('Error fetching stats:', error)
+        console.error('Dashboard: Error fetching stats:', error)
       }
     }
 
