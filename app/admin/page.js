@@ -499,9 +499,18 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('Form submitted!', formData)
+    
+    // Validate required fields
+    if (!formData.category || !formData.title) {
+      alert('Por favor, preencha a categoria e o título.')
+      return
+    }
+    
     setLoading(true)
 
     try {
+      console.log('Sending request to /api/listings...')
       const response = await fetch('/api/listings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -517,11 +526,15 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
         })
       })
 
+      console.log('Response status:', response.status)
+
       if (response.ok) {
         const newListing = await response.json()
+        console.log('Listing created successfully:', newListing)
         
         // If we have images, create media entries
         if (uploadedImages.length > 0) {
+          console.log('Saving', uploadedImages.length, 'images...')
           for (let i = 0; i < uploadedImages.length; i++) {
             const image = uploadedImages[i]
             // For now, we'll use placeholder URLs since we don't have cloud storage
@@ -546,6 +559,7 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
           }
         }
 
+        alert('Propriedade criada com sucesso!')
         onCreated()
         onClose()
         // Reset form
@@ -564,9 +578,14 @@ const CreateListingModal = ({ open, onClose, onCreated }) => {
           is_featured: false
         })
         setUploadedImages([])
+      } else {
+        const errorData = await response.text()
+        console.error('Error response:', errorData)
+        alert('Erro ao criar propriedade: ' + errorData)
       }
     } catch (error) {
       console.error('Error creating listing:', error)
+      alert('Erro ao criar propriedade: ' + error.message)
     } finally {
       setLoading(false)
     }
