@@ -748,56 +748,7 @@ const Footer = () => {
     </footer>
   )
 }
-        <div key={index} className="relative cursor-pointer" onClick={() => openLightbox(index + 1)}>
-          <img 
-            src={image} 
-            alt={`${alt} ${index + 2}`}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
-          {index === 3 && images.length > 5 && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white font-semibold">
-              +{images.length - 5} fotos
-            </div>
-          )}
-        </div>
-      ))}
 
-      {/* Lightbox */}
-      {lightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center">
-          <div className="relative max-w-4xl max-h-full">
-            <button 
-              onClick={() => setLightboxOpen(false)}
-              className="absolute top-4 right-4 text-white z-10"
-            >
-              <X size={32} />
-            </button>
-            <img 
-              src={images[currentImage]} 
-              alt={`${alt} ${currentImage + 1}`}
-              className="max-w-full max-h-screen object-contain"
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Navigation Component
-const Navigation = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">W</span>
-            </div>
-            <span className="font-bold text-xl text-gray-900">Wordmaster Beach</span>
           </Link>
 
           {/* Desktop Menu */}
