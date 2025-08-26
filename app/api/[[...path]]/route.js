@@ -163,7 +163,58 @@ async function handleRoute(request, { params }) {
       }))
     }
 
-    // Create listing - POST /api/listings
+    // Update listing - PATCH /api/listings/[id]
+    if (route.startsWith('/listings/') && method === 'PATCH') {
+      const listingId = route.split('/listings/')[1]
+      const body = await request.json()
+      
+      const result = await db.collection('listings').updateOne(
+        { id: listingId },
+        { 
+          $set: {
+            ...body,
+            updated_at: new Date()
+          }
+        }
+      )
+
+      if (result.matchedCount === 0) {
+        return handleCORS(NextResponse.json(
+          { error: "Listing not found" }, 
+          { status: 404 }
+        ))
+      }
+
+      return handleCORS(NextResponse.json({ success: true }))
+    }
+
+    // Delete listing - DELETE /api/listings/[id]
+    if (route.startsWith('/listings/') && method === 'DELETE') {
+      const listingId = route.split('/listings/')[1]
+      
+      const result = await db.collection('listings').deleteOne({ id: listingId })
+
+      if (result.deletedCount === 0) {
+        return handleCORS(NextResponse.json(
+          { error: "Listing not found" }, 
+          { status: 404 }
+        ))
+      }
+
+      return handleCORS(NextResponse.json({ success: true }))
+    }
+
+    // Get reviews - GET /api/reviews
+    if (route === '/reviews' && method === 'GET') {
+      const reviews = await db.collection('reviews')
+        .find({})
+        .sort({ created_at: -1 })
+        .toArray()
+
+      return handleCORS(NextResponse.json({
+        reviews: reviews.map(({ _id, ...rest }) => rest)
+      }))
+    }
     if (route === '/listings' && method === 'POST') {
       const body = await request.json()
       
