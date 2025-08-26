@@ -366,7 +366,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "External URL Configuration Issue"
+    - "API Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
