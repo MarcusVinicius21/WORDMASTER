@@ -573,21 +573,24 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Homepage Enhanced Features"
     - "Promotions Carousel"
-    - "API Integration Homepage"
     - "Category Pages - Mansoes"
     - "Category Pages - Iates"
     - "Category Pages - Escuna"
     - "Category Pages - Transfer"
     - "Category Pages - Buggy"
-    - "Category Pages - Cambio"
     - "Listing Detail Pages"
     - "Gallery Mosaic with Lightbox"
-    - "Enhanced WhatsApp Integration"
-    - "Navigation Menu Updates"
-    - "Enhanced Mobile Responsiveness"
-  stuck_tasks: []
+    - "Amenities Section with Modal"
+    - "Reviews Section"
+  stuck_tasks:
+    - "Promotions Carousel"
+    - "Category Pages - Mansoes"
+    - "Category Pages - Iates"
+    - "Category Pages - Escuna"
+    - "Category Pages - Transfer"
+    - "Category Pages - Buggy"
+    - "Listing Detail Pages"
   test_all: true
   test_priority: "high_first"
 
