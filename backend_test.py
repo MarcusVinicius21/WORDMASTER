@@ -471,6 +471,129 @@ class BackendTester:
         else:
             self.log_test("CORS Headers", False, f"Missing CORS headers: {missing_headers}")
     
+    def test_media_api(self):
+        """Test media API for admin photo upload functionality"""
+        print("\n=== Testing Media API ===")
+        
+        if not self.created_listing_id:
+            self.log_test("Media API", False, "No listing ID available for media testing")
+            return False
+        
+        # Test creating media for a listing
+        media_data = {
+            "listing_id": self.created_listing_id,
+            "type": "image",
+            "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
+            "alt_text": "Test property image",
+            "sort_order": 1
+        }
+        
+        response = self.make_request('POST', '/media', data=media_data)
+        
+        if response is None:
+            self.log_test("Create Media", False, "Failed to connect to API")
+            return False
+            
+        if response.status_code == 201:
+            try:
+                data = response.json()
+                if data.get('listing_id') == self.created_listing_id and data.get('type') == 'image':
+                    self.log_test("Create Media", True, f"Media created successfully with ID: {data.get('id')}")
+                    
+                    # Test getting media for the listing
+                    response = self.make_request('GET', '/media', params={'listing_id': self.created_listing_id})
+                    
+                    if response and response.status_code == 200:
+                        media_list = response.json()
+                        if 'media' in media_list and len(media_list['media']) > 0:
+                            self.log_test("Get Media", True, f"Retrieved {len(media_list['media'])} media items for listing")
+                        else:
+                            self.log_test("Get Media", False, "No media returned for listing", media_list)
+                    else:
+                        self.log_test("Get Media", False, f"HTTP {response.status_code if response else 'No response'}")
+                    
+                    return True
+                else:
+                    self.log_test("Create Media", False, "Created media data doesn't match input", data)
+                    return False
+            except json.JSONDecodeError:
+                self.log_test("Create Media", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_test("Create Media", False, f"HTTP {response.status_code}", response.text)
+            return False
+    
+    def test_admin_dashboard_data(self):
+        """Test admin dashboard statistics endpoints"""
+        print("\n=== Testing Admin Dashboard Data ===")
+        
+        # Test listings for dashboard stats
+        response = self.make_request('GET', '/listings')
+        
+        if response and response.status_code == 200:
+            try:
+                data = response.json()
+                listings = data.get('listings', [])
+                total = data.get('total', 0)
+                
+                # Calculate stats like admin dashboard would
+                active_listings = len([l for l in listings if l.get('is_active', False)])
+                featured_listings = len([l for l in listings if l.get('is_featured', False)])
+                
+                self.log_test("Dashboard Listings Data", True, 
+                            f"Dashboard stats: Total={total}, Active={active_listings}, Featured={featured_listings}")
+                
+                # Test categories for dashboard
+                response = self.make_request('GET', '/categories')
+                if response and response.status_code == 200:
+                    categories_data = response.json()
+                    categories = categories_data.get('categories', [])
+                    self.log_test("Dashboard Categories Data", True, f"Categories available: {len(categories)}")
+                else:
+                    self.log_test("Dashboard Categories Data", False, "Failed to get categories")
+                
+                return True
+            except json.JSONDecodeError:
+                self.log_test("Dashboard Listings Data", False, "Invalid JSON response")
+                return False
+        else:
+            self.log_test("Dashboard Listings Data", False, f"HTTP {response.status_code if response else 'No response'}")
+            return False
+    
+    def test_admin_crud_operations(self):
+        """Test admin CRUD operations for listings management"""
+        print("\n=== Testing Admin CRUD Operations ===")
+        
+        if not self.created_listing_id:
+            self.log_test("Admin CRUD", False, "No listing ID available for CRUD testing")
+            return False
+        
+        # Test UPDATE operation (PATCH)
+        update_data = {
+            "title": "Updated Test Property - Admin Panel",
+            "is_featured": True,
+            "price_label": "R$ 999/dia"
+        }
+        
+        response = self.make_request('PATCH', f'/listings/{self.created_listing_id}', data=update_data)
+        
+        if response and response.status_code == 200:
+            self.log_test("Update Listing", True, "Listing updated successfully via admin CRUD")
+            
+            # Verify the update by getting the listing
+            response = self.make_request('GET', f'/listings/{self.created_listing_id}')
+            if response and response.status_code == 200:
+                updated_listing = response.json()
+                if updated_listing.get('title') == update_data['title']:
+                    self.log_test("Verify Update", True, "Update verified - title changed correctly")
+                else:
+                    self.log_test("Verify Update", False, "Update not reflected in listing data")
+            
+            return True
+        else:
+            self.log_test("Update Listing", False, f"HTTP {response.status_code if response else 'No response'}")
+            return False
+
     def test_error_handling(self):
         """Test error handling for non-existent routes"""
         print("\n=== Testing Error Handling ===")
