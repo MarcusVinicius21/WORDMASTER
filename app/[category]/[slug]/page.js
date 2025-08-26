@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Star, MapPin, Heart, Share2, Users, Bed, Bath, Square, Camera, X, Wifi, Car, Pool, ChefHat, Tv, Wind, Check, Eye } from "lucide-react"
+import { ArrowLeft, Star, MapPin, Heart, Share2, Users, Bed, Bath, Square, Camera, X, Wifi, Car, ChefHat, Tv, Wind, Check, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
