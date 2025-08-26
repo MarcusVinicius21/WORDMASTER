@@ -323,7 +323,7 @@ frontend:
           comment: "Dynamic category page for yachts with filters and listings - needs testing"
         - working: false
           agent: "testing"
-          comment: "❌ Category page loads but API integration failing: 502 errors from https://buzios-stays.preview.emergentagent.com/api/listings?category=iate&limit=20. Page structure works but no listings displayed."
+          comment: "❌ Category page loads but API integration failing: 502 errors from https://wordmaster-admin.preview.emergentagent.com/api/listings?category=iate&limit=20. Page structure works but no listings displayed."
 
   - task: "Category Pages - Escuna"
     implemented: true
@@ -596,10 +596,10 @@ test_plan:
 
 agent_communication:
     - agent: "testing"
-      message: "Comprehensive backend API testing completed. All core functionality working correctly with 70.6% success rate (12/17 tests passed). The 5 failed tests were minor issues with test script HTTP status handling, not actual API failures. Critical finding: External URL (https://buzios-stays.preview.emergentagent.com/api) returns 502 errors while localhost works perfectly - this indicates an ingress/routing configuration issue that needs to be addressed for production deployment."
+      message: "Comprehensive backend API testing completed. All core functionality working correctly with 70.6% success rate (12/17 tests passed). The 5 failed tests were minor issues with test script HTTP status handling, not actual API failures. Critical finding: External URL (https://wordmaster-admin.preview.emergentagent.com/api) returns 502 errors while localhost works perfectly - this indicates an ingress/routing configuration issue that needs to be addressed for production deployment."
     - agent: "testing"
       message: "Comprehensive frontend testing completed successfully. All major UI components working perfectly: ✅ Navigation (6 categories), ✅ Hero section with search, ✅ Categories display, ✅ Featured listings (3 cards), ✅ WhatsApp integration (4 buttons with correct phone number), ✅ Host section (Adson Carlos), ✅ Footer (complete contact info), ✅ Mobile responsiveness. CRITICAL: Frontend not integrated with backend APIs - still using hardcoded sample data instead of fetching from /api/listings endpoint. Application accessible at production URL but needs API integration to be complete."
     - agent: "testing"
-      message: "Starting comprehensive testing of upgraded Wordmaster Beach Búzios application. Fixed Pool icon import error in listing detail and category pages. Ready to test all new implementations: enhanced homepage with carousel, category pages, listing details, gallery mosaic, amenities, reviews, enhanced WhatsApp integration, and mobile responsiveness. Testing will focus on production URL: https://buzios-stays.preview.emergentagent.com"
+      message: "Starting comprehensive testing of upgraded Wordmaster Beach Búzios application. Fixed Pool icon import error in listing detail and category pages. Ready to test all new implementations: enhanced homepage with carousel, category pages, listing details, gallery mosaic, amenities, reviews, enhanced WhatsApp integration, and mobile responsiveness. Testing will focus on production URL: https://wordmaster-admin.preview.emergentagent.com"
     - agent: "testing"
       message: "COMPREHENSIVE TESTING COMPLETED - Upgraded Wordmaster Beach Búzios application tested extensively. SUCCESS RATE: 68% (13/19 tasks working). ✅ WORKING: Homepage enhanced features, API integration, WhatsApp integration (7 buttons), Navigation (6 categories), Login page, Mobile responsiveness, Filters/Sorting, Breadcrumbs, Cambio page. ❌ CRITICAL ISSUES: 1) Promotions carousel missing implementation 2) Category pages show 502 API errors (ingress routing issue) 3) Listing detail pages have routing problems. 🔧 FIXES NEEDED: External API routing configuration, carousel component implementation, listing detail page routing. Application is 68% functional with excellent homepage and navigation but needs backend connectivity fixes."
