@@ -250,104 +250,8 @@ backend:
           comment: "Error handling working correctly - returns proper 404 responses for non-existent routes and listings, validation errors return appropriate 400 status codes. Minor: Test script had minor HTTP status handling issues but API responses are correct"
 
 frontend:
-  - task: "Homepage Navigation"
+  - task: "Homepage Enhanced Features"
     implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Navigation fully functional - all 6 category links working (Mansões, Transfer, Escuna, Iates, Buggy, Câmbio), mobile menu working, brand logo displays correctly, 'Anuncie sua propriedade' and Login buttons present"
-
-  - task: "Hero Section"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Hero section working perfectly - title 'Aluguéis Exclusivos em Búzios', subtitle, background image, and search input all functional. Search input accepts text input correctly"
-
-  - task: "Categories Section"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Categories section complete - all 6 categories present with correct icons (🏖️ Mansões, 🛥️ Iates, ⛵ Escuna, ✈️ Transfer, 🚗 Buggy, 💱 Câmbio), proper layout and clickable cards"
-
-  - task: "Featured Listings Display"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Featured listings section working - displays 3 sample listings with images, titles, descriptions, and pricing. Cards have proper hover effects and layout. Minor: Using sample data instead of API integration"
-
-  - task: "WhatsApp Integration"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "WhatsApp integration fully functional - 4 WhatsApp buttons found throughout the site, correct phone number (+55 21 97686-0759) implemented, buttons generate proper wa.me links with listing-specific messages"
-
-  - task: "Host Section"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Host section complete - Adson Carlos dos Santos profile with photo, all statistics (500+ guests, 4.9★ rating, 7 years experience), testimonial text, and WhatsApp contact button working"
-
-  - task: "Footer"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Footer complete - all 4 sections (Sobre, Contato, Categorias, Legal) present, contact information correct (WhatsApp +55 21 97686-0759, email wordmaster01@outlook.com, Instagram @wordmasterbeachbuzios), copyright notice present"
-
-  - task: "Mobile Responsiveness"
-    implemented: true
-    working: true
-    file: "app/page.js"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Mobile responsiveness working - mobile menu functionality tested and working, tablet layout verified, all major sections visible and properly arranged across different viewport sizes"
-
-  - task: "API Integration"
-    implemented: false
     working: "NA"
     file: "app/page.js"
     stuck_count: 0
@@ -356,7 +260,247 @@ frontend:
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "API integration not implemented - frontend currently uses hardcoded sample data instead of fetching from backend /api/listings endpoint. Backend APIs are confirmed working but frontend not connected yet"
+          comment: "New enhanced homepage with promotions carousel, API integration, and improved UI - needs comprehensive testing"
+
+  - task: "Promotions Carousel"
+    implemented: true
+    working: "NA"
+    file: "app/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Carousel component with navigation arrows for featured listings - needs testing"
+
+  - task: "API Integration Homepage"
+    implemented: true
+    working: "NA"
+    file: "app/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Homepage now fetches real data from /api/listings endpoint - needs testing"
+
+  - task: "Category Pages - Mansoes"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Dynamic category page for mansions with filters and listings - needs testing"
+
+  - task: "Category Pages - Iates"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Dynamic category page for yachts with filters and listings - needs testing"
+
+  - task: "Category Pages - Escuna"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Dynamic category page for schooner tours with filters and listings - needs testing"
+
+  - task: "Category Pages - Transfer"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Dynamic category page for airport transfers with filters and listings - needs testing"
+
+  - task: "Category Pages - Buggy"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Dynamic category page for buggy rentals with filters and listings - needs testing"
+
+  - task: "Category Pages - Cambio"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Special currency exchange page with USD/EUR information - needs testing"
+
+  - task: "Listing Detail Pages"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/[slug]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Dynamic listing detail pages with gallery mosaic, amenities, reviews, and WhatsApp integration - needs testing"
+
+  - task: "Gallery Mosaic with Lightbox"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/[slug]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Image gallery with mosaic layout and lightbox functionality - needs testing"
+
+  - task: "Amenities Section with Modal"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/[slug]/page.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Amenities display with 'Show all' modal functionality - needs testing"
+
+  - task: "Reviews Section"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/[slug]/page.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Reviews display with 'Show more' functionality - needs testing"
+
+  - task: "Enhanced WhatsApp Integration"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/[slug]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "WhatsApp buttons with listing-specific messages and analytics tracking - needs testing"
+
+  - task: "Mobile Sticky WhatsApp Button"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/[slug]/page.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Sticky WhatsApp button for mobile devices - needs testing"
+
+  - task: "Filters Panel"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Advanced filters panel with price range, neighborhood, and category-specific filters - needs testing"
+
+  - task: "Sorting Functionality"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Sorting options (newest, price, featured) for listings - needs testing"
+
+  - task: "Breadcrumb Navigation"
+    implemented: true
+    working: "NA"
+    file: "app/[category]/page.js"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Breadcrumb navigation on category and detail pages - needs testing"
+
+  - task: "Login Page"
+    implemented: true
+    working: "NA"
+    file: "app/login/page.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Login page with demo credentials functionality - needs testing"
+
+  - task: "Enhanced Mobile Responsiveness"
+    implemented: true
+    working: "NA"
+    file: "app/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Improved mobile responsiveness across all new pages and components - needs testing"
+
+  - task: "Navigation Menu Updates"
+    implemented: true
+    working: "NA"
+    file: "app/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Updated navigation menu with all category links - needs testing"
 
 metadata:
   created_by: "testing_agent"
