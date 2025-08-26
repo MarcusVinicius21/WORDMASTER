@@ -1,44 +1,48 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Star, MapPin, Heart, Share2, Users, Bed, Bath, Square, Camera, X, Wifi, Car, ChefHat, Tv, Wind, Check, Eye } from "lucide-react"
+import { useParams } from "next/navigation"
+import { ArrowLeft, MapPin, Users, Bed, Bath, Maximize, Star, Calendar, ChevronLeft, ChevronRight, Phone, Mail, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 
-// Navigation Component
-const Navigation = () => {
+// Villas in Brazil Style Navbar
+const VillasNavbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">W</span>
+    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link href="/" className="flex items-center">
+            <div className="text-2xl font-bold text-gray-800">
+              <div className="text-sm font-normal text-gray-600">WORDMASTER</div>
+              <div className="text-base font-bold text-gray-900 -mt-1">in BÚZIOS</div>
             </div>
-            <span className="font-bold text-xl text-gray-900">Wordmaster Beach</span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/mansoes" className="text-gray-700 hover:text-blue-600 font-medium">Mansões</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-blue-600 font-medium">Transfer Aeroporto</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-blue-600 font-medium">Passeios de Escuna</Link>
-            <Link href="/iates" className="text-gray-700 hover:text-blue-600 font-medium">Iates e Lanchas</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-blue-600 font-medium">Aluguel de Buggy</Link>
-            <Link href="/cambio" className="text-gray-700 hover:text-blue-600 font-medium">Câmbio</Link>
-          </div>
-
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" onClick={() => window.open('https://wa.me/5521976860759?text=Quero anunciar minha propriedade', '_blank')}>
-              Anuncie sua propriedade
-            </Button>
-            <Link href="/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
+          {/* Navigation Menu */}
+          <div className="hidden lg:flex items-center space-x-8 text-sm">
+            <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
+            <Link href="/destinos" className="text-gray-700 hover:text-gray-900 font-medium">Mais destinos</Link>
+            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
+            <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
+            <Link href="/concierge" className="text-gray-700 hover:text-gray-900 font-medium">Concierge</Link>
+            <Link href="/longo-prazo" className="text-gray-700 hover:text-gray-900 font-medium">Longo prazo</Link>
+            <Link href="/vendas" className="text-gray-700 hover:text-gray-900 font-medium">Vendas</Link>
+            <Link href="/sobre" className="text-gray-700 hover:text-gray-900 font-medium">Sobre Nós</Link>
+            <Link href="/blog" className="text-gray-700 hover:text-gray-900 font-medium">Blog</Link>
+            <Link href="/contato" className="text-gray-700 hover:text-gray-900 font-medium">Contato</Link>
+            
+            <div className="flex items-center space-x-2 text-gray-600 ml-4">
+              <span>PT</span>
+              <span>R$ BRL</span>
+            </div>
           </div>
         </div>
       </div>
@@ -46,117 +50,89 @@ const Navigation = () => {
   )
 }
 
-// Breadcrumb Component
-const Breadcrumb = ({ category, categoryName, title }) => {
-  return (
-    <nav className="bg-gray-50 py-4">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-blue-600">Home</Link>
-          <span>/</span>
-          <Link href={`/${category}`} className="hover:text-blue-600">{categoryName}</Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium truncate">{title}</span>
-        </div>
-      </div>
-    </nav>
-  )
-}
-
-// Gallery Mosaic Component
-const GalleryMosaic = ({ images, alt }) => {
-  const [lightboxOpen, setLightboxOpen] = useState(false)
+// Villas Style Gallery Component
+const VillasGallery = ({ images, title }) => {
   const [currentImage, setCurrentImage] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
-  const openLightbox = (index) => {
-    setCurrentImage(index)
-    setLightboxOpen(true)
-  }
-
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length)
-  }
-
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length)
-  }
+  const galleryImages = images || [
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop&crop=center", 
+    "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=800&h=600&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=800&h=600&fit=crop&crop=center"
+  ]
 
   return (
     <div className="relative">
-      <div className="grid grid-cols-4 grid-rows-2 gap-2 h-96 rounded-2xl overflow-hidden">
-        {/* Hero Image */}
-        <div className="col-span-2 row-span-2 relative cursor-pointer group" onClick={() => openLightbox(0)}>
+      {/* Main Gallery Grid - Villas in Brazil style */}
+      <div className="grid grid-cols-4 gap-2 h-96">
+        {/* Main large image */}
+        <div className="col-span-2 relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
           <img 
-            src={images[0]} 
-            alt={alt}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            src={galleryImages[0]} 
+            alt={title}
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-            <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+        
+        {/* Side images */}
+        <div className="space-y-2">
+          <div className="h-[calc(50%-4px)] relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
+            <img 
+              src={galleryImages[1]} 
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="h-[calc(50%-4px)] relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
+            <img 
+              src={galleryImages[2]} 
+              alt={title}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
         
-        {/* Thumbnail Images */}
-        {images.slice(1, 5).map((image, index) => (
-          <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
+        <div className="space-y-2">
+          <div className="h-[calc(50%-4px)] relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
             <img 
-              src={image} 
-              alt={`${alt} ${index + 2}`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              src={galleryImages[3]} 
+              alt={title}
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
-            {index === 3 && images.length > 5 && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white font-semibold">
-                +{images.length - 5} fotos
-              </div>
-            )}
           </div>
-        ))}
+          <div className="h-[calc(50%-4px)] relative cursor-pointer bg-gray-100 flex items-center justify-center" onClick={() => setLightboxOpen(true)}>
+            <span className="text-gray-600 font-medium">Veja mais fotos</span>
+            <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+          </div>
+        </div>
       </div>
-
-      {/* Show all photos button */}
-      <Button
-        variant="outline"
-        className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm hover:bg-white"
-        onClick={() => openLightbox(0)}
-      >
-        <Camera className="w-4 h-4 mr-2" />
-        Mostrar todas as fotos
-      </Button>
 
       {/* Lightbox */}
       {lightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center">
-          <div className="relative max-w-6xl max-h-full w-full h-full flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center">
+          <div className="relative max-w-4xl max-h-full">
             <button 
               onClick={() => setLightboxOpen(false)}
-              className="absolute top-4 right-4 text-white z-10 hover:bg-white/20 rounded-full p-2"
+              className="absolute top-4 right-4 text-white z-10 bg-black/50 rounded-full p-2"
             >
-              <X size={32} />
+              <X className="w-6 h-6" />
             </button>
-            
-            <button 
-              onClick={prevImage}
-              className="absolute left-4 text-white z-10 hover:bg-white/20 rounded-full p-2"
-            >
-              <ArrowLeft size={32} />
-            </button>
-            
-            <button 
-              onClick={nextImage}
-              className="absolute right-4 text-white z-10 hover:bg-white/20 rounded-full p-2"
-            >
-              <ArrowLeft size={32} className="rotate-180" />
-            </button>
-            
             <img 
-              src={images[currentImage]} 
-              alt={`${alt} ${currentImage + 1}`}
-              className="max-w-full max-h-full object-contain"
+              src={galleryImages[currentImage]} 
+              alt={title}
+              className="max-w-full max-h-screen object-contain"
             />
-            
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white">
-              {currentImage + 1} / {images.length}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {galleryImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImage(index)}
+                  className={`w-3 h-3 rounded-full ${
+                    index === currentImage ? 'bg-white' : 'bg-white/50'
+                  }`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -166,385 +142,231 @@ const GalleryMosaic = ({ images, alt }) => {
 }
 
 // WhatsApp Button Component
-const WhatsAppButton = ({ listing, className = "", sticky = false }) => {
+const WhatsAppButton = ({ listing }) => {
   const whatsappNumber = "5521976860759"
-  const message = `Olá! Tenho interesse em "${listing.title}". Vi no site: ${typeof window !== 'undefined' ? window.location.href : ''}`
+  const message = `Olá! Tenho interesse em "${listing?.title || 'propriedade'}". Vi no site Wordmaster Beach Búzios.`
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
   
-  const handleClick = () => {
-    // Track WhatsApp click
-    fetch('/api/analytics/whatsapp-click', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        listing_id: listing.id,
-        meta: { source: 'listing_detail' }
-      })
-    }).catch(() => {}) // Silent fail
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      <button
+        onClick={() => window.open(whatsappUrl, '_blank')}
+        className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-110"
+      >
+        <Phone className="w-6 h-6" />
+      </button>
+    </div>
+  )
+}
+
+// Villas Style Contact Form
+const ContactForm = ({ listing }) => {
+  const [formData, setFormData] = useState({
+    checkIn: '',
+    checkOut: '',
+    guests: '2',
+    email: '',
+    message: ''
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const whatsappNumber = "5521976860759"
+    const message = `Olá! Tenho interesse em "${listing?.title}".
     
+Dados da reserva:
+- Check-in: ${formData.checkIn}
+- Check-out: ${formData.checkOut} 
+- Hóspedes: ${formData.guests}
+- Email: ${formData.email}
+- Mensagem: ${formData.message}
+
+Vi no site Wordmaster Beach Búzios.`
+    
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }
-  
-  return (
-    <Button 
-      className={`bg-green-600 hover:bg-green-700 text-white ${sticky ? 'fixed bottom-4 right-4 z-40 shadow-lg md:relative md:bottom-auto md:right-auto md:shadow-none' : ''} ${className}`}
-      onClick={handleClick}
-      size={sticky ? "lg" : "default"}
-    >
-      <span className="mr-2">📱</span>
-      Contatar no WhatsApp
-    </Button>
-  )
-}
-
-// Amenities Component
-const AmenitiesSection = ({ amenities }) => {
-  const [showAll, setShowAll] = useState(false)
-  
-  const amenitiesIcons = {
-    'Piscina': Wifi, // Using Wifi as placeholder since Pool is not available
-    'Wi-Fi': Wifi,
-    'Estacionamento': Car,
-    'Vista para o Mar': Eye,
-    'Churrasqueira': ChefHat,
-    'Ar Condicionado': Wind,
-    'Cozinha Completa': ChefHat,
-    'TV a Cabo': Tv,
-    'Jacuzzi': Wifi, // Using Wifi as placeholder since Pool is not available
-    'Acesso à Praia': MapPin
-  }
-
-  const displayedAmenities = showAll ? amenities : amenities.slice(0, 6)
 
   return (
-    <div className="mb-8">
-      <h3 className="text-2xl font-bold mb-6">O que este lugar oferece</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {displayedAmenities.map((amenity, index) => {
-          const IconComponent = amenitiesIcons[amenity.name] || Check
-          return (
-            <div 
-              key={index} 
-              className={`flex items-center space-x-3 ${!amenity.available ? 'text-gray-400 line-through' : ''}`}
-            >
-              <IconComponent className="w-6 h-6" />
-              <span className="text-lg">{amenity.name}</span>
-            </div>
-          )
-        })}
-      </div>
-
-      {amenities.length > 6 && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="w-full md:w-auto">
-              Mostrar todas as {amenities.length} comodidades
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Todas as comodidades</DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              {amenities.map((amenity, index) => {
-                const IconComponent = amenitiesIcons[amenity.name] || Check
-                return (
-                  <div 
-                    key={index} 
-                    className={`flex items-center space-x-3 ${!amenity.available ? 'text-gray-400 line-through' : ''}`}
-                  >
-                    <IconComponent className="w-6 h-6" />
-                    <span>{amenity.name}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  )
-}
-
-// Reviews Section Component
-const ReviewsSection = ({ reviews }) => {
-  const [showAll, setShowAll] = useState(false)
-  const displayedReviews = showAll ? reviews : reviews.slice(0, 3)
-
-  if (!reviews || reviews.length === 0) {
-    return (
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold mb-6">Avaliações</h3>
-        <p className="text-gray-600">Ainda não há avaliações para esta propriedade.</p>
-      </div>
-    )
-  }
-
-  const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-
-  return (
-    <div className="mb-8">
-      <div className="flex items-center space-x-4 mb-6">
-        <h3 className="text-2xl font-bold">Avaliações</h3>
-        <div className="flex items-center space-x-2">
-          <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-          <span className="font-semibold">{averageRating.toFixed(1)}</span>
-          <span className="text-gray-600">({reviews.length} avaliações)</span>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        {displayedReviews.map((review, index) => (
-          <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
-            <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                {review.author_name.charAt(0)}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h4 className="font-semibold">{review.author_name}</h4>
-                  <div className="flex items-center space-x-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star 
-                        key={star} 
-                        className={`w-4 h-4 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-700 leading-relaxed">{review.content}</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  {new Date(review.created_at).toLocaleDateString('pt-BR')}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {reviews.length > 3 && !showAll && (
-        <Button 
-          variant="outline" 
-          onClick={() => setShowAll(true)}
-          className="mt-6"
-        >
-          Mostrar todas as {reviews.length} avaliações
-        </Button>
-      )}
-    </div>
-  )
-}
-
-// Host Card Component
-const HostCard = ({ brokerName = "Adson Carlos dos Santos" }) => {
-  return (
-    <Card className="sticky top-4">
+    <Card className="sticky top-24">
       <CardContent className="p-6">
-        <div className="text-center mb-6">
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" 
-            alt={brokerName}
-            className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+        <div className="text-right mb-4">
+          <div className="text-sm text-gray-600">A partir de</div>
+          <div className="text-3xl font-bold text-gray-900">{listing?.price_label || 'R$ 0,00'}</div>
+          <div className="text-sm text-gray-600">por Noite</div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-2 border border-gray-300 rounded-lg p-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Check-in</label>
+              <input
+                type="date"
+                value={formData.checkIn}
+                onChange={(e) => setFormData(prev => ({ ...prev, checkIn: e.target.value }))}
+                className="w-full border-0 bg-transparent text-sm focus:outline-none"
+                required
+              />
+            </div>
+            <div className="border-l border-gray-300 pl-3">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Check-out</label>
+              <input
+                type="date"
+                value={formData.checkOut}
+                onChange={(e) => setFormData(prev => ({ ...prev, checkOut: e.target.value }))}
+                className="w-full border-0 bg-transparent text-sm focus:outline-none"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="border border-gray-300 rounded-lg p-3">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Hóspedes</label>
+            <Select value={formData.guests} onValueChange={(value) => setFormData(prev => ({ ...prev, guests: value }))}>
+              <SelectTrigger className="border-0 p-0 h-auto">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 pessoa</SelectItem>
+                <SelectItem value="2">2 pessoas</SelectItem>
+                <SelectItem value="4">4 pessoas</SelectItem>
+                <SelectItem value="6">6 pessoas</SelectItem>
+                <SelectItem value="8">8 pessoas</SelectItem>
+                <SelectItem value="10">10+ pessoas</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Input
+            type="email"
+            placeholder="Seu e-mail"
+            value={formData.email}
+            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            className="border-gray-300"
+            required
           />
-          <h3 className="text-xl font-bold mb-1">{brokerName}</h3>
-          <p className="text-gray-600">Anfitrião em Búzios</p>
+
+          <textarea
+            placeholder="Mensagem (opcional)"
+            value={formData.message}
+            onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+            className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+            rows={3}
+          />
+
+          <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-900 text-white">
+            Entrar em contato
+          </Button>
+        </form>
+
+        <div className="mt-4 text-center text-xs text-gray-500">
+          Você não será cobrado ainda  
         </div>
-
-        <div className="grid grid-cols-3 gap-4 mb-6 text-center">
-          <div>
-            <div className="text-2xl font-bold text-blue-600">500+</div>
-            <div className="text-sm text-gray-600">Hóspedes</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-blue-600">4.9★</div>
-            <div className="text-sm text-gray-600">Avaliação</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-blue-600">7</div>
-            <div className="text-sm text-gray-600">Anos</div>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-700 mb-6 text-center">
-          "Especialista em aluguéis de luxo em Búzios com experiência em proporcionar estadias inesquecíveis."
-        </p>
-
-        <Button 
-          className="w-full bg-green-600 hover:bg-green-700"
-          onClick={() => window.open('https://wa.me/5521976860759?text=Olá Adson! Gostaria de conversar sobre um aluguel em Búzios.', '_blank')}
-        >
-          Enviar mensagem
-        </Button>
       </CardContent>
     </Card>
   )
 }
 
-// Main Listing Detail Page Component
-export default function ListingDetailPage() {
+// Main Property Detail Page
+export default function PropertyDetailPage() {
   const params = useParams()
-  const router = useRouter()
   const { category, slug } = params
   
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
-  const categoryNames = {
-    mansoes: 'Mansões de Alto Padrão',
-    iates: 'Iates e Lanchas',
-    escuna: 'Passeios de Escuna',
-    transfer: 'Transfer Aeroporto',
-    buggy: 'Aluguel de Buggy'
+  // Category configurations
+  const categoryConfig = {
+    mansoes: {
+      name: 'Mansão de Luxo',
+      features: ['quartos', 'banheiros', 'pessoas', 'área'],
+    },
+    iates: {
+      name: 'Iate Premium',
+      features: ['pessoas', 'cabines', 'tripulação', 'tamanho'],
+    },
+    escuna: {
+      name: 'Passeio de Escuna',
+      features: ['pessoas', 'duração', 'praias', 'refeições'],
+    },
+    transfer: {
+      name: 'Transfer VIP',
+      features: ['pessoas', 'bagagens', 'duração', 'conforto'],
+    },
+    buggy: {
+      name: 'Buggy Adventure',
+      features: ['pessoas', 'duração', 'trilhas', 'equipamentos'],
+    }
   }
 
-  // Sample amenities data
-  const sampleAmenities = [
-    { name: 'Piscina', available: true },
-    { name: 'Wi-Fi', available: true },
-    { name: 'Estacionamento', available: true },
-    { name: 'Vista para o Mar', available: true },
-    { name: 'Churrasqueira', available: true },
-    { name: 'Ar Condicionado', available: true },
-    { name: 'Cozinha Completa', available: true },
-    { name: 'TV a Cabo', available: true },
-    { name: 'Jacuzzi', available: false },
-    { name: 'Acesso à Praia', available: true }
-  ]
+  const currentCategory = categoryConfig[category] || categoryConfig.mansoes
 
-  // Sample reviews data
-  const sampleReviews = [
-    {
-      author_name: "Marina Silva",
-      rating: 5,
-      content: "Lugar incrível! A vista é de tirar o fôlego e a propriedade é exatamente como nas fotos. O Adson foi super atencioso durante toda a estadia.",
-      created_at: new Date('2024-12-15').toISOString()
-    },
-    {
-      author_name: "Carlos Roberto",
-      rating: 5,
-      content: "Experiência perfeita em Búzios. A localização é privilegiada e as comodidades são de primeiro mundo. Recomendo demais!",
-      created_at: new Date('2024-12-10').toISOString()
-    },
-    {
-      author_name: "Ana Paula",
-      rating: 4,
-      content: "Muito bom! Apenas algumas pequenas observações sobre a limpeza, mas no geral foi uma estadia maravilhosa.",
-      created_at: new Date('2024-12-05').toISOString()
-    }
-  ]
-
+  // Fetch property details
   useEffect(() => {
-    const fetchListing = async () => {
+    const fetchProperty = async () => {
       try {
-        // First try to find listing by slug in API
-        const response = await fetch(`/api/listings`)
+        const response = await fetch(`/api/listings/${slug}`)
         if (response.ok) {
           const data = await response.json()
-          const foundListing = data.listings.find(l => l.slug === slug)
-          
-          if (foundListing) {
-            // Add sample data
-            const listingWithExtras = {
-              ...foundListing,
-              images: [
-                category === 'mansoes' 
-                  ? "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-                  : "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-                "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-                "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
-                "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-                "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-              ],
-              rating: 4.8 + (Math.random() * 0.4),
-              amenities: sampleAmenities,
-              reviews: sampleReviews,
-              keyFeatures: [
-                "Vista panorâmica para o mar",
-                "Piscina privativa aquecida",
-                "Acesso direto à praia",
-                "Área gourmet completa",
-                "Wi-Fi de alta velocidade",
-                "Estacionamento para 3 carros"
-              ]
-            }
-            setListing(listingWithExtras)
-          } else {
-            throw new Error('Listing not found')
-          }
+          setListing(data)
         } else {
-          throw new Error('Failed to fetch listing')
+          // Fallback data based on category
+          const fallbackData = {
+            id: slug,
+            title: `${currentCategory.name} em Búzios`,
+            subtitle: 'Experiência de luxo inesquecível',
+            description: `Esta é uma fabulosa ${currentCategory.name.toLowerCase()} em Búzios, um dos principais destinos turísticos do Brasil. Com vistas deslumbrantes para o mar e acabamentos de primeira linha, oferece uma experiência única e inesquecível.
+
+O primeiro ambiente conta com ampla sala de estar e jantar, cozinha totalmente equipada e área de serviço completa. Todos os ambientes são climatizados e oferecem vista panorâmica para o mar.
+
+Na área externa, você encontrará uma piscina privativa, deck com espreguiçadeiras, área gourmet completa e jardim paisagístico. O local é perfeito para relaxar e curtir momentos especiais com família e amigos.`,
+            category: category,
+            neighborhood: 'Búzios, Rio de Janeiro',
+            price_label: category === 'mansoes' ? 'R$ 3.500,00' : 
+                        category === 'iates' ? 'R$ 8.500,00' :
+                        category === 'escuna' ? 'R$ 180,00' :
+                        category === 'transfer' ? 'R$ 2.500,00' : 'R$ 350,00',
+            guests: category === 'mansoes' ? 12 : 
+                   category === 'iates' ? 20 :
+                   category === 'escuna' ? 40 :
+                   category === 'transfer' ? 4 : 4,
+            bedrooms: category === 'mansoes' ? 6 : category === 'iates' ? 3 : null,
+            bathrooms: category === 'mansoes' ? 5 : category === 'iates' ? 2 : null,
+            area_m2: category === 'mansoes' ? 350 : null,
+            is_featured: true
+          }
+          setListing(fallbackData)
         }
-      } catch (err) {
-        console.error('Error fetching listing:', err)
-        // Create sample listing
-        const sampleListing = {
-          id: Date.now(),
-          title: `${categoryNames[category]} - ${slug.replace(/-/g, ' ')}`,
-          subtitle: "Experiência única em Búzios",
-          neighborhood: "Geribá",
-          category: category === 'mansoes' ? 'mansao' : category === 'iates' ? 'iate' : category,
-          slug: slug,
-          description: `Magnífica propriedade localizada em uma das melhores regiões de Búzios. Oferece todo o conforto e luxo que você merece para suas férias dos sonhos. Com vista deslumbrante e comodidades de primeira classe, garantimos uma experiência inesquecível.`,
-          city: "Búzios",
-          guests: category === 'mansoes' ? 10 : category === 'iates' ? 12 : 8,
-          bedrooms: category === 'mansoes' ? 5 : category === 'iates' ? 2 : null,
-          bathrooms: category === 'mansoes' ? 6 : category === 'iates' ? 2 : null,
-          area_m2: category === 'mansoes' ? 450 : null,
-          attributes: category === 'mansoes' ? { pool: true, oceanfront: true, parking: 4 } : 
-                     category === 'iates' ? { length_ft: 45, cabins: 2, crew: 2 } : {},
-          base_price: category === 'mansoes' ? 2500 : category === 'iates' ? 3800 : 1500,
-          price_label: category === 'mansoes' ? "R$ 2.500/dia" : category === 'iates' ? "R$ 3.800/dia" : "R$ 1.500/dia",
-          whatsapp_e164: "5521976860759",
-          broker_name: "Adson Carlos dos Santos",
-          is_featured: true,
-          is_active: true,
-          images: [
-            category === 'mansoes' 
-              ? "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-              : "https://images.unsplash.com/photo-1523496922380-91d5afba98a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-            "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-            "https://images.unsplash.com/photo-1578439297699-eb414262c2de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85",
-            "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjB5YWNodHxlbnwwfHx8Ymx1ZXwxNzU1NzUyNzc5fDA&ixlib=rb-4.1.0&q=85",
-            "https://images.unsplash.com/photo-1585544314038-a0d3769d0193?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBtYW5zaW9ufGVufDB8fHxibHVlfDE3NTU3NTI3ODV8MA&ixlib=rb-4.1.0&q=85"
-          ],
-          rating: 4.9,
-          amenities: sampleAmenities,
-          reviews: sampleReviews,
-          keyFeatures: [
-            "Vista panorâmica para o mar",
-            "Piscina privativa aquecida",
-            "Acesso direto à praia",
-            "Área gourmet completa",
-            "Wi-Fi de alta velocidade",
-            "Estacionamento para 3 carros"
-          ]
-        }
-        setListing(sampleListing)
+      } catch (error) {
+        console.error('Error fetching property:', error)
+        // Use fallback data
+        setListing({
+          id: slug,
+          title: `${currentCategory.name} em Búzios`,
+          subtitle: 'Experiência de luxo inesquecível',
+          category: category,
+          neighborhood: 'Búzios, Rio de Janeiro',
+          price_label: 'R$ 3.500,00',
+          guests: 12,
+          bedrooms: 6,
+          bathrooms: 5
+        })
       } finally {
         setLoading(false)
       }
     }
 
-    fetchListing()
+    fetchProperty()
   }, [category, slug])
 
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation />
-        <div className="container mx-auto px-4 py-12">
-          <div className="animate-pulse">
-            <div className="h-96 bg-gray-300 rounded-2xl mb-8"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <div className="h-8 bg-gray-300 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-300 rounded"></div>
-                <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-              </div>
-              <div className="h-64 bg-gray-300 rounded"></div>
-            </div>
+        <VillasNavbar />
+        <div className="container mx-auto px-6 py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Carregando propriedade...</p>
           </div>
         </div>
       </div>
@@ -554,11 +376,14 @@ export default function ListingDetailPage() {
   if (!listing) {
     return (
       <div className="min-h-screen bg-white">
-        <Navigation />
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-3xl font-bold mb-4">Propriedade não encontrada</h1>
-          <p className="text-gray-600 mb-8">A propriedade que você está procurando não foi encontrada.</p>
-          <Button onClick={() => router.back()}>Voltar</Button>
+        <VillasNavbar />
+        <div className="container mx-auto px-6 py-20">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Propriedade não encontrada</h1>
+            <Link href="/">
+              <Button>Voltar ao início</Button>
+            </Link>
+          </div>
         </div>
       </div>
     )
@@ -566,156 +391,116 @@ export default function ListingDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
-      <Breadcrumb category={category} categoryName={categoryNames[category]} title={listing.title} />
-      
-      <div className="container mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          onClick={() => router.back()}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Voltar
-        </Button>
+      {/* Navbar */}
+      <VillasNavbar />
 
-        {/* Title and Share */}
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">{listing.title}</h1>
-            <div className="flex items-center space-x-4 text-gray-600">
-              <div className="flex items-center space-x-1">
-                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium">{listing.rating}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <MapPin className="w-5 h-5" />
-                <span>{listing.neighborhood}, {listing.city}</span>
-              </div>
-            </div>
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-8">
+        {/* Breadcrumb */}
+        <nav className="mb-6">
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <Link href="/" className="hover:text-gray-900">Home</Link>
+            <span>/</span>
+            <Link href={`/${category}`} className="hover:text-gray-900 capitalize">{category}</Link>
+            <span>/</span>
+            <span className="text-gray-900">{listing.title}</span>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
-              <Share2 className="w-4 h-4 mr-2" />
-              Compartilhar
-            </Button>
-            <Button variant="ghost" size="sm">
-              <Heart className="w-4 h-4 mr-2" />
-              Salvar
-            </Button>
-          </div>
-        </div>
+        </nav>
 
         {/* Gallery */}
-        <div className="mb-8">
-          <GalleryMosaic images={listing.images} alt={listing.title} />
-        </div>
+        <VillasGallery title={listing.title} />
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+          {/* Left Content */}
           <div className="lg:col-span-2">
-            {/* Property Info */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-4">
-                {category === 'mansoes' && `Casa inteira em ${listing.neighborhood}`}
-                {category === 'iates' && `Iate completo em ${listing.neighborhood}`}
-                {category === 'escuna' && `Passeio de escuna em ${listing.neighborhood}`}
-                {category === 'transfer' && `Transfer executivo`}
-                {category === 'buggy' && `Aluguel de buggy`}
-              </h2>
-              
-              <div className="flex items-center space-x-6 text-gray-600 mb-6">
-                {listing.guests && (
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-5 h-5" />
-                    <span>{listing.guests} hóspedes</span>
-                  </div>
-                )}
-                {listing.bedrooms && (
-                  <div className="flex items-center space-x-1">
-                    <Bed className="w-5 h-5" />
-                    <span>{listing.bedrooms} quartos</span>
-                  </div>
-                )}
-                {listing.bathrooms && (
-                  <div className="flex items-center space-x-1">
-                    <Bath className="w-5 h-5" />
-                    <span>{listing.bathrooms} banheiros</span>
-                  </div>
-                )}
-                {listing.area_m2 && (
-                  <div className="flex items-center space-x-1">
-                    <Square className="w-5 h-5" />
-                    <span>{listing.area_m2}m²</span>
-                  </div>
-                )}
+            {/* Title and Location */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {listing.title.toUpperCase()}
+              </h1>
+              <div className="flex items-center text-gray-600 mb-4">
+                <MapPin className="w-4 h-4 mr-1" />
+                <span>{listing.neighborhood}</span>
               </div>
 
-              <Separator className="mb-6" />
-
-              <p className="text-lg leading-relaxed text-gray-700 mb-6">
-                {listing.description}
-              </p>
-
-              {/* Key Features */}
-              {listing.keyFeatures && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-4">Destaques da Propriedade</h3>
-                  <ul className="space-y-2">
-                    {listing.keyFeatures.map((feature, index) => (
-                      <li key={index} className="flex items-center space-x-2">
-                        <Check className="w-5 h-5 text-green-600" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {/* Property Features Badges */}
+              <div className="flex flex-wrap gap-2">
+                {listing.bedrooms && (
+                  <Badge variant="outline" className="text-gray-700 border-gray-300">
+                    <Bed className="w-4 h-4 mr-1" />
+                    {listing.bedrooms} Quartos
+                  </Badge>
+                )}
+                {listing.guests && (
+                  <Badge variant="outline" className="text-gray-700 border-gray-300">
+                    <Users className="w-4 h-4 mr-1" />
+                    {listing.guests} pessoas
+                  </Badge>
+                )}
+                {listing.bathrooms && (
+                  <Badge variant="outline" className="text-gray-700 border-gray-300">
+                    <Bath className="w-4 h-4 mr-1" />
+                    {listing.bathrooms} Banheiros
+                  </Badge>
+                )}
+                {listing.area_m2 && (
+                  <Badge variant="outline" className="text-gray-700 border-gray-300">
+                    <Maximize className="w-4 h-4 mr-1" />
+                    {listing.area_m2}m²
+                  </Badge>
+                )}
+              </div>
             </div>
 
-            <Separator className="mb-8" />
+            {/* Description */}
+            <div className="prose max-w-none">
+              <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                {listing.description}
+              </div>
+            </div>
 
             {/* Amenities */}
-            <AmenitiesSection amenities={listing.amenities} />
-
-            <Separator className="mb-8" />
-
-            {/* Reviews */}
-            <ReviewsSection reviews={listing.reviews} />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            {/* Price and Book */}
-            <Card className="mb-6 sticky top-4">
-              <CardContent className="p-6">
-                <div className="text-center mb-6">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">
-                    {listing.price_label}
-                  </div>
-                  <p className="text-gray-600">Preço total da diária</p>
+            <div className="mt-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Comodidades</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-700">Wi-Fi gratuito</span>
                 </div>
-
-                <WhatsAppButton listing={listing} className="w-full mb-4" />
-                
-                <p className="text-sm text-gray-500 text-center">
-                  Você será redirecionado para o WhatsApp para finalizar sua reserva
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Host Card */}
-            <HostCard brokerName={listing.broker_name} />
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-700">Ar condicionado</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-700">Piscina privativa</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-700">Vista para o mar</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-700">Cozinha completa</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-700">Área gourmet</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Mobile Sticky WhatsApp Button */}
-        <div className="lg:hidden">
-          <WhatsAppButton listing={listing} sticky={true} />
+          {/* Right Sidebar - Contact Form */}
+          <div className="lg:col-span-1">
+            <ContactForm listing={listing} />
+          </div>
         </div>
       </div>
+
+      {/* WhatsApp Button */}
+      <WhatsAppButton listing={listing} />
     </div>
   )
 }
