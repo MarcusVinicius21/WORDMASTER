@@ -278,6 +278,7 @@ const ListingsManagement = () => {
   }, [])
 
   const fetchListings = async () => {
+    setLoading(true)
     try {
       console.log('Fetching listings from /api/listings...')
       const response = await fetch('/api/listings')
@@ -294,17 +295,21 @@ const ListingsManagement = () => {
         const errorText = await response.text()
         console.error('Error response:', errorText)
         
-        // Use fallback sample data
+        // Use fallback sample data but keep any locally created listings
         console.log('Using fallback sample listings data')
         const sampleListings = getSampleListings()
-        setListings(sampleListings)
+        // Merge with any existing listings that have local- prefix (locally created)
+        const localListings = listings.filter(l => l.id.startsWith('local-'))
+        setListings([...localListings, ...sampleListings])
       }
     } catch (error) {
       console.error('Error fetching listings:', error)
-      // Use fallback sample data
+      // Use fallback sample data but keep any locally created listings
       console.log('Using fallback sample listings data due to error')
       const sampleListings = getSampleListings()
-      setListings(sampleListings)
+      // Preserve locally created listings
+      const localListings = listings.filter(l => l.id.startsWith('local-'))
+      setListings([...localListings, ...sampleListings])
     } finally {
       setLoading(false)
     }
