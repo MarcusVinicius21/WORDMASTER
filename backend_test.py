@@ -624,14 +624,14 @@ class BackendTester:
                         f"Should have returned 404 for non-existent listing, got {response.status_code if response else 'No response'}")
     
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("🚀 Starting Comprehensive Backend API Tests for Wordmaster Beach Búzios")
+        """Run all backend tests with focus on admin functionality"""
+        print("🚀 Starting Comprehensive Admin Backend API Tests for Wordmaster Beach Búzios")
         print(f"🌐 Testing against: {self.base_url}")
         print("=" * 80)
         
         start_time = time.time()
         
-        # Run tests in logical order
+        # Run tests in logical order - focusing on admin functionality
         self.test_root_endpoint()
         self.test_seed_database()
         self.test_categories_api()
@@ -641,6 +641,9 @@ class BackendTester:
         self.test_listings_pagination()
         self.test_listings_get_single()
         self.test_listings_create()
+        self.test_media_api()  # New admin-specific test
+        self.test_admin_dashboard_data()  # New admin-specific test
+        self.test_admin_crud_operations()  # New admin-specific test
         self.test_analytics_whatsapp_click()
         self.test_cors_headers()
         self.test_error_handling()
@@ -650,7 +653,7 @@ class BackendTester:
         
         # Summary
         print("\n" + "=" * 80)
-        print("📊 TEST SUMMARY")
+        print("📊 ADMIN BACKEND TEST SUMMARY")
         print("=" * 80)
         
         passed = sum(1 for result in self.test_results if result['success'])
@@ -666,6 +669,13 @@ class BackendTester:
             for result in self.test_results:
                 if not result['success']:
                     print(f"   ❌ {result['test']}: {result['message']}")
+        
+        print("\n🎯 ADMIN FUNCTIONALITY FOCUS:")
+        print("   • Database seeding for sample data")
+        print("   • Listings CRUD operations")
+        print("   • Media/photo upload API")
+        print("   • Dashboard statistics data")
+        print("   • Property management features")
         
         print("\n" + "=" * 80)
         return passed, failed
