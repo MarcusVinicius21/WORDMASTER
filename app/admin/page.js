@@ -255,10 +255,20 @@ const ListingsManagement = () => {
 
   const fetchListings = async () => {
     try {
+      console.log('Fetching listings from /api/listings...')
       const response = await fetch('/api/listings')
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+      
       if (response.ok) {
         const data = await response.json()
-        setListings(data.listings)
+        console.log('Listings data received:', data)
+        console.log('Number of listings:', data.listings?.length)
+        setListings(data.listings || [])
+      } else {
+        console.error('Failed to fetch listings:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('Error response:', errorText)
       }
     } catch (error) {
       console.error('Error fetching listings:', error)
