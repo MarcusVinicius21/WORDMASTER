@@ -542,6 +542,7 @@ const ListingsManagement = () => {
         open={showCreateModal} 
         onClose={() => setShowCreateModal(false)} 
         onCreated={fetchListings}
+        setListings={setListings}
       />
     </div>
   )
