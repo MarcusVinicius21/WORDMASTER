@@ -18,7 +18,7 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
     { id: 'listings', label: 'Propriedades', icon: Home },
     { id: 'promotions', label: 'Promoções', icon: Star },
     { id: 'reviews', label: 'Avaliações', icon: MessageSquare },
-    { id: 'settings', label: 'Configurações', icon: Settings }
+    { id: 'settings', label: 'Configurações', icon: SettingsIcon }
   ]
 
   return (
