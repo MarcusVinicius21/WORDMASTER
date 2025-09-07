@@ -760,7 +760,9 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Adicionar Nova Propriedade</DialogTitle>
+          <DialogTitle>
+            {editingListing ? 'Editar Propriedade' : 'Adicionar Nova Propriedade'}
+          </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
