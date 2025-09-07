@@ -667,60 +667,40 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
     setLoading(true)
 
     try {
-      console.log('Sending request to /api/listings...')
-      const response = await fetch('/api/listings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
+      if (editingListing) {
+        // Update existing listing
+        console.log('Updating listing:', editingListing.id)
+        const updatedListing = {
+          ...editingListing,
+          category: formData.category,
+          title: formData.title,
+          subtitle: formData.subtitle || '',
+          description: formData.description || '',
+          neighborhood: formData.neighborhood || '',
           guests: formData.guests ? parseInt(formData.guests) : null,
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           area_m2: formData.area_m2 ? parseInt(formData.area_m2) : null,
           base_price: formData.base_price ? parseFloat(formData.base_price) : null,
-          whatsapp_e164: '5521976860759',
-          city: 'Búzios'
-        })
-      })
-
-      console.log('Response status:', response.status)
-
-      if (response.ok) {
-        const newListing = await response.json()
-        console.log('Listing created successfully:', newListing)
-        
-        // If we have images, create media entries
-        if (uploadedImages.length > 0) {
-          console.log('Saving', uploadedImages.length, 'images...')
-          for (let i = 0; i < uploadedImages.length; i++) {
-            const image = uploadedImages[i]
-            const mediaData = {
-              listing_id: newListing.id,
-              type: 'image',
-              url: `https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center`,
-              alt_text: image.name,
-              sort_order: i + 1
-            }
-            
-            try {
-              await fetch('/api/media', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(mediaData)
-              })
-            } catch (error) {
-              console.error('Error saving media:', error)
-            }
-          }
+          price_label: formData.price_label || '',
+          is_featured: formData.is_featured || false
         }
-
-        alert('Propriedade criada com sucesso!')
+        
+        // Update in local listings
+        if (setListings) {
+          setListings(prev => prev.map(listing => 
+            listing.id === editingListing.id ? updatedListing : listing
+          ))
+          console.log('Propriedade atualizada localmente:', updatedListing.title)
+        }
+        
+        alert('Propriedade atualizada com sucesso!')
         onCreated()
         onClose()
         resetForm()
       } else {
-        console.error('API não disponível, criando propriedade localmente...')
-        // Create listing locally when API is not available
+        // Create new listing
+        console.log('Creating new listing...')
         const newListing = {
           id: 'local-' + Date.now(),
           category: formData.category,
@@ -744,43 +724,14 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
           console.log('Propriedade adicionada à lista local:', newListing.title)
         }
         
-        alert('Propriedade criada localmente com sucesso! (Será sincronizada quando a API estiver disponível)')
-        onCreated() // This will refresh the listings
+        alert('Propriedade criada com sucesso!')
+        onCreated()
         onClose() 
         resetForm()
       }
     } catch (error) {
-      console.error('Error creating listing:', error)
-      
-      // Fallback: Create listing locally
-      console.log('Creating listing locally as fallback...')
-      const newListing = {
-        id: 'local-' + Date.now(),
-        category: formData.category,
-        title: formData.title,
-        subtitle: formData.subtitle || '',
-        description: formData.description || '',
-        neighborhood: formData.neighborhood || '',
-        guests: formData.guests ? parseInt(formData.guests) : null,
-        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
-        bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
-        area_m2: formData.area_m2 ? parseInt(formData.area_m2) : null,
-        base_price: formData.base_price ? parseFloat(formData.base_price) : null,
-        price_label: formData.price_label || '',
-        is_active: true,
-        is_featured: formData.is_featured || false
-      }
-      
-      // Add to local listings using the passed setListings function
-      if (setListings) {
-        setListings(prev => [newListing, ...prev])
-        console.log('Propriedade adicionada à lista local (fallback):', newListing.title)
-      }
-      
-      alert('Propriedade criada localmente com sucesso! (Será sincronizada quando a API estiver disponível)')
-      onCreated() // This will refresh the listings
-      onClose()
-      resetForm()
+      console.error('Error saving listing:', error)
+      alert('Erro ao salvar propriedade. Tente novamente.')
     } finally {
       setLoading(false)
     }
