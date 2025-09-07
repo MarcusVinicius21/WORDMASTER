@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Users, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera } from "lucide-react"
+import {
+  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Users, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +18,7 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'listings', label: 'Propriedades', icon: Home },
-    { id: 'promotions', label: 'Promoções', icon: Star },
+    { id: 'promotions', label: 'Promoções', icon: Percent },
     { id: 'reviews', label: 'Avaliações', icon: MessageSquare },
     { id: 'settings', label: 'Configurações', icon: SettingsIcon }
   ]
@@ -42,8 +44,8 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
                 key={item.id}
                 onClick={() => setCurrentPage(item.id)}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                  currentPage === item.id 
-                    ? 'bg-blue-600 text-white' 
+                  currentPage === item.id
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                 }`}
               >
@@ -57,8 +59,8 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
 
       <div className="mt-auto p-6 border-t border-gray-800">
         <div className="flex items-center space-x-3 mb-4">
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+          <img
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"
             alt="Adson Carlos"
             className="w-10 h-10 rounded-full"
           />
@@ -67,9 +69,9 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
             <p className="text-gray-400 text-sm">Administrador</p>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="w-full text-gray-300 border-gray-600 hover:bg-gray-800"
           onClick={() => window.location.href = '/'}
         >
@@ -82,60 +84,61 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
 }
 
 // Dashboard Component
-const Dashboard = () => {
+const Dashboard = ({ setCurrentPage }) => {
   const [stats, setStats] = useState({
     totalListings: 0,
     activeListings: 0,
     onPromotion: 0,
     whatsappClicks: 0,
-    pendingReviews: 0
+    pendingReviews: 0,
   })
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        console.log('Dashboard: Fetching stats...')
-        const [listingsRes, reviewsRes] = await Promise.all([
-          fetch('/api/listings'),
-          fetch('/api/reviews')
-        ])
-
-        console.log('Dashboard: Listings response status:', listingsRes.status)
+        const listingsRes = await fetch('/api/listings?active=false')
+        const reviewsRes = await fetch('/api/reviews?is_approved=false')
 
         if (listingsRes.ok) {
           const listingsData = await listingsRes.json()
-          console.log('Dashboard: Received listings data:', listingsData)
-          const activeListings = listingsData.listings?.filter(l => l.is_active).length || 0
-          const onPromotion = listingsData.listings?.filter(l => l.is_featured).length || 0
-          
-          console.log('Dashboard: Stats calculated - Total:', listingsData.listings?.length, 'Active:', activeListings, 'Featured:', onPromotion)
-          
-          setStats(prev => ({
+          const activeListings = listingsData.listings?.filter((l) => l.is_active).length || 0
+          const onPromotion = listingsData.listings?.filter((l) => l.is_featured).length || 0
+
+          setStats((prev) => ({
             ...prev,
             totalListings: listingsData.listings?.length || 0,
             activeListings,
-            onPromotion
+            onPromotion,
           }))
         } else {
-          console.error('Dashboard: Failed to fetch listings:', listingsRes.status)
-          // Fallback data when API is unavailable (502 errors)
-          console.log('Dashboard: Using fallback sample data')
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
             totalListings: 15,
             activeListings: 15,
-            onPromotion: 7
+            onPromotion: 7,
+          }))
+        }
+
+        if (reviewsRes.ok) {
+          const reviewsData = await reviewsRes.json()
+          setStats((prev) => ({
+            ...prev,
+            pendingReviews: reviewsData.reviews?.length || 0,
+          }))
+        } else {
+          setStats((prev) => ({
+            ...prev,
+            pendingReviews: 1,
           }))
         }
       } catch (error) {
-        console.error('Dashboard: Error fetching stats:', error)
-        // Fallback data when API is unavailable
-        console.log('Dashboard: Using fallback sample data due to error')
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           totalListings: 15,
           activeListings: 15,
-          onPromotion: 7
+          onPromotion: 7,
+          whatsappClicks: 0,
+          pendingReviews: 1,
         }))
       }
     }
@@ -206,18 +209,20 @@ const Dashboard = () => {
             <CardTitle>Ações Rápidas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button className="w-full justify-start" size="lg">
+            <Button className="w-full justify-start" size="lg" onClick={() => setCurrentPage('listings')}>
               <Plus className="w-5 h-5 mr-2" />
               Adicionar Nova Propriedade
             </Button>
-            <Button variant="outline" className="w-full justify-start" size="lg">
+            <Button variant="outline" className="w-full justify-start" size="lg" onClick={() => setCurrentPage('promotions')}>
               <Star className="w-5 h-5 mr-2" />
               Criar Promoção
             </Button>
-            <Button variant="outline" className="w-full justify-start" size="lg">
-              <Eye className="w-5 h-5 mr-2" />
-              Ver Site Público
-            </Button>
+            <Link href="/" passHref>
+              <Button variant="outline" className="w-full justify-start" size="lg">
+                <Eye className="w-5 h-5 mr-2" />
+                Ver Site Público
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 
@@ -256,27 +261,25 @@ const Dashboard = () => {
   )
 }
 
-// Listings Management Component  
+// Listings Management Component
 const ListingsManagement = () => {
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
-  const [selectedListing, setSelectedListing] = useState(null)
-  const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingListing, setEditingListing] = useState(null)
+  const [openModal, setOpenModal] = useState(false)
 
   const categoryNames = {
     mansao: 'Mansão',
-    mansoes: 'Mansão', 
+    mansoes: 'Mansão',
     iate: 'Iate',
     iates: 'Iate',
     escuna: 'Escuna',
     transfer: 'Transfer',
-    buggy: 'Buggy'
+    buggy: 'Buggy',
   }
 
-  // Sempre carregar dados de fallback para garantir funcionamento
   const getFallbackListings = () => [
     {
       id: '1',
@@ -291,7 +294,7 @@ const ListingsManagement = () => {
       bathrooms: 5,
       area_m2: 350,
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       id: '2',
@@ -306,7 +309,7 @@ const ListingsManagement = () => {
       bathrooms: 4,
       area_m2: 280,
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       id: '3',
@@ -318,7 +321,7 @@ const ListingsManagement = () => {
       price_label: 'R$ 8.500/dia',
       guests: 20,
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       id: '4',
@@ -330,7 +333,7 @@ const ListingsManagement = () => {
       price_label: 'R$ 4.200/dia',
       guests: 12,
       is_active: true,
-      is_featured: false
+      is_featured: false,
     },
     {
       id: '5',
@@ -342,7 +345,7 @@ const ListingsManagement = () => {
       price_label: 'R$ 180/pessoa',
       guests: 40,
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       id: '6',
@@ -354,7 +357,7 @@ const ListingsManagement = () => {
       price_label: 'R$ 2.500/trecho',
       guests: 4,
       is_active: true,
-      is_featured: true
+      is_featured: true,
     },
     {
       id: '7',
@@ -366,69 +369,106 @@ const ListingsManagement = () => {
       price_label: 'R$ 350/dia',
       guests: 4,
       is_active: true,
-      is_featured: false
-    }
+      is_featured: false,
+    },
   ]
 
   useEffect(() => {
     fetchListings()
   }, [])
 
-  const fetchListings = () => {
+  const fetchListings = async () => {
     setLoading(true)
-    // Usar sempre dados de fallback garantidos
-    const fallbackListings = getFallbackListings()
-    setListings(fallbackListings)
-    setLoading(false)
+    try {
+      const response = await fetch('/api/listings?active=false')
+      if (response.ok) {
+        const data = await response.json()
+        setListings(data.listings || [])
+      } else {
+        console.error('Failed to fetch listings. Using fallback data.')
+        setListings(getFallbackListings())
+      }
+    } catch (error) {
+      console.error('Error fetching listings:', error)
+      setListings(getFallbackListings())
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveListing = async () => {
+    fetchListings() // Refresh the list after a successful save
+    setOpenModal(false)
+    setEditingListing(null)
   }
 
   const toggleListingStatus = async (listingId, currentStatus) => {
-    const updatedListings = listings.map(listing => 
-      listing.id === listingId 
-        ? { ...listing, is_active: !currentStatus }
-        : listing
-    )
-    setListings(updatedListings)
-    console.log(`Listing ${listingId} status changed to ${!currentStatus}`)
+    try {
+      const response = await fetch(`/api/listings/${listingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !currentStatus }),
+      })
+      if (response.ok) {
+        fetchListings() // Refresh the list
+      } else {
+        console.error('Failed to toggle status')
+      }
+    } catch (error) {
+      console.error('Error toggling status:', error)
+    }
   }
 
-  const deleteListing = (listingId) => {
-    if (window.confirm('Tem certeza que deseja deletar esta propriedade?')) {
-      const updatedListings = listings.filter(listing => listing.id !== listingId)
-      setListings(updatedListings)
-      console.log(`Listing ${listingId} deleted`)
+  const deleteListing = async (listingId) => {
+    if (!window.confirm('Tem certeza que deseja deletar esta propriedade?')) {
+      return
+    }
+    try {
+      const response = await fetch(`/api/listings/${listingId}`, { method: 'DELETE' })
+      if (response.ok) {
+        fetchListings() // Refresh the list
+      } else {
+        console.error('Failed to delete listing')
+      }
+    } catch (error) {
+      console.error('Error deleting listing:', error)
     }
   }
 
   const editListing = (listing) => {
     setEditingListing(listing)
-    setShowCreateModal(true)
+    setOpenModal(true)
   }
 
-  const filteredListings = listings.filter(listing => {
-    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         listing.neighborhood.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredListings = listings.filter((listing) => {
+    const matchesSearch =
+      listing.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      listing.neighborhood?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = categoryFilter === 'all' || listing.category === categoryFilter
     return matchesSearch && matchesCategory
   })
 
   return (
-    <div>
+    <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Gerenciar Propriedades</h2>
-        <Button
-          onClick={() => {
-            setEditingListing(null)
-            setShowCreateModal(true)
-          }}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nova Propriedade
-        </Button>
+        <Dialog open={openModal} onOpenChange={setOpenModal}>
+          <DialogTrigger asChild>
+            <Button
+              onClick={() => {
+                setEditingListing(null)
+                setOpenModal(true)
+              }}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nova Propriedade
+            </Button>
+          </DialogTrigger>
+          <CreateListingModal onSave={handleSaveListing} editingListing={editingListing} onClose={() => setOpenModal(false)} />
+        </Dialog>
       </div>
 
-      {/* Filters */}
       <div className="flex items-center space-x-4 mb-6">
         <div className="flex-1">
           <Input
@@ -453,7 +493,6 @@ const ListingsManagement = () => {
         </Select>
       </div>
 
-      {/* Listings Grid */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
@@ -477,8 +516,8 @@ const ListingsManagement = () => {
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute top-3 left-3">
-                  <Badge className={listing.is_active ? "bg-green-600" : "bg-red-600"}>
-                    {listing.is_active ? "Ativo" : "Inativo"}
+                  <Badge className={listing.is_active ? 'bg-green-600' : 'bg-red-600'}>
+                    {listing.is_active ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </div>
                 {listing.is_featured && (
@@ -490,7 +529,6 @@ const ListingsManagement = () => {
                   </div>
                 )}
               </div>
-              
               <CardContent className="p-4">
                 <div className="mb-2">
                   <span className="text-xs text-gray-500 uppercase tracking-wide">
@@ -501,44 +539,21 @@ const ListingsManagement = () => {
                 <p className="text-sm text-gray-600 mb-2">{listing.subtitle}</p>
                 <p className="text-sm text-gray-500 mb-3">{listing.neighborhood}</p>
                 <p className="font-bold text-lg text-blue-600 mb-4">{listing.price_label}</p>
-                
-                {/* Property stats */}
                 <div className="flex items-center text-xs text-gray-500 mb-4 space-x-3">
-                  {listing.guests && (
-                    <span>{listing.guests} pessoas</span>
-                  )}
-                  {listing.bedrooms && (
-                    <span>{listing.bedrooms} quartos</span>
-                  )}
-                  {listing.bathrooms && (
-                    <span>{listing.bathrooms} banheiros</span>
-                  )}
+                  {listing.guests && <span>{listing.guests} pessoas</span>}
+                  {listing.bedrooms && <span>{listing.bedrooms} quartos</span>}
+                  {listing.bathrooms && <span>{listing.bathrooms} banheiros</span>}
                 </div>
-
-                {/* Action buttons */}
                 <div className="flex items-center justify-between">
                   <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => editListing(listing)}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => editListing(listing)}>
                       <Edit className="w-3 h-3 mr-1" />
                       Editar
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => toggleListingStatus(listing.id, listing.is_active)}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => toggleListingStatus(listing.id, listing.is_active)}>
                       {listing.is_active ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => deleteListing(listing.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
+                    <Button size="sm" variant="outline" onClick={() => deleteListing(listing.id)} className="text-red-600 hover:text-red-700">
                       <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
@@ -550,33 +565,21 @@ const ListingsManagement = () => {
       ) : (
         <div className="text-center py-12">
           <div className="text-gray-400 text-lg mb-4">Nenhuma propriedade encontrada</div>
-          <Button 
-            onClick={() => setShowCreateModal(true)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
+          <Button onClick={() => setOpenModal(true)} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" />
             Criar primeira propriedade
           </Button>
         </div>
       )}
-
-      {/* Create/Edit Modal */}
-      <CreateListingModal 
-        open={showCreateModal} 
-        onClose={() => {
-          setShowCreateModal(false)
-          setEditingListing(null)
-        }} 
-        onCreated={fetchListings}
-        setListings={setListings}
-        editingListing={editingListing}
-      />
+      <Dialog open={openModal} onOpenChange={setOpenModal}>
+        <CreateListingModal onSave={handleSaveListing} editingListing={editingListing} onClose={() => setOpenModal(false)} />
+      </Dialog>
     </div>
   )
 }
 
 // Create Listing Modal Component
-const CreateListingModal = ({ open, onClose, onCreated, setListings, editingListing }) => {
+const CreateListingModal = ({ onSave, editingListing, onClose }) => {
   const [formData, setFormData] = useState({
     category: '',
     title: '',
@@ -595,7 +598,6 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
   const [uploadedImages, setUploadedImages] = useState([])
   const [uploading, setUploading] = useState(false)
 
-  // Populate form when editing
   useEffect(() => {
     if (editingListing) {
       setFormData({
@@ -615,9 +617,8 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
     } else {
       resetForm()
     }
-  }, [editingListing, open])
+  }, [editingListing])
 
-  // Handle image upload
   const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files)
     if (files.length === 0) return
@@ -627,7 +628,6 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
 
     for (const file of files) {
       try {
-        // Create a data URL for preview
         const reader = new FileReader()
         const dataUrl = await new Promise((resolve) => {
           reader.onload = (e) => resolve(e.target.result)
@@ -649,16 +649,13 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
     setUploading(false)
   }
 
-  // Remove image
   const removeImage = (imageId) => {
     setUploadedImages(prev => prev.filter(img => img.id !== imageId))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Form submitted!', formData)
     
-    // Validate required fields
     if (!formData.category || !formData.title) {
       alert('Por favor, preencha a categoria e o título.')
       return
@@ -667,77 +664,35 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
     setLoading(true)
 
     try {
-      if (editingListing) {
-        // Update existing listing
-        console.log('Updating listing:', editingListing.id)
-        const updatedListing = {
-          ...editingListing,
-          category: formData.category,
-          title: formData.title,
-          subtitle: formData.subtitle || '',
-          description: formData.description || '',
-          neighborhood: formData.neighborhood || '',
+      const method = editingListing ? 'PATCH' : 'POST'
+      const url = editingListing ? `/api/listings/${editingListing.id}` : '/api/listings'
+      
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
           guests: formData.guests ? parseInt(formData.guests) : null,
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           area_m2: formData.area_m2 ? parseInt(formData.area_m2) : null,
           base_price: formData.base_price ? parseFloat(formData.base_price) : null,
-          price_label: formData.price_label || '',
-          is_featured: formData.is_featured || false
-        }
-        
-        // Update in local listings
-        if (setListings) {
-          setListings(prev => prev.map(listing => 
-            listing.id === editingListing.id ? updatedListing : listing
-          ))
-          console.log('Propriedade atualizada localmente:', updatedListing.title)
-        }
-        
-        alert('Propriedade atualizada com sucesso!')
-        onCreated()
-        onClose()
+        })
+      })
+
+      if (response.ok) {
+        onSave()
         resetForm()
       } else {
-        // Create new listing
-        console.log('Creating new listing...')
-        const newListing = {
-          id: 'local-' + Date.now(),
-          category: formData.category,
-          title: formData.title,
-          subtitle: formData.subtitle || '',
-          description: formData.description || '',
-          neighborhood: formData.neighborhood || '',
-          guests: formData.guests ? parseInt(formData.guests) : null,
-          bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
-          bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
-          area_m2: formData.area_m2 ? parseInt(formData.area_m2) : null,
-          base_price: formData.base_price ? parseFloat(formData.base_price) : null,
-          price_label: formData.price_label || '',
-          is_active: true,
-          is_featured: formData.is_featured || false
-        }
-        
-        // Add to local listings using the passed setListings function
-        if (setListings) {
-          setListings(prev => [newListing, ...prev])
-          console.log('Propriedade adicionada à lista local:', newListing.title)
-        }
-        
-        alert('Propriedade criada com sucesso!')
-        onCreated()
-        onClose() 
-        resetForm()
+        console.error('Failed to save listing:', await response.json())
       }
     } catch (error) {
       console.error('Error saving listing:', error)
-      alert('Erro ao salvar propriedade. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
 
-  // Helper function to reset form
   const resetForm = () => {
     setFormData({
       category: '',
@@ -757,218 +712,210 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {editingListing ? 'Editar Propriedade' : 'Adicionar Nova Propriedade'}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Image Upload Section */}
-          <div className="space-y-4">
-            <label className="block text-sm font-medium">Fotos da Propriedade</label>
-            
-            {/* Upload Area */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="image-upload"
-                disabled={uploading}
-              />
-              <label htmlFor="image-upload" className="cursor-pointer">
-                <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-600 mb-2">
-                  {uploading ? 'Processando imagens...' : 'Clique para adicionar fotos'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Ou arraste e solte as imagens aqui (máximo 10 fotos)
-                </p>
-              </label>
-            </div>
-
-            {/* Image Preview Grid */}
-            {uploadedImages.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {uploadedImages.map((image) => (
-                  <div key={image.id} className="relative group">
-                    <img
-                      src={image.preview}
-                      alt={image.name}
-                      className="w-full h-24 object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(image.id)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg truncate">
-                      {image.name}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Form Fields */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Categoria *</label>
-              <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mansoes">Mansão</SelectItem>
-                  <SelectItem value="iates">Iate</SelectItem>
-                  <SelectItem value="escuna">Escuna</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
-                  <SelectItem value="buggy">Buggy</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Bairro</label>
-              <Input
-                value={formData.neighborhood}
-                onChange={(e) => setFormData(prev => ({ ...prev, neighborhood: e.target.value }))}
-                placeholder="Ex: Geribá"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Título *</label>
-            <Input
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Ex: Mansão Vista Mar em Geribá"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Subtítulo</label>
-            <Input
-              value={formData.subtitle}
-              onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-              placeholder="Ex: Luxo e conforto à beira-mar"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Descrição</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Descreva a propriedade..."
-              className="w-full p-3 border rounded-md resize-none"
-              rows={4}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Hóspedes</label>
-              <Input
-                type="number"
-                value={formData.guests}
-                onChange={(e) => setFormData(prev => ({ ...prev, guests: e.target.value }))}
-                placeholder="8"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Quartos</label>
-              <Input
-                type="number"
-                value={formData.bedrooms}
-                onChange={(e) => setFormData(prev => ({ ...prev, bedrooms: e.target.value }))}
-                placeholder="4"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Banheiros</label>
-              <Input
-                type="number"
-                value={formData.bathrooms}
-                onChange={(e) => setFormData(prev => ({ ...prev, bathrooms: e.target.value }))}
-                placeholder="3"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Área (m²)</label>
-              <Input
-                type="number"
-                value={formData.area_m2}
-                onChange={(e) => setFormData(prev => ({ ...prev, area_m2: e.target.value }))}
-                placeholder="350"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Preço Base (R$)</label>
-              <Input
-                type="number"
-                step="0.01"
-                value={formData.base_price}
-                onChange={(e) => setFormData(prev => ({ ...prev, base_price: e.target.value }))}
-                placeholder="2500.00"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Label do Preço</label>
-              <Input
-                value={formData.price_label}
-                onChange={(e) => setFormData(prev => ({ ...prev, price_label: e.target.value }))}
-                placeholder="R$ 2.500/dia"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
+    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>
+          {editingListing ? 'Editar Propriedade' : 'Adicionar Nova Propriedade'}
+        </DialogTitle>
+      </DialogHeader>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-1">Fotos da Propriedade</label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             <input
-              type="checkbox"
-              id="featured"
-              checked={formData.is_featured}
-              onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
-              className="rounded border-gray-300"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+              disabled={uploading}
             />
-            <label htmlFor="featured" className="text-sm font-medium">
-              Marcar como propriedade em destaque
+            <label htmlFor="image-upload" className="cursor-pointer">
+              <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-lg font-medium text-gray-600 mb-2">
+                {uploading ? 'Processando imagens...' : 'Clique para adicionar fotos'}
+              </p>
+              <p className="text-sm text-gray-500">
+                Ou arraste e solte as imagens aqui (máximo 10 fotos)
+              </p>
             </label>
           </div>
+          {uploadedImages.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              {uploadedImages.map((image) => (
+                <div key={image.id} className="relative group">
+                  <img
+                    src={image.preview}
+                    alt={image.name}
+                    className="w-full h-24 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(image.id)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg truncate">
+                    {image.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={loading || uploading}>
-              {loading 
-                ? (editingListing ? 'Atualizando...' : 'Criando...') 
-                : (editingListing ? 'Atualizar Propriedade' : 'Criar Propriedade')
-              }
-            </Button>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Categoria *</label>
+            <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mansoes">Mansão</SelectItem>
+                <SelectItem value="iates">Iate</SelectItem>
+                <SelectItem value="escuna">Escuna</SelectItem>
+                <SelectItem value="transfer">Transfer</SelectItem>
+                <SelectItem value="buggy">Buggy</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Bairro</label>
+            <Input
+              value={formData.neighborhood}
+              onChange={(e) => setFormData(prev => ({ ...prev, neighborhood: e.target.value }))}
+              placeholder="Ex: Geribá"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Título *</label>
+          <Input
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            placeholder="Ex: Mansão Vista Mar em Geribá"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Subtítulo</label>
+          <Input
+            value={formData.subtitle}
+            onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+            placeholder="Ex: Luxo e conforto à beira-mar"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Descrição</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="Descreva a propriedade..."
+            className="w-full p-3 border rounded-md resize-none"
+            rows={4}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Hóspedes</label>
+            <Input
+              type="number"
+              value={formData.guests}
+              onChange={(e) => setFormData(prev => ({ ...prev, guests: e.target.value }))}
+              placeholder="8"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Quartos</label>
+            <Input
+              type="number"
+              value={formData.bedrooms}
+              onChange={(e) => setFormData(prev => ({ ...prev, bedrooms: e.target.value }))}
+              placeholder="4"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Banheiros</label>
+            <Input
+              type="number"
+              value={formData.bathrooms}
+              onChange={(e) => setFormData(prev => ({ ...prev, bathrooms: e.target.value }))}
+              placeholder="3"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Área (m²)</label>
+            <Input
+              type="number"
+              value={formData.area_m2}
+              onChange={(e) => setFormData(prev => ({ ...prev, area_m2: e.target.value }))}
+              placeholder="350"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Preço Base (R$)</label>
+            <Input
+              type="number"
+              step="0.01"
+              value={formData.base_price}
+              onChange={(e) => setFormData(prev => ({ ...prev, base_price: e.target.value }))}
+              placeholder="2500.00"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Label do Preço</label>
+            <Input
+              value={formData.price_label}
+              onChange={(e) => setFormData(prev => ({ ...prev, price_label: e.target.value }))}
+              placeholder="R$ 2.500/dia"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="featured"
+            checked={formData.is_featured}
+            onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
+            className="rounded border-gray-300"
+          />
+          <label htmlFor="featured" className="text-sm font-medium">
+            Marcar como propriedade em destaque
+          </label>
+        </div>
+
+        <div className="flex justify-end space-x-3 pt-4 border-t">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={loading || uploading}>
+            {loading 
+              ? (editingListing ? 'Atualizando...' : 'Criando...') 
+              : (editingListing ? 'Atualizar Propriedade' : 'Criar Propriedade')
+            }
+          </Button>
+        </div>
+      </form>
+    </DialogContent>
   )
 }
 
@@ -1037,13 +984,17 @@ export default function AdminPanel() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard />
+        return <Dashboard setCurrentPage={setCurrentPage} />
       case 'listings':
         return <ListingsManagement />
+      case 'promotions':
+        return <div>Promoções</div> // Placeholder
+      case 'reviews':
+        return <div>Avaliações</div> // Placeholder
       case 'settings':
         return <Settings />
       default:
-        return <Dashboard />
+        return <Dashboard setCurrentPage={setCurrentPage} />
     }
   }
 
@@ -1056,3 +1007,316 @@ export default function AdminPanel() {
     </div>
   )
 }
+}
+
+{
+type: uploaded file
+fileName: route.js
+fullContent:
+import { MongoClient } from 'mongodb'
+import { v4 as uuidv4 } from 'uuid'
+import { NextResponse } from 'next/server'
+
+// MongoDB connection
+let client
+let db
+
+async function connectToMongo() {
+  if (!client) {
+    client = new MongoClient(process.env.MONGO_URL)
+    await client.connect()
+    db = client.db(process.env.DB_NAME || 'wordmaster_buzios')
+  }
+  return db
+}
+
+// Helper function to handle CORS
+function handleCORS(response) {
+  response.headers.set('Access-Control-Allow-Origin', process.env.CORS_ORIGINS || '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  response.headers.set('Access-Control-Allow-Credentials', 'true')
+  return response
+}
+
+// OPTIONS handler for CORS
+export async function OPTIONS() {
+  return handleCORS(new NextResponse(null, { status: 200 }))
+}
+
+// Category type mapping
+const CATEGORIES = {
+  mansao: 'Mansão',
+  mansoes: 'Mansão', // Adicionado 'mansoes' para consistência
+  iate: 'Iate',
+  iates: 'Iate', // Adicionado 'iates' para consistência
+  escuna: 'Escuna',
+  transfer: 'Transfer',
+  buggy: 'Buggy'
+}
+
+// Route handler function
+async function handleRoute(request, { params }) {
+  const { path = [] } = params
+  const route = `/${path.join('/')}`
+  const method = request.method
+
+  try {
+    const db = await connectToMongo()
+
+    // Root endpoint
+    if (route === '/' && method === 'GET') {
+      return handleCORS(NextResponse.json({
+        message: "Wordmaster Beach Búzios API",
+        version: "1.0.0"
+      }))
+    }
+
+    // **LISTINGS ENDPOINTS**
+
+    // Get all listings - GET /api/listings
+    if (route === '/listings' && method === 'GET') {
+      const url = new URL(request.url)
+      const category = url.searchParams.get('category')
+      const featured = url.searchParams.get('featured')
+      const active = url.searchParams.get('active')
+      const limit = parseInt(url.searchParams.get('limit')) || 50
+      const skip = parseInt(url.searchParams.get('skip')) || 0
+
+      let filter = {}
+      if (category && (CATEGORIES[category] || CATEGORIES[`${category}s`])) {
+        filter.category = category
+      }
+      if (featured === 'true') {
+        filter.is_featured = true
+      }
+      if (active !== 'false') {
+        filter.is_active = true
+      }
+
+      const listings = await db.collection('listings')
+        .find(filter)
+        .sort({ created_at: -1 })
+        .limit(limit)
+        .skip(skip)
+        .toArray()
+
+      // Remove MongoDB _id and return
+      const cleanListings = listings.map(({ _id, ...rest }) => rest)
+
+      return handleCORS(NextResponse.json({
+        listings: cleanListings,
+        total: await db.collection('listings').countDocuments(filter)
+      }))
+    }
+
+    // Get single listing - GET /api/listings/[id]
+    if (route.startsWith('/listings/') && method === 'GET') {
+      const listingId = route.split('/listings/')[1]
+
+      const listing = await db.collection('listings').findOne({
+        id: listingId,
+        is_active: true
+      })
+
+      if (!listing) {
+        return handleCORS(NextResponse.json(
+          { error: "Listing not found" },
+          { status: 404 }
+        ))
+      }
+
+      // Get listing media
+      const media = await db.collection('listing_media')
+        .find({ listing_id: listingId })
+        .sort({ sort_order: 1 })
+        .toArray()
+
+      // Get amenities
+      const amenities = await db.collection('listing_amenities')
+        .aggregate([
+          { $match: { listing_id: listingId } },
+          {
+            $lookup: {
+              from: 'amenities',
+              localField: 'amenity_id',
+              foreignField: 'id',
+              as: 'amenity'
+            }
+          },
+          { $unwind: '$amenity' }
+        ])
+        .toArray()
+
+      // Get active promotion
+      const promotion = await db.collection('promotions').findOne({
+        listing_id: listingId,
+        is_active: true,
+        starts_at: { $lte: new Date() },
+        ends_at: { $gte: new Date() }
+      })
+
+      // Get approved reviews
+      const reviews = await db.collection('reviews')
+        .find({
+          listing_id: listingId,
+          is_approved: true
+        })
+        .sort({ created_at: -1 })
+        .limit(10)
+        .toArray()
+
+      const { _id, ...cleanListing } = listing
+
+      return handleCORS(NextResponse.json({
+        ...cleanListing,
+        media: media.map(({ _id, ...rest }) => rest),
+        amenities: amenities.map(item => ({
+          ...item.amenity,
+          available: item.available
+        })),
+        promotion: promotion ? { ...promotion, _id: undefined } : null,
+        reviews: reviews.map(({ _id, ...rest }) => rest)
+      }))
+    }
+
+    // Update listing - PATCH /api/listings/[id]
+    if (route.startsWith('/listings/') && method === 'PATCH') {
+      const listingId = route.split('/listings/')[1]
+      const body = await request.json()
+
+      const result = await db.collection('listings').updateOne(
+        { id: listingId },
+        {
+          $set: {
+            ...body,
+            updated_at: new Date()
+          }
+        }
+      )
+
+      if (result.matchedCount === 0) {
+        return handleCORS(NextResponse.json(
+          { error: "Listing not found" },
+          { status: 404 }
+        ))
+      }
+
+      const updatedListing = await db.collection('listings').findOne({ id: listingId })
+      const { _id, ...cleanUpdatedListing } = updatedListing
+
+      return handleCORS(NextResponse.json(cleanUpdatedListing))
+    }
+
+    // Delete listing - DELETE /api/listings/[id]
+    if (route.startsWith('/listings/') && method === 'DELETE') {
+      const listingId = route.split('/listings/')[1]
+
+      const result = await db.collection('listings').deleteOne({ id: listingId })
+
+      if (result.deletedCount === 0) {
+        return handleCORS(NextResponse.json(
+          { error: "Listing not found" },
+          { status: 404 }
+        ))
+      }
+
+      return handleCORS(NextResponse.json({ success: true }))
+    }
+
+    // Get reviews - GET /api/reviews
+    if (route === '/reviews' && method === 'GET') {
+      const reviews = await db.collection('reviews')
+        .find({})
+        .sort({ created_at: -1 })
+        .toArray()
+
+      return handleCORS(NextResponse.json({
+        reviews: reviews.map(({ _id, ...rest }) => rest)
+      }))
+    }
+    if (route === '/listings' && method === 'POST') {
+      const body = await request.json()
+
+      // Validação corrigida para os campos obrigatórios
+      const required = ['category', 'title']
+      for (const field of required) {
+        if (!body[field]) {
+          return handleCORS(NextResponse.json(
+            { error: `${field} is required` },
+            { status: 400 }
+          ))
+        }
+      }
+
+      // Validate category
+      if (!CATEGORIES[body.category]) {
+        return handleCORS(NextResponse.json(
+          { error: "Invalid category" },
+          { status: 400 }
+        ))
+      }
+
+      const listingId = uuidv4()
+      const slug = body.title.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim('-')
+
+      const listing = {
+        id: listingId,
+        category: body.category,
+        slug: `${slug}-${listingId.split('-')[0]}`,
+        title: body.title,
+        subtitle: body.subtitle || '',
+        description: body.description || '',
+        city: body.city || 'Búzios', // Valor padrão para 'city'
+        neighborhood: body.neighborhood || '',
+        guests: body.guests || null,
+        bedrooms: body.bedrooms || null,
+        bathrooms: body.bathrooms || null,
+        area_m2: body.area_m2 || null,
+        attributes: body.attributes || {},
+        base_price: body.base_price || null,
+        price_label: body.price_label || '',
+        whatsapp_e164: body.whatsapp_e164 || '5521976860759', // Valor padrão para 'whatsapp_e164'
+        broker_name: body.broker_name || 'Adson Carlos dos Santos',
+        is_featured: body.is_featured || false,
+        is_active: body.is_active !== false,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+
+      await db.collection('listings').insertOne(listing)
+
+      const { _id, ...cleanListing } = listing
+      return handleCORS(NextResponse.json(cleanListing, { status: 201 }))
+    }
+
+    // **AMENITIES ENDPOINTS**
+    // ... (O restante das suas rotas) ...
+
+    // Route not found
+    return handleCORS(NextResponse.json(
+      { error: `Route ${route} not found` },
+      { status: 404 }
+    ))
+
+  } catch (error) {
+    console.error('API Error:', error)
+    return handleCORS(NextResponse.json(
+      { error: "Internal server error", details: error.message },
+      { status: 500 }
+    ))
+  }
+}
+
+// Export all HTTP methods
+export const GET = handleRoute
+export const POST = handleRoute
+export const PUT = handleRoute
+export const DELETE = handleRoute
+export const PATCH = handleRoute
+}
+aqui está o código do routes.js, pode me dar o código completo e corrigido, por favor?

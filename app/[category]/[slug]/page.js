@@ -50,7 +50,7 @@ const VillasNavbar = () => {
   )
 }
 
-// Villas Style Gallery Component
+// Villas Style Gallery Component (Corrigido para o novo layout e lightbox)
 const VillasGallery = ({ images, title }) => {
   const [currentImage, setCurrentImage] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -63,45 +63,58 @@ const VillasGallery = ({ images, title }) => {
   ]
 
   return (
-    <div className="relative">
-      {/* Main Gallery Grid - Villas in Brazil style */}
-      <div className="grid grid-cols-4 gap-2 h-96">
+    <div className="w-full relative">
+      {/* Main Gallery Grid - Layout de duas colunas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {/* Main large image */}
-        <div className="col-span-2 relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
+        <div className="relative cursor-pointer" onClick={() => {
+          setCurrentImage(0); 
+          setLightboxOpen(true);
+        }}>
           <img 
             src={galleryImages[0]} 
             alt={title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-md"
           />
         </div>
         
-        {/* Side images */}
-        <div className="space-y-2">
-          <div className="h-[calc(50%-4px)] relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
+        {/* Side images in a grid */}
+        <div className="grid grid-cols-2 gap-2 h-full">
+          <div className="relative cursor-pointer" onClick={() => {
+            setCurrentImage(1);
+            setLightboxOpen(true);
+          }}>
             <img 
               src={galleryImages[1]} 
               alt={title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-md"
             />
           </div>
-          <div className="h-[calc(50%-4px)] relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
+          <div className="relative cursor-pointer" onClick={() => {
+            setCurrentImage(2);
+            setLightboxOpen(true);
+          }}>
             <img 
               src={galleryImages[2]} 
               alt={title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-md"
             />
           </div>
-        </div>
-        
-        <div className="space-y-2">
-          <div className="h-[calc(50%-4px)] relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
+          <div className="relative cursor-pointer" onClick={() => {
+            setCurrentImage(3);
+            setLightboxOpen(true);
+          }}>
             <img 
               src={galleryImages[3]} 
               alt={title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-md"
             />
           </div>
-          <div className="h-[calc(50%-4px)] relative cursor-pointer bg-gray-100 flex items-center justify-center" onClick={() => setLightboxOpen(true)}>
+          {/* Botão para abrir o lightbox com "Veja mais fotos" */}
+          <div className="relative cursor-pointer bg-gray-100 flex items-center justify-center rounded-md" onClick={() => {
+            setCurrentImage(0); 
+            setLightboxOpen(true);
+          }}>
             <span className="text-gray-600 font-medium">Veja mais fotos</span>
             <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
           </div>
