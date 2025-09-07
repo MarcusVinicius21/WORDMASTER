@@ -827,8 +827,8 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
                   <SelectValue placeholder="Selecione a categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="mansao">Mansão</SelectItem>
-                  <SelectItem value="iate">Iate</SelectItem>
+                  <SelectItem value="mansoes">Mansão</SelectItem>
+                  <SelectItem value="iates">Iate</SelectItem>
                   <SelectItem value="escuna">Escuna</SelectItem>
                   <SelectItem value="transfer">Transfer</SelectItem>
                   <SelectItem value="buggy">Buggy</SelectItem>
