@@ -576,7 +576,7 @@ const ListingsManagement = () => {
 }
 
 // Create Listing Modal Component
-const CreateListingModal = ({ open, onClose, onCreated, setListings }) => {
+const CreateListingModal = ({ open, onClose, onCreated, setListings, editingListing }) => {
   const [formData, setFormData] = useState({
     category: '',
     title: '',
@@ -594,6 +594,28 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings }) => {
   const [loading, setLoading] = useState(false)
   const [uploadedImages, setUploadedImages] = useState([])
   const [uploading, setUploading] = useState(false)
+
+  // Populate form when editing
+  useEffect(() => {
+    if (editingListing) {
+      setFormData({
+        category: editingListing.category || '',
+        title: editingListing.title || '',
+        subtitle: editingListing.subtitle || '',
+        description: editingListing.description || '',
+        neighborhood: editingListing.neighborhood || '',
+        guests: editingListing.guests ? editingListing.guests.toString() : '',
+        bedrooms: editingListing.bedrooms ? editingListing.bedrooms.toString() : '',
+        bathrooms: editingListing.bathrooms ? editingListing.bathrooms.toString() : '',
+        area_m2: editingListing.area_m2 ? editingListing.area_m2.toString() : '',
+        base_price: editingListing.base_price ? editingListing.base_price.toString() : '',
+        price_label: editingListing.price_label || '',
+        is_featured: editingListing.is_featured || false
+      })
+    } else {
+      resetForm()
+    }
+  }, [editingListing, open])
 
   // Handle image upload
   const handleImageUpload = async (event) => {
