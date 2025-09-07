@@ -960,7 +960,10 @@ const CreateListingModal = ({ open, onClose, onCreated, setListings, editingList
               Cancelar
             </Button>
             <Button type="submit" disabled={loading || uploading}>
-              {loading ? 'Criando...' : 'Criar Propriedade'}
+              {loading 
+                ? (editingListing ? 'Atualizando...' : 'Criando...') 
+                : (editingListing ? 'Atualizar Propriedade' : 'Criar Propriedade')
+              }
             </Button>
           </div>
         </form>
