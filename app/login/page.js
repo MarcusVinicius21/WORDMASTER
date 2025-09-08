@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,28 +14,22 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    try {
-      // Here you would typically call your authentication API
-      // For now, we'll just simulate a login
+    // Simulação de autenticação
+    if ((email === 'admin@wordmaster.com' && password === 'admin123') || (email === 'editor@wordmaster.com' && password === 'editor123')) {
+      // Salva o estado de autenticado no localStorage
+      localStorage.setItem('isAuthenticated', 'true');
       
-      if (email === 'admin@wordmaster.com' && password === 'admin123') {
-        // Redirect to admin panel
-        window.location.href = '/admin'
-      } else if (email === 'editor@wordmaster.com' && password === 'editor123') {
-        // Redirect to admin panel with editor role
-        window.location.href = '/admin'
-      } else {
-        setError('Email ou senha incorretos')
-      }
-    } catch (err) {
-      setError('Erro ao fazer login. Tente novamente.')
-    } finally {
+      // Redireciona para o painel de administração
+      router.push('/admin');
+    } else {
+      setError('Email ou senha incorretos')
       setLoading(false)
     }
   }
@@ -115,7 +110,6 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Demo credentials */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h4 className="font-semibold text-sm mb-2">Credenciais de Demonstração:</h4>
             <div className="text-xs space-y-1">
