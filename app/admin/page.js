@@ -14,9 +14,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 
-// O componente AdminSidebar e outros internos não precisam de alteração
-// A correção principal está no componente ListingsManagement
-
 const AdminSidebar = ({ currentPage, setCurrentPage }) => {
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
@@ -184,7 +181,13 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
       const savedListing = await response.json();
       if (uploadedImages.length > 0) {
         for (const image of uploadedImages) {
-          const mediaPayload = { listing_id: savedListing.id, type: "image", url: `https://source.unsplash.com/random/800x600?beach,house&sig=${Math.random()}`, alt_text: formData.title, };
+          const mediaPayload = { 
+            listing_id: savedListing.id, 
+            type: "image", 
+            // *** CORREÇÃO APLICADA AQUI ***
+            url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop', 
+            alt_text: formData.title, 
+          };
           await fetch('/api/media', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mediaPayload) });
         }
       }

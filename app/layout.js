@@ -12,6 +12,9 @@ export const metadata = {
     description: 'Aluguéis exclusivos em Búzios',
     images: ['/og-image.jpg'],
   },
+  icons: {
+    icon: '/logo.png', // <-- ADICIONADO AQUI
+  },
 }
 
 export default function RootLayout({ children }) {
