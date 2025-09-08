@@ -8,7 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import Image from "next/image" // <-- IMPORT ADICIONADO
+import Image from "next/image"
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
+
 
 // WhatsApp Component
 const WhatsAppButton = ({ listing, className = "" }) => {
@@ -192,101 +194,114 @@ const HeroSection = () => {
   )
 }
 
-// Property Card Component with proper image handling
+// NOVO Property Card Component - REDESENHADO
 const PropertyCard = ({ listing, category }) => {
-  // Get image from API or fallback to category default
   const getPropertyImage = (listing, category) => {
-    // First try to get the featured_image from API
-    if (listing.featured_image) {
-      return listing.featured_image
-    }
-    
-    // Then try to get from media array
-    if (listing.media && listing.media.length > 0) {
-      return listing.media[0].url
-    }
-    
-    // Fallback to category defaults
+    if (listing.featured_image) return listing.featured_image;
+    if (listing.media && listing.media.length > 0) return listing.media[0].url;
     const categoryImages = {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
       iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
       transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
       buggy: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center'
-    }
-    return categoryImages[category] || categoryImages.mansoes
-  }
+    };
+    return categoryImages[category] || categoryImages.mansoes;
+  };
 
   return (
-    <Link href={`/${category}/${listing.slug || listing.id}`}>
-      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer">
-        <div className="relative overflow-hidden">
-          <img
-            src={getPropertyImage(listing, category)}
-            alt={listing.title}
-            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={(e) => {
-              // Fallback if image fails to load
-              e.target.src = `https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center`
-            }}
-          />
-          <div className="absolute top-4 left-4">
-            <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-              {listing.neighborhood || 'Búzios'}
-            </span>
+    <Link href={`/${category}/${listing.slug || listing.id}`} className="block">
+      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col">
+        <CardContent className="p-0 flex flex-col flex-grow">
+          <div className="relative overflow-hidden">
+            <img
+              src={getPropertyImage(listing, category)}
+              alt={listing.title}
+              className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center';
+              }}
+            />
           </div>
-        </div>
-        
-        <CardContent className="p-6">
-          <h3 className="text-xl font-medium text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
-            {listing.title}
-          </h3>
-          <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-            {listing.subtitle}
-          </p>
-          
-          {/* Property Features */}
-          <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-            {listing.bedrooms && (
-              <div className="flex items-center space-x-1">
-                <Bed className="w-4 h-4" />
-                <span>{listing.bedrooms} Quartos</span>
-              </div>
-            )}
-            {listing.guests && (
-              <div className="flex items-center space-x-1">
-                <Users className="w-4 h-4" />
-                <span>{listing.guests} pessoas</span>
-              </div>
-            )}
-            {listing.bathrooms && (
-              <div className="flex items-center space-x-1">
-                <Bath className="w-4 h-4" />
-                <span>{listing.bathrooms} Banheiros</span>
-              </div>
-            )}
-          </div>
+          <div className="p-4 flex flex-col flex-grow">
+            <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
+              {listing.title}
+            </h3>
+            
+            <div className="flex items-center text-sm text-gray-600 space-x-4 mb-4">
+              {listing.bedrooms && <span className="flex items-center"><Bed className="w-4 h-4 mr-1.5" />{listing.bedrooms} Quartos</span>}
+              {listing.guests && <span className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Hóspedes</span>}
+            </div>
 
-          <div className="border-t border-gray-100 pt-4">
-            <div className="flex items-center justify-between">
+            <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
               <div>
-                <span className="text-sm text-gray-500">A partir de</span>
-                <div className="text-2xl font-semibold text-gray-900">
-                  {listing.price_label}
-                </div>
-                <span className="text-sm text-gray-500">por Noite</span>
+                <p className="text-sm text-gray-500">A partir de</p>
+                <p className="font-semibold text-gray-800">{listing.price_label}</p>
               </div>
-              <WhatsAppButton listing={listing} />
+              <Button variant="outline">Detalhes</Button>
             </div>
           </div>
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }
 
-// Category Section
-const CategorySection = ({ title, listings, category }) => {
+
+// NOVA SEÇÃO DE CATEGORIA - REDESENHADA
+const CategorySection = ({ title, description, listings, category }) => {
+  if (!listings || listings.length === 0) return null;
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-left">
+            <h2 className="text-4xl font-light text-gray-900 mb-4 tracking-wide">
+              {title}
+            </h2>
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              {description}
+            </p>
+            <Link href={`/${category}`}>
+              <Button variant="outline" size="lg">
+                Ver mais
+              </Button>
+            </Link>
+          </div>
+
+          <div className="w-full">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {listings.map((listing) => (
+                  <CarouselItem key={listing.id} className="md:basis-1/2">
+                    <div className="p-1">
+                      <PropertyCard 
+                        listing={listing} 
+                        category={category}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10" />
+              <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10" />
+            </Carousel>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Seção de Categoria Original - Mantida para compatibilidade
+const OriginalCategorySection = ({ title, listings, category }) => {
   if (!listings || listings.length === 0) return null
 
   return (
@@ -321,6 +336,7 @@ const CategorySection = ({ title, listings, category }) => {
     </section>
   )
 }
+
 
 // Footer com Logo, CNPJ e Instagram
 const Footer = () => {
@@ -464,6 +480,7 @@ export default function HomePage() {
         neighborhood: 'Marina, Búzios',
         price_label: 'R$ 8.500,00',
         guests: 20,
+        bedrooms: 4,
         featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
         is_featured: true
       },
@@ -475,6 +492,7 @@ export default function HomePage() {
         neighborhood: 'Marina, Búzios',
         price_label: 'R$ 4.200,00',
         guests: 12,
+        bedrooms: 2,
         featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center',
         is_featured: true
       }
@@ -488,6 +506,7 @@ export default function HomePage() {
         neighborhood: 'Porto, Búzios',
         price_label: 'R$ 180,00',
         guests: 40,
+        bedrooms: 0,
         featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
         is_featured: true
       }
@@ -501,6 +520,7 @@ export default function HomePage() {
         neighborhood: 'Heliporto, Búzios',
         price_label: 'R$ 2.500,00',
         guests: 4,
+        bedrooms: 0,
         featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
         is_featured: true
       }
@@ -514,6 +534,7 @@ export default function HomePage() {
         neighborhood: 'Base Centro, Búzios',
         price_label: 'R$ 350,00',
         guests: 4,
+        bedrooms: 0,
         featured_image: 'https://images.unsplash.com/photo-1606635278919-00d3bc78ce2c?w=400&h=250&fit=crop&crop=center',
         is_featured: true
       }
@@ -588,25 +609,27 @@ export default function HomePage() {
       {/* Category Sections */}
       {!loading && (
         <>
-          <CategorySection 
+          <OriginalCategorySection
             title="APARTAMENTOS E CASAS DE LUXO PARA ALUGAR" 
             listings={allListings.mansoes} 
             category="mansoes" 
           />
           
+          {/* SEÇÃO DE IATES ATUALIZADA */}
           <CategorySection 
             title="ALUGUEL DE IATES DE LUXO" 
+            description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer."
             listings={allListings.iates} 
             category="iates" 
           />
           
-          <CategorySection 
+          <OriginalCategorySection 
             title="PASSEIOS DE ESCUNA" 
             listings={allListings.escuna} 
             category="escuna" 
           />
           
-          <CategorySection 
+          <OriginalCategorySection 
             title="TRANSFER & TÁXI AÉREO" 
             listings={allListings.transfer} 
             category="transfer" 
