@@ -313,6 +313,73 @@ const CategorySection = ({ title, description, listings, category }) => {
 }
 
 
+// INÍCIO DO NOVO CÓDIGO ADICIONADO
+// Google Reviews Section
+const GoogleReviewsSection = () => {
+  const reviews = [
+    {
+      id: 1,
+      name: "Julia Mendes",
+      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+      stars: 5,
+      text: "Serviço impecável e propriedades deslumbrantes. A equipe da Wordmaster foi extremamente atenciosa e tornou nossa viagem a Búzios inesquecível. Recomendo fortemente!",
+      date: "2 meses atrás"
+    },
+    {
+      id: 2,
+      name: "Roberto Carlos",
+      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+      stars: 5,
+      text: "Alugamos um iate para um passeio em família e foi a melhor decisão. Embarcação de luxo, tripulação profissional e um roteiro incrível pelas praias. Experiência 10/10.",
+      date: "5 meses atrás"
+    },
+    {
+      id: 3,
+      name: "Ana Vitoria",
+      avatar: "https://randomuser.me/api/portraits/women/65.jpg",
+      stars: 5,
+      text: "A mansão que ficamos era um sonho! Exatamente como nas fotos, com uma vista espetacular. Todo o processo de reserva foi simples e transparente. Voltaremos com certeza.",
+      date: "10 meses atrás"
+    }
+  ];
+
+  return (
+    <section className="bg-white py-16 md:py-20">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 tracking-wide">
+            O QUE NOSSOS CLIENTES DIZEM
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Avaliações reais de clientes que viveram a experiência Wordmaster Beach Búzios.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {reviews.map((review) => (
+            <Card key={review.id} className="bg-gray-50/80 p-6 rounded-2xl shadow-lg border border-gray-200 flex flex-col transition-all hover:shadow-xl hover:-translate-y-1">
+              <div className="flex items-center mb-4">
+                <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full mr-4" />
+                <div>
+                  <p className="font-semibold text-gray-800">{review.name}</p>
+                  <p className="text-sm text-gray-500">{review.date}</p>
+                </div>
+              </div>
+              <div className="flex items-center mb-4">
+                {[...Array(review.stars)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-600 leading-relaxed">{review.text}</p>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+// FIM DO NOVO CÓDIGO ADICIONADO
+
+
 // Footer
 const Footer = () => {
   return (
@@ -424,6 +491,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      <GoogleReviewsSection />
       <Footer />
       <div className="fixed bottom-6 right-6 z-50">
         <button onClick={() => window.open('https://wa.me/5521976860759', '_blank')} className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-110">

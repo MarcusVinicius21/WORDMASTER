@@ -1,690 +1,221 @@
-#!/usr/bin/env python3
-"""
-Comprehensive Backend API Tests for Wordmaster Beach Búzios
-Tests all core API endpoints with proper validation and error handling
-"""
-
 import requests
 import json
-import uuid
-import time
 from datetime import datetime
+import uuid
 
-# Configuration - Using internal URL for backend testing as requested
-BASE_URL = "http://localhost:3000/api"
-HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
+# URL da API (ajuste conforme necessário)
+API_BASE_URL = "http://localhost:3000/api"
 
-class BackendTester:
-    def __init__(self):
-        self.base_url = BASE_URL
-        self.headers = HEADERS
-        self.test_results = []
-        self.created_listing_id = None
-        
-    def log_test(self, test_name, success, message, details=None):
-        """Log test results"""
-        result = {
-            'test': test_name,
-            'success': success,
-            'message': message,
-            'timestamp': datetime.now().isoformat(),
-            'details': details
-        }
-        self.test_results.append(result)
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} - {test_name}: {message}")
-        if details and not success:
-            print(f"   Details: {details}")
-    
-    def make_request(self, method, endpoint, data=None, params=None):
-        """Make HTTP request with error handling"""
-        url = f"{self.base_url}{endpoint}"
-        try:
-            if method.upper() == 'GET':
-                response = requests.get(url, headers=self.headers, params=params, timeout=30)
-            elif method.upper() == 'POST':
-                response = requests.post(url, headers=self.headers, json=data, timeout=30)
-            elif method.upper() == 'PUT':
-                response = requests.put(url, headers=self.headers, json=data, timeout=30)
-            elif method.upper() == 'PATCH':
-                response = requests.patch(url, headers=self.headers, json=data, timeout=30)
-            elif method.upper() == 'DELETE':
-                response = requests.delete(url, headers=self.headers, timeout=30)
-            else:
-                raise ValueError(f"Unsupported method: {method}")
-            
-            return response
-        except requests.exceptions.RequestException as e:
-            return None, str(e)
-    
-    def test_root_endpoint(self):
-        """Test root API endpoint"""
-        print("\n=== Testing Root Endpoint ===")
-        response = self.make_request('GET', '/')
-        
-        if response is None:
-            self.log_test("Root Endpoint", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                if 'message' in data and 'Wordmaster Beach Búzios API' in data['message']:
-                    self.log_test("Root Endpoint", True, "API is accessible and responding correctly")
-                    return True
-                else:
-                    self.log_test("Root Endpoint", False, "Unexpected response format", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("Root Endpoint", False, "Invalid JSON response")
-                return False
-        else:
-            self.log_test("Root Endpoint", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_seed_database(self):
-        """Test database seeding"""
-        print("\n=== Testing Database Seeding ===")
-        response = self.make_request('POST', '/seed')
-        
-        if response is None:
-            self.log_test("Database Seeding", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                if 'message' in data and 'seeded successfully' in data['message']:
-                    counts = data.get('counts', {})
-                    self.log_test("Database Seeding", True, 
-                                f"Database seeded successfully - Amenities: {counts.get('amenities', 0)}, Listings: {counts.get('listings', 0)}")
-                    return True
-                else:
-                    self.log_test("Database Seeding", False, "Unexpected response format", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("Database Seeding", False, "Invalid JSON response")
-                return False
-        else:
-            self.log_test("Database Seeding", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_categories_api(self):
-        """Test categories API"""
-        print("\n=== Testing Categories API ===")
-        response = self.make_request('GET', '/categories')
-        
-        if response is None:
-            self.log_test("Categories API", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                categories = data.get('categories', [])
-                
-                # Check if we have expected categories
-                expected_categories = ['mansao', 'iate', 'escuna', 'transfer', 'buggy']
-                found_categories = [cat['key'] for cat in categories]
-                
-                if all(cat in found_categories for cat in expected_categories):
-                    self.log_test("Categories API", True, f"All {len(categories)} categories returned correctly")
-                    return True
-                else:
-                    missing = [cat for cat in expected_categories if cat not in found_categories]
-                    self.log_test("Categories API", False, f"Missing categories: {missing}", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("Categories API", False, "Invalid JSON response")
-                return False
-        else:
-            self.log_test("Categories API", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_amenities_api(self):
-        """Test amenities API"""
-        print("\n=== Testing Amenities API ===")
-        response = self.make_request('GET', '/amenities')
-        
-        if response is None:
-            self.log_test("Amenities API", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                amenities = data.get('amenities', [])
-                
-                if len(amenities) > 0:
-                    # Check structure of first amenity
-                    first_amenity = amenities[0]
-                    required_fields = ['id', 'name', 'icon']
-                    
-                    if all(field in first_amenity for field in required_fields):
-                        self.log_test("Amenities API", True, f"Retrieved {len(amenities)} amenities with correct structure")
-                        return True
-                    else:
-                        missing_fields = [field for field in required_fields if field not in first_amenity]
-                        self.log_test("Amenities API", False, f"Missing fields in amenity: {missing_fields}", first_amenity)
-                        return False
-                else:
-                    self.log_test("Amenities API", False, "No amenities returned", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("Amenities API", False, "Invalid JSON response")
-                return False
-        else:
-            self.log_test("Amenities API", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_listings_get_all(self):
-        """Test GET /api/listings"""
-        print("\n=== Testing GET All Listings ===")
-        response = self.make_request('GET', '/listings')
-        
-        if response is None:
-            self.log_test("GET All Listings", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                listings = data.get('listings', [])
-                total = data.get('total', 0)
-                
-                if isinstance(listings, list) and isinstance(total, int):
-                    self.log_test("GET All Listings", True, f"Retrieved {len(listings)} listings, total: {total}")
-                    
-                    # Store first listing ID for later tests
-                    if listings:
-                        self.created_listing_id = listings[0].get('id')
-                    
-                    return True
-                else:
-                    self.log_test("GET All Listings", False, "Invalid response structure", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("GET All Listings", False, "Invalid JSON response")
-                return False
-        else:
-            self.log_test("GET All Listings", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_listings_filtering(self):
-        """Test listings filtering by category and featured status"""
-        print("\n=== Testing Listings Filtering ===")
-        
-        # Test category filtering
-        response = self.make_request('GET', '/listings', params={'category': 'mansao'})
-        
-        if response and response.status_code == 200:
-            try:
-                data = response.json()
-                listings = data.get('listings', [])
-                
-                # Check if all returned listings are mansao category
-                if all(listing.get('category') == 'mansao' for listing in listings):
-                    self.log_test("Category Filtering", True, f"Category filter working - {len(listings)} mansao listings")
-                else:
-                    wrong_category = [l for l in listings if l.get('category') != 'mansao']
-                    self.log_test("Category Filtering", False, f"Wrong category listings returned", wrong_category)
-            except json.JSONDecodeError:
-                self.log_test("Category Filtering", False, "Invalid JSON response")
-        else:
-            self.log_test("Category Filtering", False, f"HTTP {response.status_code if response else 'No response'}")
-        
-        # Test featured filtering
-        response = self.make_request('GET', '/listings', params={'featured': 'true'})
-        
-        if response and response.status_code == 200:
-            try:
-                data = response.json()
-                listings = data.get('listings', [])
-                
-                # Check if all returned listings are featured
-                if all(listing.get('is_featured') == True for listing in listings):
-                    self.log_test("Featured Filtering", True, f"Featured filter working - {len(listings)} featured listings")
-                else:
-                    non_featured = [l for l in listings if not l.get('is_featured')]
-                    self.log_test("Featured Filtering", False, f"Non-featured listings returned", non_featured)
-            except json.JSONDecodeError:
-                self.log_test("Featured Filtering", False, "Invalid JSON response")
-        else:
-            self.log_test("Featured Filtering", False, f"HTTP {response.status_code if response else 'No response'}")
-    
-    def test_listings_pagination(self):
-        """Test listings pagination"""
-        print("\n=== Testing Listings Pagination ===")
-        
-        # Test with limit
-        response = self.make_request('GET', '/listings', params={'limit': 1})
-        
-        if response and response.status_code == 200:
-            try:
-                data = response.json()
-                listings = data.get('listings', [])
-                
-                if len(listings) <= 1:
-                    self.log_test("Pagination Limit", True, f"Limit parameter working - returned {len(listings)} listings")
-                else:
-                    self.log_test("Pagination Limit", False, f"Limit not respected - returned {len(listings)} listings")
-            except json.JSONDecodeError:
-                self.log_test("Pagination Limit", False, "Invalid JSON response")
-        else:
-            self.log_test("Pagination Limit", False, f"HTTP {response.status_code if response else 'No response'}")
-    
-    def test_listings_get_single(self):
-        """Test GET /api/listings/[id]"""
-        print("\n=== Testing GET Single Listing ===")
-        
-        if not self.created_listing_id:
-            self.log_test("GET Single Listing", False, "No listing ID available for testing")
-            return False
-        
-        response = self.make_request('GET', f'/listings/{self.created_listing_id}')
-        
-        if response is None:
-            self.log_test("GET Single Listing", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                
-                # Check required fields
-                required_fields = ['id', 'category', 'title', 'city']
-                if all(field in data for field in required_fields):
-                    # Check if we get additional data like media, amenities
-                    has_media = 'media' in data
-                    has_amenities = 'amenities' in data
-                    has_reviews = 'reviews' in data
-                    
-                    self.log_test("GET Single Listing", True, 
-                                f"Single listing retrieved with media: {has_media}, amenities: {has_amenities}, reviews: {has_reviews}")
-                    return True
-                else:
-                    missing_fields = [field for field in required_fields if field not in data]
-                    self.log_test("GET Single Listing", False, f"Missing required fields: {missing_fields}", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("GET Single Listing", False, "Invalid JSON response")
-                return False
-        elif response.status_code == 404:
-            self.log_test("GET Single Listing", False, "Listing not found - may be inactive or deleted")
-            return False
-        else:
-            self.log_test("GET Single Listing", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_listings_create(self):
-        """Test POST /api/listings"""
-        print("\n=== Testing POST Create Listing ===")
-        
-        # Test with valid data
-        test_listing = {
-            "category": "mansao",
-            "title": "Casa de Teste Automatizado",
-            "subtitle": "Teste de API",
-            "description": "Esta é uma propriedade criada durante teste automatizado da API",
-            "city": "Búzios",
-            "neighborhood": "Centro",
-            "guests": 6,
-            "bedrooms": 3,
-            "bathrooms": 2,
-            "area_m2": 150,
-            "base_price": 800.00,
-            "price_label": "R$ 800/dia",
-            "whatsapp_e164": "5521987654321",
-            "broker_name": "Teste Automatizado",
-            "is_featured": False,
-            "is_active": True
-        }
-        
-        response = self.make_request('POST', '/listings', data=test_listing)
-        
-        if response is None:
-            self.log_test("Create Listing - Valid Data", False, "Failed to connect to API")
-            return False
-            
+def create_listing(listing_data):
+    """Cria uma nova listagem via API"""
+    try:
+        response = requests.post(f"{API_BASE_URL}/listings", json=listing_data)
         if response.status_code == 201:
-            try:
-                data = response.json()
-                
-                # Check if listing was created with correct data
-                if data.get('title') == test_listing['title'] and data.get('category') == test_listing['category']:
-                    # Store the created listing ID for cleanup
-                    self.created_listing_id = data.get('id')
-                    self.log_test("Create Listing - Valid Data", True, f"Listing created successfully with ID: {self.created_listing_id}")
-                else:
-                    self.log_test("Create Listing - Valid Data", False, "Created listing data doesn't match input", data)
-            except json.JSONDecodeError:
-                self.log_test("Create Listing - Valid Data", False, "Invalid JSON response")
+            print(f"✅ {listing_data['category'].upper()}: {listing_data['title']} criado com sucesso!")
+            return response.json()
         else:
-            self.log_test("Create Listing - Valid Data", False, f"HTTP {response.status_code}", response.text)
-        
-        # Test with missing required fields
-        invalid_listing = {
-            "title": "Incomplete Listing"
-            # Missing category, city, whatsapp_e164
-        }
-        
-        response = self.make_request('POST', '/listings', data=invalid_listing)
-        
-        if response and response.status_code == 400:
-            self.log_test("Create Listing - Missing Fields", True, "Correctly rejected listing with missing required fields")
-        else:
-            self.log_test("Create Listing - Missing Fields", False, 
-                        f"Should have returned 400 for missing fields, got {response.status_code if response else 'No response'}")
-        
-        # Test with invalid category
-        invalid_category_listing = {
-            "category": "invalid_category",
-            "title": "Invalid Category Test",
-            "city": "Búzios",
-            "whatsapp_e164": "5521987654321"
-        }
-        
-        response = self.make_request('POST', '/listings', data=invalid_category_listing)
-        
-        if response and response.status_code == 400:
-            self.log_test("Create Listing - Invalid Category", True, "Correctly rejected listing with invalid category")
-        else:
-            self.log_test("Create Listing - Invalid Category", False, 
-                        f"Should have returned 400 for invalid category, got {response.status_code if response else 'No response'}")
-    
-    def test_analytics_whatsapp_click(self):
-        """Test POST /api/analytics/whatsapp-click"""
-        print("\n=== Testing Analytics WhatsApp Click ===")
-        
-        if not self.created_listing_id:
-            self.log_test("WhatsApp Click Analytics", False, "No listing ID available for testing")
-            return False
-        
-        # Test with valid data
-        analytics_data = {
-            "listing_id": self.created_listing_id,
-            "meta": {
-                "source": "test",
-                "button_location": "listing_detail"
-            }
-        }
-        
-        response = self.make_request('POST', '/analytics/whatsapp-click', data=analytics_data)
-        
-        if response is None:
-            self.log_test("WhatsApp Click Analytics", False, "Failed to connect to API")
-            return False
-            
-        if response.status_code == 201:
-            try:
-                data = response.json()
-                
-                # Check if event was created correctly
-                if data.get('listing_id') == self.created_listing_id and data.get('type') == 'click_whatsapp':
-                    self.log_test("WhatsApp Click Analytics", True, f"Analytics event created successfully with ID: {data.get('id')}")
-                else:
-                    self.log_test("WhatsApp Click Analytics", False, "Created event data doesn't match input", data)
-            except json.JSONDecodeError:
-                self.log_test("WhatsApp Click Analytics", False, "Invalid JSON response")
-        else:
-            self.log_test("WhatsApp Click Analytics", False, f"HTTP {response.status_code}", response.text)
-        
-        # Test with missing listing_id
-        invalid_analytics = {
-            "meta": {
-                "source": "test"
-            }
-        }
-        
-        response = self.make_request('POST', '/analytics/whatsapp-click', data=invalid_analytics)
-        
-        if response and response.status_code == 400:
-            self.log_test("WhatsApp Click Analytics - Missing listing_id", True, "Correctly rejected analytics without listing_id")
-        else:
-            self.log_test("WhatsApp Click Analytics - Missing listing_id", False, 
-                        f"Should have returned 400 for missing listing_id, got {response.status_code if response else 'No response'}")
-    
-    def test_cors_headers(self):
-        """Test CORS headers are properly set"""
-        print("\n=== Testing CORS Headers ===")
-        
-        response = self.make_request('GET', '/categories')
-        
-        if response is None:
-            self.log_test("CORS Headers", False, "Failed to connect to API")
-            return False
-        
-        cors_headers = [
-            'Access-Control-Allow-Origin',
-            'Access-Control-Allow-Methods',
-            'Access-Control-Allow-Headers'
-        ]
-        
-        missing_headers = []
-        for header in cors_headers:
-            if header not in response.headers:
-                missing_headers.append(header)
-        
-        if not missing_headers:
-            self.log_test("CORS Headers", True, "All required CORS headers are present")
-        else:
-            self.log_test("CORS Headers", False, f"Missing CORS headers: {missing_headers}")
-    
-    def test_media_api(self):
-        """Test media API for admin photo upload functionality"""
-        print("\n=== Testing Media API ===")
-        
-        if not self.created_listing_id:
-            self.log_test("Media API", False, "No listing ID available for media testing")
-            return False
-        
-        # Test creating media for a listing
-        media_data = {
-            "listing_id": self.created_listing_id,
+            print(f"❌ Erro ao criar {listing_data['title']}: {response.text}")
+            return None
+    except Exception as e:
+        print(f"❌ Erro na requisição: {e}")
+        return None
+
+def create_media_for_listing(listing_id, media_data):
+    """Adiciona mídia para uma listagem"""
+    try:
+        media_payload = {
+            "listing_id": listing_id,
             "type": "image",
-            "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-            "alt_text": "Test property image",
-            "sort_order": 1
+            "url": media_data["url"],
+            "alt_text": media_data.get("alt_text", ""),
+            "sort_order": media_data.get("sort_order", 1)
         }
-        
-        response = self.make_request('POST', '/media', data=media_data)
-        
-        if response is None:
-            self.log_test("Create Media", False, "Failed to connect to API")
-            return False
-            
+        response = requests.post(f"{API_BASE_URL}/media", json=media_payload)
         if response.status_code == 201:
-            try:
-                data = response.json()
-                if data.get('listing_id') == self.created_listing_id and data.get('type') == 'image':
-                    self.log_test("Create Media", True, f"Media created successfully with ID: {data.get('id')}")
-                    
-                    # Test getting media for the listing
-                    response = self.make_request('GET', '/media', params={'listing_id': self.created_listing_id})
-                    
-                    if response and response.status_code == 200:
-                        media_list = response.json()
-                        if 'media' in media_list and len(media_list['media']) > 0:
-                            self.log_test("Get Media", True, f"Retrieved {len(media_list['media'])} media items for listing")
-                        else:
-                            self.log_test("Get Media", False, "No media returned for listing", media_list)
-                    else:
-                        self.log_test("Get Media", False, f"HTTP {response.status_code if response else 'No response'}")
-                    
-                    return True
-                else:
-                    self.log_test("Create Media", False, "Created media data doesn't match input", data)
-                    return False
-            except json.JSONDecodeError:
-                self.log_test("Create Media", False, "Invalid JSON response")
-                return False
+            print(f"  📷 Mídia adicionada para {listing_id}")
         else:
-            self.log_test("Create Media", False, f"HTTP {response.status_code}", response.text)
-            return False
-    
-    def test_admin_dashboard_data(self):
-        """Test admin dashboard statistics endpoints"""
-        print("\n=== Testing Admin Dashboard Data ===")
-        
-        # Test listings for dashboard stats
-        response = self.make_request('GET', '/listings')
-        
-        if response and response.status_code == 200:
-            try:
-                data = response.json()
-                listings = data.get('listings', [])
-                total = data.get('total', 0)
-                
-                # Calculate stats like admin dashboard would
-                active_listings = len([l for l in listings if l.get('is_active', False)])
-                featured_listings = len([l for l in listings if l.get('is_featured', False)])
-                
-                self.log_test("Dashboard Listings Data", True, 
-                            f"Dashboard stats: Total={total}, Active={active_listings}, Featured={featured_listings}")
-                
-                # Test categories for dashboard
-                response = self.make_request('GET', '/categories')
-                if response and response.status_code == 200:
-                    categories_data = response.json()
-                    categories = categories_data.get('categories', [])
-                    self.log_test("Dashboard Categories Data", True, f"Categories available: {len(categories)}")
-                else:
-                    self.log_test("Dashboard Categories Data", False, "Failed to get categories")
-                
-                return True
-            except json.JSONDecodeError:
-                self.log_test("Dashboard Listings Data", False, "Invalid JSON response")
-                return False
-        else:
-            self.log_test("Dashboard Listings Data", False, f"HTTP {response.status_code if response else 'No response'}")
-            return False
-    
-    def test_admin_crud_operations(self):
-        """Test admin CRUD operations for listings management"""
-        print("\n=== Testing Admin CRUD Operations ===")
-        
-        if not self.created_listing_id:
-            self.log_test("Admin CRUD", False, "No listing ID available for CRUD testing")
-            return False
-        
-        # Test UPDATE operation (PATCH)
-        update_data = {
-            "title": "Updated Test Property - Admin Panel",
-            "is_featured": True,
-            "price_label": "R$ 999/dia"
-        }
-        
-        response = self.make_request('PATCH', f'/listings/{self.created_listing_id}', data=update_data)
-        
-        if response and response.status_code == 200:
-            self.log_test("Update Listing", True, "Listing updated successfully via admin CRUD")
-            
-            # Verify the update by getting the listing
-            response = self.make_request('GET', f'/listings/{self.created_listing_id}')
-            if response and response.status_code == 200:
-                updated_listing = response.json()
-                if updated_listing.get('title') == update_data['title']:
-                    self.log_test("Verify Update", True, "Update verified - title changed correctly")
-                else:
-                    self.log_test("Verify Update", False, "Update not reflected in listing data")
-            
-            return True
-        else:
-            self.log_test("Update Listing", False, f"HTTP {response.status_code if response else 'No response'}")
-            return False
+            print(f"  ❌ Erro ao adicionar mídia: {response.text}")
+    except Exception as e:
+        print(f"  ❌ Erro ao adicionar mídia: {e}")
 
-    def test_error_handling(self):
-        """Test error handling for non-existent routes"""
-        print("\n=== Testing Error Handling ===")
-        
-        # Test non-existent route
-        response = self.make_request('GET', '/nonexistent-route')
-        
-        if response and response.status_code == 404:
-            try:
-                data = response.json()
-                if 'error' in data:
-                    self.log_test("404 Error Handling", True, "Correctly returns 404 for non-existent routes")
-                else:
-                    self.log_test("404 Error Handling", False, "404 response missing error field", data)
-            except json.JSONDecodeError:
-                self.log_test("404 Error Handling", False, "Invalid JSON in 404 response")
-        else:
-            self.log_test("404 Error Handling", False, 
-                        f"Should have returned 404, got {response.status_code if response else 'No response'}")
-        
-        # Test non-existent listing
-        response = self.make_request('GET', '/listings/non-existent-id')
-        
-        if response and response.status_code == 404:
-            self.log_test("Listing Not Found", True, "Correctly returns 404 for non-existent listing")
-        else:
-            self.log_test("Listing Not Found", False, 
-                        f"Should have returned 404 for non-existent listing, got {response.status_code if response else 'No response'}")
+# Dados de teste para cada categoria
+SAMPLE_LISTINGS = [
+    # MANSÕES
+    {
+        "category": "mansoes",
+        "title": "Villa Geribá Luxo",
+        "subtitle": "Vista mar deslumbrante",
+        "description": "Luxuosa villa com vista panorâmica para o mar de Geribá. Possui piscina infinita, churrasqueira gourmet e acesso privativo à praia. Perfeita para famílias e grupos que buscam conforto e exclusividade.",
+        "neighborhood": "Geribá",
+        "guests": 12,
+        "bedrooms": 6,
+        "bathrooms": 5,
+        "area_m2": 450,
+        "base_price": 3500.00,
+        "price_label": "R$ 3.500/dia",
+        "is_featured": True,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop", "sort_order": 1},
+            {"url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop", "sort_order": 2}
+        ]
+    },
+    {
+        "category": "mansoes", 
+        "title": "Casa Centro Histórico",
+        "subtitle": "Charme colonial moderno",
+        "description": "Belíssima casa no coração do centro histórico de Búzios, totalmente restaurada mantendo o charme colonial. Localização privilegiada próxima aos melhores restaurantes e vida noturna.",
+        "neighborhood": "Centro",
+        "guests": 8,
+        "bedrooms": 4,
+        "bathrooms": 3,
+        "area_m2": 280,
+        "base_price": 2200.00,
+        "price_label": "R$ 2.200/dia",
+        "is_featured": False,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop", "sort_order": 1}
+        ]
+    },
+
+    # IATES
+    {
+        "category": "iates",
+        "title": "Iate Azimut 68 pés",
+        "subtitle": "Luxo e conforto no mar",
+        "description": "Magnífico iate de 68 pés com 4 cabines luxuosas, sala de estar ampla, deck superior com jacuzzi e tripulação especializada. Ideal para day trips ou pernoites navegando pela costa de Búzios.",
+        "neighborhood": "Marina Porto Búzios",
+        "guests": 16,
+        "bedrooms": 4,  # cabines
+        "boat_length": 68,
+        "boat_year": 2019,
+        "base_price": 8500.00,
+        "price_label": "R$ 8.500/dia",
+        "is_featured": True,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop", "sort_order": 1},
+            {"url": "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=800&h=600&fit=crop", "sort_order": 2}
+        ]
+    },
+    {
+        "category": "iates",
+        "title": "Lancha Cigarette 42",
+        "subtitle": "Velocidade e estilo",
+        "description": "Lancha esportiva de alta performance para quem busca adrenalina e velocidade. Perfeita para passeios rápidos às praias mais exclusivas e atividades aquáticas.",
+        "neighborhood": "Marina Porto Búzios", 
+        "guests": 12,
+        "bedrooms": 2,
+        "boat_length": 42,
+        "boat_year": 2021,
+        "base_price": 4200.00,
+        "price_label": "R$ 4.200/dia",
+        "is_featured": False,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=800&h=600&fit=crop", "sort_order": 1}
+        ]
+    },
+
+    # ESCUNAS
+    {
+        "category": "escuna",
+        "title": "Escuna Tradicional Búzios",
+        "subtitle": "Passeio clássico pelas praias",
+        "description": "Tradicional escuna para o famoso passeio pelas 12 praias de Búzios. Inclui paradas para banho em Ilha Feia, João Fernandes e Azeda. Bar a bordo e música ambiente.",
+        "neighborhood": "Cais de Búzios",
+        "guests": 40,
+        "boat_length": 55,
+        "duration": "3 horas",
+        "includes_meal": True,
+        "base_price": 180.00,
+        "price_label": "R$ 180/pessoa",
+        "is_featured": True,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop", "sort_order": 1}
+        ]
+    },
+
+    # TRANSFER
+    {
+        "category": "transfer",
+        "title": "Helicóptero Executive",
+        "subtitle": "Transfer VIP Rio-Búzios",
+        "description": "Transfer executivo de helicóptero entre Rio de Janeiro e Búzios. Voe sobre as belezas da Região dos Lagos com total segurança e conforto. Inclui transfer terrestre nos aeroportos.",
+        "neighborhood": "Aeroporto de Búzios",
+        "guests": 4,
+        "vehicle_type": "helicopter",
+        "duration": "45 minutos",
+        "base_price": 2500.00,
+        "price_label": "R$ 2.500/trecho",
+        "is_featured": True,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=800&h=600&fit=crop", "sort_order": 1}
+        ]
+    },
+    {
+        "category": "transfer",
+        "title": "Van Executiva", 
+        "subtitle": "Conforto para grupos",
+        "description": "Transfer terrestre em van executiva com ar-condicionado, WiFi e motorista bilíngue. Ideal para grupos e famílias. Serviço porta a porta com paradas para fotos.",
+        "neighborhood": "Todo Búzios",
+        "guests": 12,
+        "vehicle_type": "van",
+        "duration": "Flexível",
+        "base_price": 450.00,
+        "price_label": "R$ 450/dia",
+        "is_featured": False,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=800&h=600&fit=crop", "sort_order": 1}
+        ]
+    },
+
+    # BUGGY
+    {
+        "category": "buggy",
+        "title": "Buggy Polaris RZR",
+        "subtitle": "Aventura off-road",
+        "description": "Buggy Polaris RZR para aventuras off-road pelas trilhas e praias desertas de Búzios. Equipado com GPS, equipamentos de segurança e mapa das melhores trilhas.",
+        "neighborhood": "Base Geribá",
+        "guests": 4,
+        "vehicle_model": "Polaris RZR 1000",
+        "duration": "Dia completo",
+        "base_price": 850.00,
+        "price_label": "R$ 850/dia",
+        "is_featured": True,
+        "media": [
+            {"url": "https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=800&h=600&fit=crop", "sort_order": 1}
+        ]
+    }
+]
+
+def main():
+    print("🚀 Iniciando seed dos dados de teste para Wordmaster Búzios...")
+    print(f"📡 API Base URL: {API_BASE_URL}")
+    print("-" * 60)
     
-    def run_all_tests(self):
-        """Run all backend tests with focus on admin functionality"""
-        print("🚀 Starting Comprehensive Admin Backend API Tests for Wordmaster Beach Búzios")
-        print(f"🌐 Testing against: {self.base_url}")
-        print("=" * 80)
+    created_count = 0
+    
+    for listing_data in SAMPLE_LISTINGS:
+        # Separar os dados de mídia
+        media_list = listing_data.pop('media', [])
         
-        start_time = time.time()
+        # Criar a listagem
+        created_listing = create_listing(listing_data)
         
-        # Run tests in logical order - focusing on admin functionality
-        self.test_root_endpoint()
-        self.test_seed_database()
-        self.test_categories_api()
-        self.test_amenities_api()
-        self.test_listings_get_all()
-        self.test_listings_filtering()
-        self.test_listings_pagination()
-        self.test_listings_get_single()
-        self.test_listings_create()
-        self.test_media_api()  # New admin-specific test
-        self.test_admin_dashboard_data()  # New admin-specific test
-        self.test_admin_crud_operations()  # New admin-specific test
-        self.test_analytics_whatsapp_click()
-        self.test_cors_headers()
-        self.test_error_handling()
-        
-        end_time = time.time()
-        duration = end_time - start_time
-        
-        # Summary
-        print("\n" + "=" * 80)
-        print("📊 ADMIN BACKEND TEST SUMMARY")
-        print("=" * 80)
-        
-        passed = sum(1 for result in self.test_results if result['success'])
-        failed = len(self.test_results) - passed
-        
-        print(f"✅ Passed: {passed}")
-        print(f"❌ Failed: {failed}")
-        print(f"⏱️  Duration: {duration:.2f} seconds")
-        print(f"📈 Success Rate: {(passed/len(self.test_results)*100):.1f}%")
-        
-        if failed > 0:
-            print("\n🔍 FAILED TESTS:")
-            for result in self.test_results:
-                if not result['success']:
-                    print(f"   ❌ {result['test']}: {result['message']}")
-        
-        print("\n🎯 ADMIN FUNCTIONALITY FOCUS:")
-        print("   • Database seeding for sample data")
-        print("   • Listings CRUD operations")
-        print("   • Media/photo upload API")
-        print("   • Dashboard statistics data")
-        print("   • Property management features")
-        
-        print("\n" + "=" * 80)
-        return passed, failed
+        if created_listing:
+            created_count += 1
+            
+            # Adicionar mídia se criou com sucesso
+            for media_data in media_list:
+                create_media_for_listing(created_listing['id'], media_data)
+    
+    print("-" * 60)
+    print(f"✅ Seed concluído! {created_count} listagens criadas com sucesso.")
+    print("\n📋 Resumo por categoria:")
+    print("  🏠 Mansões: 2 propriedades")
+    print("  ⛵ Iates: 2 embarcações") 
+    print("  🚢 Escunas: 1 passeio")
+    print("  ✈️ Transfer: 2 opções")
+    print("  🚗 Buggy: 1 veículo")
+    print("\n🌐 Acesse http://localhost:3000 para ver o resultado!")
 
 if __name__ == "__main__":
-    tester = BackendTester()
-    passed, failed = tester.run_all_tests()
-    
-    # Exit with appropriate code
-    exit(0 if failed == 0 else 1)
+    main()

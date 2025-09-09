@@ -142,8 +142,10 @@ async function handleRoute(request, { params }) {
       if (!CATEGORIES[body.category]) {
         return handleCORS(NextResponse.json({ error: "Invalid category" }, { status: 400 }))
       }
+      
       const listingId = uuidv4()
       const slugBase = body.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim('-')
+      
       const listing = {
         id: listingId,
         category: body.category,
@@ -161,9 +163,19 @@ async function handleRoute(request, { params }) {
         price_label: body.price_label || '',
         is_featured: body.is_featured || false,
         is_active: body.is_active !== false,
+        // Campos específicos para iates/escunas
+        boat_length: body.boat_length || null,
+        boat_year: body.boat_year || null,
+        duration: body.duration || '',
+        includes_meal: body.includes_meal || false,
+        // Campos específicos para transfer
+        vehicle_type: body.vehicle_type || '',
+        // Campos específicos para buggy
+        vehicle_model: body.vehicle_model || '',
         created_at: new Date(),
         updated_at: new Date()
       }
+      
       await db.collection('listings').insertOne(listing)
       const { _id, ...cleanListing } = listing
       return handleCORS(NextResponse.json(cleanListing, { status: 201 }))
@@ -175,7 +187,21 @@ async function handleRoute(request, { params }) {
         const body = await request.json();
         delete body.id;
         delete body.created_at;
-        const result = await db.collection('listings').updateOne({ id: listingId }, { $set: { ...body, updated_at: new Date() } });
+        
+        // Incluir novos campos na atualização
+        const updateFields = {
+          ...body,
+          updated_at: new Date(),
+          // Garantir que campos específicos sejam preservados
+          boat_length: body.boat_length || null,
+          boat_year: body.boat_year || null,
+          duration: body.duration || '',
+          includes_meal: body.includes_meal || false,
+          vehicle_type: body.vehicle_type || '',
+          vehicle_model: body.vehicle_model || ''
+        };
+        
+        const result = await db.collection('listings').updateOne({ id: listingId }, { $set: updateFields });
         if (result.matchedCount === 0) {
             return handleCORS(NextResponse.json({ error: "Listing not found" }, { status: 404 }));
         }

@@ -77,7 +77,13 @@ const ListingsManagement = () => {
   const [editingListing, setEditingListing] = useState(null)
   const [openModal, setOpenModal] = useState(false)
 
-  const categoryNames = { mansao: 'Mansão', mansoes: 'Mansão', iate: 'Iate', iates: 'Iate', escuna: 'Escuna', transfer: 'Transfer', buggy: 'Buggy' }
+  const categoryNames = { 
+    mansao: 'Mansão', mansoes: 'Mansão', 
+    iate: 'Iate', iates: 'Iate', 
+    escuna: 'Escuna', 
+    transfer: 'Transfer', 
+    buggy: 'Buggy' 
+  }
 
   useEffect(() => { fetchListings() }, [])
 
@@ -104,12 +110,30 @@ const ListingsManagement = () => {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Gerenciar Propriedades</h2>
-        <Button onClick={() => { setEditingListing(null); setOpenModal(true) }} className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" /> Nova Propriedade</Button>
+        <div className="flex space-x-3">
+          <Button onClick={() => { setEditingListing({ category: 'mansoes' }); setOpenModal(true) }} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" /> Nova Mansão
+          </Button>
+          <Button onClick={() => { setEditingListing({ category: 'iates' }); setOpenModal(true) }} className="bg-cyan-600 hover:bg-cyan-700">
+            <Plus className="w-4 h-4 mr-2" /> Novo Iate
+          </Button>
+          <Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700">
+            <Plus className="w-4 h-4 mr-2" /> Nova Escuna
+          </Button>
+          <Button onClick={() => { setEditingListing({ category: 'transfer' }); setOpenModal(true) }} className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 mr-2" /> Novo Transfer
+          </Button>
+          <Button onClick={() => { setEditingListing({ category: 'buggy' }); setOpenModal(true) }} className="bg-orange-600 hover:bg-orange-700">
+            <Plus className="w-4 h-4 mr-2" /> Novo Buggy
+          </Button>
+        </div>
       </div>
+      
       <div className="flex items-center space-x-4 mb-6">
         <Input placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm" />
         <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="iates">Iates</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
       </div>
+      
       {loading ? (<div className="text-center py-10">Carregando...</div>) : 
       filteredListings.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -134,27 +158,58 @@ const ListingsManagement = () => {
           })}
         </div>
       ) : (
-        <div className="text-center py-12"><div className="text-gray-400 text-lg mb-4">Nenhuma propriedade encontrada</div><Button onClick={() => setOpenModal(true)} className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Criar primeira</Button></div>
+        <div className="text-center py-12"><div className="text-gray-400 text-lg mb-4">Nenhuma propriedade encontrada</div><div className="flex justify-center space-x-2"><Button onClick={() => { setEditingListing({ category: 'mansoes' }); setOpenModal(true) }} className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Mansão</Button><Button onClick={() => { setEditingListing({ category: 'iates' }); setOpenModal(true) }} className="bg-cyan-600 hover:bg-cyan-700"><Plus className="w-4 h-4 mr-2" />Iate</Button><Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700"><Plus className="w-4 h-4 mr-2" />Escuna</Button></div></div>
       )}
       <Dialog open={openModal} onOpenChange={setOpenModal}><CreateListingModal onSave={handleSaveListing} editingListing={editingListing} onClose={() => setOpenModal(false)} /></Dialog>
     </div>
   )
 }
 
+// Modal adaptado para diferentes categorias
 const CreateListingModal = ({ onSave, editingListing, onClose }) => {
-  const [formData, setFormData] = useState({ category: '', title: '', subtitle: '', description: '', neighborhood: '', guests: '', bedrooms: '', bathrooms: '', area_m2: '', base_price: '', price_label: '', is_featured: false });
+  const [formData, setFormData] = useState({
+    category: '', title: '', subtitle: '', description: '', neighborhood: '', guests: '', bedrooms: '', bathrooms: '', area_m2: '', base_price: '', price_label: '', is_featured: false,
+    // Campos específicos para iates/escunas
+    boat_length: '', boat_year: '', duration: '', includes_meal: false,
+    // Campos específicos para transfer
+    vehicle_type: '', 
+    // Campos específicos para buggy  
+    vehicle_model: ''
+  });
   const [loading, setLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (editingListing) {
+    if (editingListing && editingListing.id) {
+      // Editando um item existente
       setFormData({
-        category: editingListing.category || '', title: editingListing.title || '', subtitle: editingListing.subtitle || '', description: editingListing.description || '', neighborhood: editingListing.neighborhood || '',
-        guests: String(editingListing.guests || ''), bedrooms: String(editingListing.bedrooms || ''), bathrooms: String(editingListing.bathrooms || ''), area_m2: String(editingListing.area_m2 || ''),
-        base_price: String(editingListing.base_price || ''), price_label: editingListing.price_label || '', is_featured: editingListing.is_featured || false
+        category: editingListing.category || '',
+        title: editingListing.title || '',
+        subtitle: editingListing.subtitle || '',
+        description: editingListing.description || '',
+        neighborhood: editingListing.neighborhood || '',
+        guests: String(editingListing.guests || ''),
+        bedrooms: String(editingListing.bedrooms || ''),
+        bathrooms: String(editingListing.bathrooms || ''),
+        area_m2: String(editingListing.area_m2 || ''),
+        base_price: String(editingListing.base_price || ''),
+        price_label: editingListing.price_label || '',
+        is_featured: editingListing.is_featured || false,
+        boat_length: String(editingListing.boat_length || ''),
+        boat_year: String(editingListing.boat_year || ''),
+        duration: editingListing.duration || '',
+        includes_meal: editingListing.includes_meal || false,
+        vehicle_type: editingListing.vehicle_type || '',
+        vehicle_model: editingListing.vehicle_model || ''
       });
-    } else { resetForm(); }
+    } else if (editingListing && editingListing.category) {
+      // Criando novo item com categoria pré-definida
+      resetForm();
+      setFormData(prev => ({ ...prev, category: editingListing.category }));
+    } else {
+      resetForm();
+    }
   }, [editingListing]);
 
   const handleImageUpload = (event) => {
@@ -165,41 +220,138 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     setUploadedImages(prev => [...prev, ...newImages]);
     setUploading(false);
   };
+  
   const removeImage = (id) => { setUploadedImages(prev => prev.filter(img => img.id !== id)) };
-  const resetForm = () => { setFormData({ category: '', title: '', subtitle: '', description: '', neighborhood: '', guests: '', bedrooms: '', bathrooms: '', area_m2: '', base_price: '', price_label: '', is_featured: false }); setUploadedImages([]); };
+  
+  const resetForm = () => {
+    setFormData({
+      category: '', title: '', subtitle: '', description: '', neighborhood: '', guests: '', bedrooms: '', bathrooms: '', area_m2: '', base_price: '', price_label: '', is_featured: false,
+      boat_length: '', boat_year: '', duration: '', includes_meal: false, vehicle_type: '', vehicle_model: ''
+    });
+    setUploadedImages([]);
+  };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.category || !formData.title) { alert('Categoria e Título são obrigatórios.'); return; }
     setLoading(true);
     try {
-      const method = editingListing ? 'PATCH' : 'POST';
-      const url = editingListing ? `/api/listings/${editingListing.id}` : '/api/listings';
-      const payload = { ...formData, guests: parseInt(formData.guests) || null, bedrooms: parseInt(formData.bedrooms) || null, bathrooms: parseInt(formData.bathrooms) || null, area_m2: parseInt(formData.area_m2) || null, base_price: parseFloat(formData.base_price) || null };
+      const method = editingListing && editingListing.id ? 'PATCH' : 'POST';
+      const url = editingListing && editingListing.id ? `/api/listings/${editingListing.id}` : '/api/listings';
+      const payload = {
+        ...formData,
+        guests: parseInt(formData.guests) || null,
+        bedrooms: parseInt(formData.bedrooms) || null,
+        bathrooms: parseInt(formData.bathrooms) || null,
+        area_m2: parseInt(formData.area_m2) || null,
+        base_price: parseFloat(formData.base_price) || null,
+        boat_length: parseInt(formData.boat_length) || null,
+        boat_year: parseInt(formData.boat_year) || null
+      };
       const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!response.ok) throw new Error('Falha ao salvar propriedade');
       const savedListing = await response.json();
       if (uploadedImages.length > 0) {
         for (const image of uploadedImages) {
-          const mediaPayload = { 
-            listing_id: savedListing.id, 
-            type: "image", 
-            // *** CORREÇÃO APLICADA AQUI ***
-            url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop', 
-            alt_text: formData.title, 
+          const mediaPayload = {
+            listing_id: savedListing.id,
+            type: "image",
+            url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
+            alt_text: formData.title,
           };
           await fetch('/api/media', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mediaPayload) });
         }
       }
       onSave();
       resetForm();
-    } catch (error) { console.error('Error:', error); alert('Erro ao salvar.'); } 
+    } catch (error) { console.error('Error:', error); alert('Erro ao salvar.'); }
     finally { setLoading(false); }
+  };
+
+  // Campos específicos baseados na categoria
+  const renderCategorySpecificFields = () => {
+    switch (formData.category) {
+      case 'mansoes':
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Hóspedes</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Quartos</label><Input type="number" value={formData.bedrooms} onChange={(e) => setFormData(p => ({ ...p, bedrooms: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Banheiros</label><Input type="number" value={formData.bathrooms} onChange={(e) => setFormData(p => ({ ...p, bathrooms: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Área (m²)</label><Input type="number" value={formData.area_m2} onChange={(e) => setFormData(p => ({ ...p, area_m2: e.target.value }))} /></div>
+            </div>
+          </>
+        );
+
+      case 'iates':
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Passageiros</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Tamanho (pés)</label><Input type="number" value={formData.boat_length} onChange={(e) => setFormData(p => ({ ...p, boat_length: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Cabines</label><Input type="number" value={formData.bedrooms} onChange={(e) => setFormData(p => ({ ...p, bedrooms: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Ano</label><Input type="number" value={formData.boat_year} onChange={(e) => setFormData(p => ({ ...p, boat_year: e.target.value }))} /></div>
+            </div>
+          </>
+        );
+
+      case 'escuna':
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Passageiros</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Duração</label><Input value={formData.duration} onChange={(e) => setFormData(p => ({ ...p, duration: e.target.value }))} placeholder="Ex: 4 horas" /></div>
+              <div><label className="block text-sm font-medium mb-1">Tamanho (pés)</label><Input type="number" value={formData.boat_length} onChange={(e) => setFormData(p => ({ ...p, boat_length: e.target.value }))} /></div>
+            </div>
+            <div className="flex items-center space-x-2"><input type="checkbox" id="includes_meal" checked={formData.includes_meal} onChange={(e) => setFormData(p => ({ ...p, includes_meal: e.target.checked }))} /><label htmlFor="includes_meal" className="text-sm font-medium">Inclui refeição</label></div>
+          </>
+        );
+
+      case 'transfer':
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Passageiros</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Tipo de Veículo</label><Select value={formData.vehicle_type} onValueChange={(v) => setFormData(p => ({ ...p, vehicle_type: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="helicopter">Helicóptero</SelectItem><SelectItem value="car">Carro</SelectItem><SelectItem value="van">Van</SelectItem></SelectContent></Select></div>
+              <div><label className="block text-sm font-medium mb-1">Duração</label><Input value={formData.duration} onChange={(e) => setFormData(p => ({ ...p, duration: e.target.value }))} placeholder="Ex: 45 min" /></div>
+            </div>
+          </>
+        );
+
+      case 'buggy':
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Pessoas</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Modelo</label><Input value={formData.vehicle_model} onChange={(e) => setFormData(p => ({ ...p, vehicle_model: e.target.value }))} placeholder="Ex: Polaris RZR" /></div>
+              <div><label className="block text-sm font-medium mb-1">Duração</label><Input value={formData.duration} onChange={(e) => setFormData(p => ({ ...p, duration: e.target.value }))} placeholder="Ex: Dia completo" /></div>
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const getCategoryTitle = () => {
+    const titles = {
+      mansoes: 'Mansão',
+      iates: 'Iate', 
+      escuna: 'Escuna',
+      transfer: 'Transfer',
+      buggy: 'Buggy'
+    };
+    return titles[formData.category] || 'Propriedade';
   };
 
   return (
     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-      <DialogHeader><DialogTitle>{editingListing ? 'Editar Propriedade' : 'Adicionar Nova Propriedade'}</DialogTitle></DialogHeader>
+      <DialogHeader>
+        <DialogTitle>
+          {editingListing && editingListing.id ? `Editar ${getCategoryTitle()}` : `Adicionar Novo ${getCategoryTitle()}`}
+        </DialogTitle>
+      </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-6 pt-4">
         <div>
           <label className="block text-sm font-medium mb-1">Fotos</label>
@@ -209,24 +361,27 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
           </div>
           {uploadedImages.length > 0 && (<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">{uploadedImages.map((image) => (<div key={image.id} className="relative group"><img src={image.preview} alt={image.name} className="w-full h-24 object-cover rounded-lg" /><button type="button" onClick={() => removeImage(image.id)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"><X className="w-4 h-4" /></button></div>))}</div>)}
         </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="iates">Iate</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
+          {!editingListing?.id && (
+            <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="iates">Iate</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
+          )}
           <div><label className="block text-sm font-medium mb-1">Bairro</label><Input value={formData.neighborhood} onChange={(e) => setFormData(p => ({ ...p, neighborhood: e.target.value }))} placeholder="Ex: Geribá" /></div>
         </div>
-        <div><label className="block text-sm font-medium mb-1">Título *</label><Input value={formData.title} onChange={(e) => setFormData(p => ({ ...p, title: e.target.value }))} placeholder="Ex: Mansão Vista Mar" required /></div>
+        
+        <div><label className="block text-sm font-medium mb-1">Título *</label><Input value={formData.title} onChange={(e) => setFormData(p => ({ ...p, title: e.target.value }))} placeholder={`Ex: ${getCategoryTitle()} de luxo`} required /></div>
         <div><label className="block text-sm font-medium mb-1">Subtítulo</label><Input value={formData.subtitle} onChange={(e) => setFormData(p => ({ ...p, subtitle: e.target.value }))} placeholder="Ex: Luxo e conforto" /></div>
         <div><label className="block text-sm font-medium mb-1">Descrição</label><textarea value={formData.description} onChange={(e) => setFormData(p => ({ ...p, description: e.target.value }))} className="w-full p-2 border rounded-md" rows={4} /></div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div><label className="block text-sm font-medium mb-1">Hóspedes</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
-          <div><label className="block text-sm font-medium mb-1">Quartos</label><Input type="number" value={formData.bedrooms} onChange={(e) => setFormData(p => ({ ...p, bedrooms: e.target.value }))} /></div>
-          <div><label className="block text-sm font-medium mb-1">Banheiros</label><Input type="number" value={formData.bathrooms} onChange={(e) => setFormData(p => ({ ...p, bathrooms: e.target.value }))} /></div>
-          <div><label className="block text-sm font-medium mb-1">Área (m²)</label><Input type="number" value={formData.area_m2} onChange={(e) => setFormData(p => ({ ...p, area_m2: e.target.value }))} /></div>
-        </div>
+        
+        {renderCategorySpecificFields()}
+        
         <div className="grid grid-cols-2 gap-4">
           <div><label className="block text-sm font-medium mb-1">Preço Base (R$)</label><Input type="number" step="0.01" value={formData.base_price} onChange={(e) => setFormData(p => ({ ...p, base_price: e.target.value }))} /></div>
           <div><label className="block text-sm font-medium mb-1">Label do Preço</label><Input value={formData.price_label} onChange={(e) => setFormData(p => ({ ...p, price_label: e.target.value }))} placeholder="R$ 2.500/dia" /></div>
         </div>
+        
         <div className="flex items-center space-x-2"><input type="checkbox" id="featured" checked={formData.is_featured} onChange={(e) => setFormData(p => ({ ...p, is_featured: e.target.checked }))} /><label htmlFor="featured" className="text-sm font-medium">Marcar como destaque</label></div>
+        
         <div className="flex justify-end space-x-3 pt-4 border-t mt-6"><Button type="button" variant="outline" onClick={onClose}>Cancelar</Button><Button type="submit" disabled={loading || uploading}>{loading ? 'Salvando...' : 'Salvar'}</Button></div>
       </form>
     </DialogContent>
