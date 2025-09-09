@@ -55,7 +55,6 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
             <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
             <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
             <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Buggy</Link>
             <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             
             <div className="flex items-center space-x-2 text-gray-600 ml-4">
@@ -84,7 +83,6 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
               <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
               <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
               <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-              <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Buggy</Link>
               <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             </div>
           </div>
@@ -203,8 +201,7 @@ const PropertyCard = ({ listing, category }) => {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
       iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
-      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
-      buggy: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center'
+      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center'
     };
     return categoryImages[category] || categoryImages.mansoes;
   };
@@ -300,44 +297,6 @@ const CategorySection = ({ title, description, listings, category }) => {
   );
 }
 
-// Seção de Categoria Original - Mantida para compatibilidade
-const OriginalCategorySection = ({ title, listings, category }) => {
-  if (!listings || listings.length === 0) return null
-
-  return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-light text-gray-900 mb-4 tracking-wide">
-            {title}
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {listings.slice(0, 4).map((listing) => (
-            <PropertyCard 
-              key={listing.id} 
-              listing={listing} 
-              category={category}
-            />
-          ))}
-        </div>
-
-        {listings.length > 4 && (
-          <div className="text-center mt-12">
-            <Link href={`/${category}`}>
-              <Button variant="outline" size="lg">
-                Ver todas as {title.toLowerCase()}
-              </Button>
-            </Link>
-          </div>
-        )}
-      </div>
-    </section>
-  )
-}
-
-
 // Footer com Logo, CNPJ e Instagram
 const Footer = () => {
   return (
@@ -411,7 +370,6 @@ export default function HomePage() {
     iates: [],
     escuna: [],
     transfer: [],
-    buggy: []
   })
   const [loading, setLoading] = useState(true)
 
@@ -421,169 +379,84 @@ export default function HomePage() {
       {
         id: '1',
         title: 'Villa paradisíaca em Geribá',
-        subtitle: 'Esta é uma fabulosa cobertura com vista deslumbrante para o mar.',
         category: 'mansoes',
-        neighborhood: 'Geribá, Búzios',
         price_label: 'R$ 3.500,00',
         guests: 12,
         bedrooms: 6,
-        bathrooms: 5,
         featured_image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
       },
       {
         id: '2',
-        title: 'Luxuosa cobertura triplex no Centro',
-        subtitle: 'Propriedade única com acabamentos de primeira linha.',
+        title: 'Luxuosa cobertura no Centro',
         category: 'mansoes',
-        neighborhood: 'Centro, Búzios',
         price_label: 'R$ 2.500,00',
         guests: 8,
         bedrooms: 4,
-        bathrooms: 3,
         featured_image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
       },
-      {
-        id: '3',
-        title: 'Casa de praia exclusiva',
-        subtitle: 'Acesso direto à praia com piscina privativa.',
-        category: 'mansoes',
-        neighborhood: 'Ferradura, Búzios',
-        price_label: 'R$ 4.200,00',
-        guests: 10,
-        bedrooms: 5,
-        bathrooms: 4,
-        featured_image: 'https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=400&h=250&fit=crop&crop=center',
-        is_featured: false
-      },
-      {
-        id: '4',
-        title: 'Mansão vista mar premium',
-        subtitle: 'Luxo e conforto em propriedade exclusiva.',
-        category: 'mansoes',
-        neighborhood: 'Geribá, Búzios',
-        price_label: 'R$ 5.800,00',
-        guests: 14,
-        bedrooms: 7,
-        bathrooms: 6,
-        featured_image: 'https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
-      }
     ],
     iates: [
       {
         id: '5',
         title: 'Iate de luxo de 62 pés',
-        subtitle: 'Experiência náutica premium com tripulação completa.',
         category: 'iates',
-        neighborhood: 'Marina, Búzios',
         price_label: 'R$ 8.500,00',
         guests: 20,
         bedrooms: 4,
         featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
       },
       {
         id: '6',
         title: 'Lancha esportiva premium',
-        subtitle: 'Velocidade e conforto para passeios exclusivos.',
         category: 'iates',
-        neighborhood: 'Marina, Búzios',
         price_label: 'R$ 4.200,00',
         guests: 12,
         bedrooms: 2,
         featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
       }
     ],
     escuna: [
       {
         id: '7',
         title: 'Escuna Tradicional Búzios',
-        subtitle: 'Passeio clássico visitando as 12 praias mais belas.',
         category: 'escuna',
-        neighborhood: 'Porto, Búzios',
         price_label: 'R$ 180,00',
         guests: 40,
         bedrooms: 0,
         featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
       }
     ],
     transfer: [
       {
         id: '8',
         title: 'Helicóptero Executive',
-        subtitle: 'Transfer VIP com vista aérea espetacular.',
         category: 'transfer',
-        neighborhood: 'Heliporto, Búzios',
         price_label: 'R$ 2.500,00',
         guests: 4,
         bedrooms: 0,
         featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
       }
     ],
-    buggy: [
-      {
-        id: '9',
-        title: 'Buggy Adventure 4x4',
-        subtitle: 'Aventura off-road por trilhas selvagens.',
-        category: 'buggy',
-        neighborhood: 'Base Centro, Búzios',
-        price_label: 'R$ 350,00',
-        guests: 4,
-        bedrooms: 0,
-        featured_image: 'https://images.unsplash.com/photo-1606635278919-00d3bc78ce2c?w=400&h=250&fit=crop&crop=center',
-        is_featured: true
-      }
-    ]
   })
 
   // Fetch listings with proper API integration
   useEffect(() => {
     const fetchAllListings = async () => {
       try {
-        const categories = ['mansoes', 'iates', 'escuna', 'transfer', 'buggy']
+        const categories = ['mansoes', 'iates', 'escuna', 'transfer']
         const promises = categories.map(category => 
           fetch(`/api/listings?category=${category}&limit=8`)
-            .then(res => {
-              if (res.ok) {
-                return res.json()
-              } else {
-                console.log(`API failed for ${category}, using fallback`)
-                return { listings: [] }
-              }
-            })
-            .catch(error => {
-              console.log(`Error fetching ${category}:`, error)
-              return { listings: [] }
-            })
+            .then(res => res.ok ? res.json() : { listings: [] })
+            .catch(() => ({ listings: [] }))
         )
         
         const results = await Promise.all(promises)
         const listingsData = {}
+        const fallbackData = getFallbackData()
         
         categories.forEach((category, index) => {
           const apiListings = results[index].listings || []
-          listingsData[category] = apiListings
-        })
-
-        // Merge with fallback data
-        const fallbackData = getFallbackData()
-        Object.keys(listingsData).forEach(category => {
-          if (listingsData[category].length === 0) {
-            listingsData[category] = fallbackData[category] || []
-          } else {
-            // Ensure API listings have proper image fallbacks
-            listingsData[category] = listingsData[category].map(listing => ({
-              ...listing,
-              featured_image: listing.featured_image || 
-                              (listing.media && listing.media[0]?.url) || 
-                              fallbackData[category][0]?.featured_image
-            }))
-          }
+          listingsData[category] = apiListings.length > 0 ? apiListings : fallbackData[category]
         })
 
         setAllListings(listingsData)
@@ -609,13 +482,13 @@ export default function HomePage() {
       {/* Category Sections */}
       {!loading && (
         <>
-          <OriginalCategorySection
-            title="APARTAMENTOS E CASAS DE LUXO PARA ALUGAR" 
+          <CategorySection 
+            title="APARTAMENTOS E CASAS DE LUXO" 
+            description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios."
             listings={allListings.mansoes} 
             category="mansoes" 
           />
           
-          {/* SEÇÃO DE IATES ATUALIZADA */}
           <CategorySection 
             title="ALUGUEL DE IATES DE LUXO" 
             description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer."
@@ -623,14 +496,16 @@ export default function HomePage() {
             category="iates" 
           />
           
-          <OriginalCategorySection 
+          <CategorySection 
             title="PASSEIOS DE ESCUNA" 
+            description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas e desfrutando de um dia relaxante no mar."
             listings={allListings.escuna} 
             category="escuna" 
           />
           
-          <OriginalCategorySection 
+          <CategorySection 
             title="TRANSFER & TÁXI AÉREO" 
+            description="Oferecemos soluções de transporte terrestre e aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade."
             listings={allListings.transfer} 
             category="transfer" 
           />
