@@ -194,19 +194,19 @@ const PropertyCard = ({ listing, category }) => {
 
   return (
     <Link href={`/${category}/${listing.slug || listing.id}`} className="block h-full">
-      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col">
+      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col rounded-2xl">
         <CardContent className="p-0 flex flex-col flex-grow">
           <div className="relative overflow-hidden">
             <img
               src={getPropertyImage(listing, category)}
               alt={listing.title}
-              className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl"
               onError={(e) => {
                 e.target.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center';
               }}
             />
           </div>
-          <div className="p-4 flex flex-col flex-grow">
+          <div className="p-6 flex flex-col flex-grow">
             <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
               {listing.title}
             </h3>
@@ -221,7 +221,7 @@ const PropertyCard = ({ listing, category }) => {
                 <p className="text-sm text-gray-500">A partir de</p>
                 <p className="font-semibold text-gray-800">{listing.price_label}</p>
               </div>
-              <Button variant="outline">Detalhes</Button>
+              <Button variant="outline" size="sm" className="rounded-full">Detalhes</Button>
             </div>
           </div>
         </CardContent>
@@ -230,58 +230,81 @@ const PropertyCard = ({ listing, category }) => {
   );
 }
 
-// **COMPONENTE CATEGORYSECTION COM AUTOPLAY E RESPONSIVIDADE CORRIGIDA**
+// **COMPONENTE CATEGORYSECTION CORRIGIDO COM MELHOR RESPONSIVIDADE E SETAS**
 const CategorySection = ({ title, description, listings, category }) => {
   if (!listings || listings.length === 0) return null;
 
   const plugin = React.useRef(
-    Autoplay({ delay: 2500, stopOnInteraction: true })
+    Autoplay({ delay: 3000, stopOnInteraction: true })
   );
 
   return (
-    <section className="py-20 bg-white overflow-hidden">
-      <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-left">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-wide">
+    <section className="py-16 md:py-20 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Texto da seção - melhor responsividade */}
+          <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 tracking-wide">
               {title}
             </h2>
-            <p className="text-gray-600 mb-8 leading-relaxed">
+            <p className="text-gray-600 mb-6 md:mb-8 leading-relaxed text-sm md:text-base max-w-md mx-auto lg:mx-0">
               {description}
             </p>
             <Link href={`/${category}`}>
-              <Button variant="outline" size="lg">
-                Ver mais
+              <Button variant="outline" size="lg" className="rounded-full px-8">
+                Ver todas
               </Button>
             </Link>
           </div>
 
-          <div className="w-full">
-            <Carousel
-              plugins={[plugin.current]}
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-              onMouseEnter={plugin.current.stop}
-              onMouseLeave={plugin.current.reset}
-            >
-              <CarouselContent>
-                {listings.map((listing) => (
-                  <CarouselItem key={listing.id} className="md:basis-1/2">
-                    <div className="p-1 h-full">
-                      <PropertyCard 
-                        listing={listing} 
-                        category={category}
-                      />
-                    </div>
-                  </CarouselItem>
+          {/* Carrossel - melhor responsividade */}
+          <div className="lg:col-span-7 w-full">
+            <div className="relative">
+              <Carousel
+                plugins={[plugin.current]}
+                opts={{
+                  align: "start",
+                  loop: true,
+                  breakpoints: {
+                    '(min-width: 768px)': { slidesToScroll: 1 }
+                  }
+                }}
+                className="w-full"
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {listings.map((listing) => (
+                    <CarouselItem key={listing.id} className="pl-2 md:pl-4 basis-[280px] md:basis-[320px] lg:basis-1/2">
+                      <div className="h-full">
+                        <PropertyCard 
+                          listing={listing} 
+                          category={category}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                
+                {/* Setas customizadas com melhor estilo */}
+                <div className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10">
+                  <CarouselPrevious className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" />
+                </div>
+                <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10">
+                  <CarouselNext className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" />
+                </div>
+              </Carousel>
+              
+              {/* Indicadores de navegação para mobile */}
+              <div className="flex md:hidden justify-center mt-6 space-x-2">
+                {Array.from({ length: Math.ceil(listings.length / 1) }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-2 h-2 rounded-full bg-gray-300 transition-colors"
+                  />
                 ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10" />
-              <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10" />
-            </Carousel>
+              </div>
+            </div>
           </div>
         </div>
       </div>
