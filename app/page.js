@@ -90,7 +90,18 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
 }
 
 // Hero Section with Search
-const HeroSection = () => {
+const HeroSection = ({ onSearch, searchResults, isSearching }) => {
+  const [searchParams, setSearchParams] = useState({
+    dates: '',
+    guests: '2',
+    city: 'buzios',
+    bedrooms: '2'
+  });
+
+  const handleSearch = () => {
+    onSearch(searchParams);
+  };
+
   return (
     <div className="relative h-screen overflow-hidden">
       <div className="absolute inset-0">
@@ -119,14 +130,20 @@ const HeroSection = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Check-in e check-out
                 </label>
-                <Input type="text" placeholder="Selecione as datas" className="h-12 border-gray-200 rounded-md" />
+                <Input 
+                  type="text" 
+                  placeholder="Selecione as datas" 
+                  className="h-12 border-gray-200 rounded-md"
+                  value={searchParams.dates}
+                  onChange={(e) => setSearchParams(prev => ({ ...prev, dates: e.target.value }))}
+                />
               </div>
               
               <div className="text-left">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Hóspedes
                 </label>
-                <Select defaultValue="2">
+                <Select value={searchParams.guests} onValueChange={(value) => setSearchParams(prev => ({ ...prev, guests: value }))}>
                   <SelectTrigger className="h-12 border-gray-200"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">1 hóspede</SelectItem>
@@ -142,7 +159,7 @@ const HeroSection = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Cidade
                 </label>
-                <Select defaultValue="buzios">
+                <Select value={searchParams.city} onValueChange={(value) => setSearchParams(prev => ({ ...prev, city: value }))}>
                   <SelectTrigger className="h-12 border-gray-200"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="buzios">Búzios, RJ</SelectItem>
@@ -155,7 +172,7 @@ const HeroSection = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Quartos
                 </label>
-                <Select defaultValue="2">
+                <Select value={searchParams.bedrooms} onValueChange={(value) => setSearchParams(prev => ({ ...prev, bedrooms: value }))}>
                   <SelectTrigger className="h-12 border-gray-200"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">1 quarto</SelectItem>
@@ -167,8 +184,12 @@ const HeroSection = () => {
                 </Select>
               </div>
               
-              <Button className="h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium px-8 w-full sm:col-span-2 md:col-span-1">
-                Procurar
+              <Button 
+                className="h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium px-8 w-full sm:col-span-2 md:col-span-1"
+                onClick={handleSearch}
+                disabled={isSearching}
+              >
+                {isSearching ? 'Procurando...' : 'Procurar'}
               </Button>
             </div>
           </div>
@@ -177,6 +198,45 @@ const HeroSection = () => {
     </div>
   )
 }
+
+// Search Results Section
+const SearchResults = ({ results, onClearSearch }) => {
+  if (!results || results.length === 0) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Nenhuma propriedade encontrada</h2>
+            <p className="text-gray-600 mb-6">Tente ajustar seus filtros de busca ou explore nossas categorias abaixo.</p>
+            <Button onClick={onClearSearch} variant="outline">
+              Ver todas as propriedades
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-16 bg-gray-50">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Resultados da busca ({results.length} {results.length === 1 ? 'propriedade encontrada' : 'propriedades encontradas'})
+          </h2>
+          <Button onClick={onClearSearch} variant="outline" size="sm">
+            Limpar busca
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {results.map((listing) => (
+            <PropertyCard key={listing.id} listing={listing} category={listing.category} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 // Property Card Component - ATUALIZADO PARA MOSTRAR ESPECIFICAÇÕES CORRETAS
 const PropertyCard = ({ listing, category }) => {
@@ -626,6 +686,8 @@ export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [allListings, setAllListings] = useState({ mansoes: [], iates: [], escuna: [], transfer: [] });
   const [loading, setLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const getFallbackData = () => ({
     mansoes: [
@@ -643,6 +705,111 @@ export default function HomePage() {
       { id: '8', title: 'Helicóptero Executive', category: 'transfer', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
     ],
   });
+
+  const handleSearch = async (searchParams) => {
+    setIsSearching(true);
+    
+    try {
+      // Determinar quais categorias buscar
+      let categoriesToSearch = ['mansoes', 'iates', 'escuna', 'transfer', 'buggy'];
+      
+      if (searchParams.category !== 'all') {
+        categoriesToSearch = [searchParams.category];
+      }
+      
+      const promises = categoriesToSearch.map(category => 
+        fetch(`/api/listings?category=${category}&limit=50`)
+          .then(res => res.ok ? res.json() : { listings: [] })
+          .catch(() => ({ listings: [] }))
+      );
+      
+      const results = await Promise.all(promises);
+      let allResults = [];
+      
+      // Combinar todos os resultados
+      categoriesToSearch.forEach((category, index) => {
+        const categoryResults = results[index].listings || [];
+        allResults = [...allResults, ...categoryResults];
+      });
+      
+      // Aplicar filtros baseados nos parâmetros de busca
+      let filteredResults = allResults.filter(listing => {
+        // Filtro por número de pessoas (aplicável a todas as categorias)
+        const guests = parseInt(searchParams.guests);
+        if (listing.guests && listing.guests < guests) {
+          return false;
+        }
+        
+        // Filtros específicos por categoria
+        if (searchParams.category === 'mansoes' || (searchParams.category === 'all' && listing.category === 'mansoes')) {
+          // Para mansões, também considerar quartos se especificado
+          if (searchParams.bedrooms) {
+            const bedrooms = parseInt(searchParams.bedrooms);
+            if (listing.bedrooms && listing.bedrooms < bedrooms) {
+              return false;
+            }
+          }
+        }
+        
+        // Filtro por data (por enquanto apenas valida se as datas foram preenchidas)
+        if (searchParams.checkIn && searchParams.checkOut) {
+          const checkIn = new Date(searchParams.checkIn);
+          const checkOut = new Date(searchParams.checkOut);
+          
+          if (checkIn >= checkOut) {
+            return false; // Data de check-in deve ser anterior ao check-out
+          }
+        }
+        
+        return true;
+      });
+      
+      // Se não encontrar resultados da API, usar dados de fallback filtrados
+      if (filteredResults.length === 0) {
+        const fallbackData = getFallbackData();
+        let fallbackResults = [];
+        
+        if (searchParams.category === 'all') {
+          fallbackResults = [
+            ...fallbackData.mansoes,
+            ...fallbackData.iates,
+            ...fallbackData.escuna,
+            ...fallbackData.transfer
+          ];
+        } else if (fallbackData[searchParams.category]) {
+          fallbackResults = fallbackData[searchParams.category];
+        }
+        
+        filteredResults = fallbackResults.filter(listing => {
+          const guests = parseInt(searchParams.guests);
+          if (listing.guests && listing.guests < guests) {
+            return false;
+          }
+          
+          if (listing.category === 'mansoes' && searchParams.bedrooms) {
+            const bedrooms = parseInt(searchParams.bedrooms);
+            if (listing.bedrooms && listing.bedrooms < bedrooms) {
+              return false;
+            }
+          }
+          
+          return true;
+        });
+      }
+      
+      setSearchResults(filteredResults);
+      
+    } catch (error) {
+      console.error('Erro na busca:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchResults(null);
+  };
 
   useEffect(() => {
     const fetchAllListings = async () => {
@@ -672,15 +839,23 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <VillasNavbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-      <HeroSection />
-      {!loading && (
-        <>
-          <CategorySection title="APARTAMENTOS E CASAS DE LUXO" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />
-          <CategorySection title="ALUGUEL DE IATES DE LUXO" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer." listings={allListings.iates} category="iates" />
-          <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas e desfrutando de um dia relaxante no mar." listings={allListings.escuna} category="escuna" />
-          <CategorySection title="TRANSFER & TÁXI AÉREO" description="Oferecemos soluções de transporte terrestre e aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade." listings={allListings.transfer} category="transfer" />
-        </>
+      <HeroSection onSearch={handleSearch} searchResults={searchResults} isSearching={isSearching} />
+      
+      {/* Mostrar resultados de busca se existirem */}
+      {searchResults !== null ? (
+        <SearchResults results={searchResults} onClearSearch={clearSearch} />
+      ) : (
+        /* Mostrar seções de categorias normalmente */
+        !loading && (
+          <>
+            <CategorySection title="APARTAMENTOS E CASAS DE LUXO" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />
+            <CategorySection title="ALUGUEL DE IATES DE LUXO" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer." listings={allListings.iates} category="iates" />
+            <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas e desfrutando de um dia relaxante no mar." listings={allListings.escuna} category="escuna" />
+            <CategorySection title="TRANSFER & TÁXI AÉREO" description="Oferecemos soluções de transporte terrestre e aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade." listings={allListings.transfer} category="transfer" />
+          </>
+        )
       )}
+      
       {loading && (
         <div className="py-20">
           <div className="container mx-auto px-6">
@@ -691,7 +866,10 @@ export default function HomePage() {
           </div>
         </div>
       )}
-      <GoogleReviewsSection />
+      
+      {/* Só mostrar as reviews se não estiver em modo de busca */}
+      {searchResults === null && <GoogleReviewsSection />}
+      
       <Footer />
       <div className="fixed bottom-6 right-6 z-50">
         <button onClick={() => window.open('https://wa.me/5521976860759', '_blank')} className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-110">
