@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react"
-import { Search, Menu, X, Star, MapPin, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Users, Bed, Bath, Eye } from "lucide-react"
+import { Search, Menu, X, Star, MapPin, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Users, Bed, Bath, Eye, Anchor, Calendar, Clock, Car, Plane, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -178,7 +178,7 @@ const HeroSection = () => {
   )
 }
 
-// Property Card Component
+// Property Card Component - ATUALIZADO PARA MOSTRAR ESPECIFICAÇÕES CORRETAS
 const PropertyCard = ({ listing, category }) => {
   const getPropertyImage = (listing, category) => {
     if (listing.featured_image) return listing.featured_image;
@@ -191,6 +191,194 @@ const PropertyCard = ({ listing, category }) => {
     };
     return categoryImages[category] || categoryImages.mansoes;
   };
+
+  // Função para renderizar especificações baseadas na categoria
+  const renderSpecifications = () => {
+    const specs = [];
+    
+    switch (category) {
+      case 'mansoes':
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Hóspede' : 'Hóspedes'}
+            </span>
+          );
+        }
+        if (listing.bedrooms) {
+          specs.push(
+            <span key="bedrooms" className="flex items-center">
+              <Bed className="w-4 h-4 mr-1.5" />
+              {listing.bedrooms} {listing.bedrooms === 1 ? 'Quarto' : 'Quartos'}
+            </span>
+          );
+        }
+        if (listing.bathrooms) {
+          specs.push(
+            <span key="bathrooms" className="flex items-center">
+              <Bath className="w-4 h-4 mr-1.5" />
+              {listing.bathrooms} {listing.bathrooms === 1 ? 'Banheiro' : 'Banheiros'}
+            </span>
+          );
+        }
+        if (listing.area_m2) {
+          specs.push(
+            <span key="area" className="flex items-center">
+              <Maximize className="w-4 h-4 mr-1.5" />
+              {listing.area_m2}m²
+            </span>
+          );
+        }
+        break;
+
+      case 'iates':
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Passageiro' : 'Passageiros'}
+            </span>
+          );
+        }
+        if (listing.boat_length) {
+          specs.push(
+            <span key="length" className="flex items-center">
+              <Anchor className="w-4 h-4 mr-1.5" />
+              {listing.boat_length} pés
+            </span>
+          );
+        }
+        if (listing.bedrooms) {
+          specs.push(
+            <span key="cabins" className="flex items-center">
+              <Bed className="w-4 h-4 mr-1.5" />
+              {listing.bedrooms} {listing.bedrooms === 1 ? 'Cabine' : 'Cabines'}
+            </span>
+          );
+        }
+        if (listing.boat_year) {
+          specs.push(
+            <span key="year" className="flex items-center">
+              <Calendar className="w-4 h-4 mr-1.5" />
+              Ano {listing.boat_year}
+            </span>
+          );
+        }
+        break;
+
+      case 'escuna':
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Passageiro' : 'Passageiros'}
+            </span>
+          );
+        }
+        if (listing.duration) {
+          specs.push(
+            <span key="duration" className="flex items-center">
+              <Clock className="w-4 h-4 mr-1.5" />
+              {listing.duration}
+            </span>
+          );
+        }
+        if (listing.boat_length) {
+          specs.push(
+            <span key="length" className="flex items-center">
+              <Anchor className="w-4 h-4 mr-1.5" />
+              {listing.boat_length} pés
+            </span>
+          );
+        }
+        if (listing.includes_meal) {
+          specs.push(
+            <span key="meal" className="flex items-center">
+              🍽️ Refeição inclusa
+            </span>
+          );
+        }
+        break;
+
+      case 'transfer':
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Passageiro' : 'Passageiros'}
+            </span>
+          );
+        }
+        if (listing.vehicle_type) {
+          const vehicleIcon = listing.vehicle_type === 'helicopter' ? <Plane className="w-4 h-4 mr-1.5" /> : <Car className="w-4 h-4 mr-1.5" />;
+          const vehicleText = {
+            'helicopter': 'Helicóptero',
+            'car': 'Carro',
+            'van': 'Van'
+          }[listing.vehicle_type] || listing.vehicle_type;
+          
+          specs.push(
+            <span key="vehicle" className="flex items-center">
+              {vehicleIcon}
+              {vehicleText}
+            </span>
+          );
+        }
+        if (listing.duration) {
+          specs.push(
+            <span key="duration" className="flex items-center">
+              <Clock className="w-4 h-4 mr-1.5" />
+              {listing.duration}
+            </span>
+          );
+        }
+        break;
+
+      case 'buggy':
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Pessoa' : 'Pessoas'}
+            </span>
+          );
+        }
+        if (listing.vehicle_model) {
+          specs.push(
+            <span key="model" className="flex items-center">
+              <Car className="w-4 h-4 mr-1.5" />
+              {listing.vehicle_model}
+            </span>
+          );
+        }
+        if (listing.duration) {
+          specs.push(
+            <span key="duration" className="flex items-center">
+              <Clock className="w-4 h-4 mr-1.5" />
+              {listing.duration}
+            </span>
+          );
+        }
+        break;
+
+      default:
+        // Fallback para categorias não identificadas
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Pessoa' : 'Pessoas'}
+            </span>
+          );
+        }
+        break;
+    }
+
+    return specs;
+  };
+
+  const specifications = renderSpecifications();
 
   return (
     <Link href={`/${category}/${listing.slug || listing.id}`} className="block h-full">
@@ -211,15 +399,27 @@ const PropertyCard = ({ listing, category }) => {
               {listing.title}
             </h3>
             
-            <div className="flex items-center text-sm text-gray-600 space-x-4 mb-4">
-              {listing.bedrooms && <span className="flex items-center"><Bed className="w-4 h-4 mr-1.5" />{listing.bedrooms} Quartos</span>}
-              {listing.guests && <span className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Hóspedes</span>}
-            </div>
+            {/* Especificações dinâmicas baseadas na categoria */}
+            {specifications.length > 0 && (
+              <div className="flex flex-wrap items-center text-sm text-gray-600 gap-x-4 gap-y-2 mb-4">
+                {specifications.slice(0, 3).map((spec, index) => (
+                  <div key={index}>{spec}</div>
+                ))}
+                {specifications.length > 3 && (
+                  <div className="text-gray-400">+{specifications.length - 3}</div>
+                )}
+              </div>
+            )}
+
+            {/* Exibir subtítulo se não houver especificações */}
+            {specifications.length === 0 && listing.subtitle && (
+              <p className="text-sm text-gray-600 mb-4">{listing.subtitle}</p>
+            )}
 
             <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">A partir de</p>
-                <p className="font-semibold text-gray-800">{listing.price_label}</p>
+                <p className="font-semibold text-gray-800">{listing.price_label || 'Consulte'}</p>
               </div>
               <Button variant="outline" size="sm" className="rounded-full">Detalhes</Button>
             </div>
@@ -429,18 +629,18 @@ export default function HomePage() {
 
   const getFallbackData = () => ({
     mansoes: [
-      { id: '1', title: 'Villa paradisíaca em Geribá', category: 'mansoes', price_label: 'R$ 3.500,00', guests: 12, bedrooms: 6, featured_image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center' },
-      { id: '2', title: 'Luxuosa cobertura no Centro', category: 'mansoes', price_label: 'R$ 2.500,00', guests: 8, bedrooms: 4, featured_image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=250&fit=crop&crop=center' },
+      { id: '1', title: 'Villa paradisíaca em Geribá', category: 'mansoes', price_label: 'R$ 3.500,00', guests: 12, bedrooms: 6, bathrooms: 4, area_m2: 350, featured_image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center' },
+      { id: '2', title: 'Luxuosa cobertura no Centro', category: 'mansoes', price_label: 'R$ 2.500,00', guests: 8, bedrooms: 4, bathrooms: 3, area_m2: 280, featured_image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=250&fit=crop&crop=center' },
     ],
     iates: [
-      { id: '5', title: 'Iate de luxo de 62 pés', category: 'iates', price_label: 'R$ 8.500,00', guests: 20, bedrooms: 4, featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center' },
-      { id: '6', title: 'Lancha esportiva premium', category: 'iates', price_label: 'R$ 4.200,00', guests: 12, bedrooms: 2, featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center' }
+      { id: '5', title: 'Iate de luxo de 62 pés', category: 'iates', price_label: 'R$ 8.500,00', guests: 20, bedrooms: 4, boat_length: 62, boat_year: 2020, featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center' },
+      { id: '6', title: 'Lancha esportiva premium', category: 'iates', price_label: 'R$ 4.200,00', guests: 12, bedrooms: 2, boat_length: 45, boat_year: 2019, featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center' }
     ],
     escuna: [
-      { id: '7', title: 'Escuna Tradicional Búzios', category: 'escuna', price_label: 'R$ 180,00', guests: 40, bedrooms: 0, featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center' }
+      { id: '7', title: 'Escuna Tradicional Búzios', category: 'escuna', price_label: 'R$ 180,00', guests: 40, duration: '4 horas', boat_length: 85, includes_meal: true, featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center' }
     ],
     transfer: [
-      { id: '8', title: 'Helicóptero Executive', category: 'transfer', price_label: 'R$ 2.500,00', guests: 4, bedrooms: 0, featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
+      { id: '8', title: 'Helicóptero Executive', category: 'transfer', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
     ],
   });
 
