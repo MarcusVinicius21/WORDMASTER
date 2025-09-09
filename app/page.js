@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Search, Menu, X, Star, MapPin, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Users, Bed, Bath, Eye, Anchor, Calendar, Clock, Car, Plane, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -89,17 +89,138 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
   )
 }
 
-// Hero Section with Search
-const HeroSection = ({ onSearch, searchResults, isSearching }) => {
-  const [searchParams, setSearchParams] = useState({
-    dates: '',
-    guests: '2',
-    city: 'buzios',
-    bedrooms: '2'
-  });
+// Hero Section with NEW Search Logic
+const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, selectedService, setSelectedService }) => {
+
+  const handleServiceChange = (value) => {
+    setSelectedService(value);
+    // Reseta os filtros específicos ao mudar de serviço
+    setSearchParams({
+      guests: '',
+      bedrooms: '',
+      boat_length: '',
+      vehicle_type: '',
+    });
+  };
+
+  const handleParamChange = (key, value) => {
+    // Se o valor for "any", salva como string vazia para limpar o filtro
+    setSearchParams(prev => ({ ...prev, [key]: value === 'any' ? '' : value }));
+  };
 
   const handleSearch = () => {
-    onSearch(searchParams);
+    onSearch(selectedService, searchParams);
+  };
+
+  // Renderiza os filtros corretos baseados no serviço selecionado
+  const renderFilters = () => {
+    switch (selectedService) {
+      case 'mansoes':
+        return (
+          <>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Hóspedes</label>
+              <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Qualquer</SelectItem>
+                  <SelectItem value="2">2+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                  <SelectItem value="6">6+</SelectItem>
+                  <SelectItem value="8">8+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Quartos</label>
+              <Select value={searchParams.bedrooms} onValueChange={(value) => handleParamChange('bedrooms', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Qualquer</SelectItem>
+                  <SelectItem value="2">2+</SelectItem>
+                  <SelectItem value="3">3+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                  <SelectItem value="5">5+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+      case 'iates':
+        return (
+          <>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
+              <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Qualquer</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                  <SelectItem value="8">8+</SelectItem>
+                  <SelectItem value="12">12+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Pés</label>
+              <Input
+                type="number"
+                placeholder="Ex: 50"
+                className="h-12 border-gray-200 rounded-md"
+                value={searchParams.boat_length || ''}
+                onChange={(e) => handleParamChange('boat_length', e.target.value)}
+              />
+            </div>
+          </>
+        );
+      case 'escuna':
+      case 'buggy':
+        return (
+          <div className="text-left sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Pessoas</label>
+            <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+              <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">Qualquer</SelectItem>
+                <SelectItem value="1">1+</SelectItem>
+                <SelectItem value="4">4+</SelectItem>
+                <SelectItem value="10">10+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        );
+       case 'transfer':
+         return (
+          <>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
+              <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Qualquer</SelectItem>
+                  <SelectItem value="1">1+</SelectItem>
+                  <SelectItem value="2">2+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+              <Select value={searchParams.vehicle_type} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Todos</SelectItem>
+                  <SelectItem value="helicopter">Helicóptero</SelectItem>
+                  <SelectItem value="van">Van</SelectItem>
+                  <SelectItem value="car">Carro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+      default:
+        return <div className="sm:col-span-2"></div>;
+    }
   };
 
   return (
@@ -108,8 +229,8 @@ const HeroSection = ({ onSearch, searchResults, isSearching }) => {
         <Image
           src="/banner.jpg"
           alt="Búzios"
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{objectFit: "cover"}}
           priority
         />
         <div className="absolute inset-0 bg-black/40" />
@@ -125,71 +246,29 @@ const HeroSection = ({ onSearch, searchResults, isSearching }) => {
           </p>
           
           <div className="bg-white rounded-lg shadow-2xl p-4 sm:p-6 w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
-              <div className="text-left md:col-span-1 sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Check-in e check-out
-                </label>
-                <Input 
-                  type="text" 
-                  placeholder="Selecione as datas" 
-                  className="h-12 border-gray-200 rounded-md"
-                  value={searchParams.dates}
-                  onChange={(e) => setSearchParams(prev => ({ ...prev, dates: e.target.value }))}
-                />
-              </div>
-              
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Hóspedes
-                </label>
-                <Select value={searchParams.guests} onValueChange={(value) => setSearchParams(prev => ({ ...prev, guests: value }))}>
-                  <SelectTrigger className="h-12 border-gray-200"><SelectValue /></SelectTrigger>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+              <div className="text-left md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Serviço</label>
+                <Select value={selectedService} onValueChange={handleServiceChange}>
+                  <SelectTrigger className="h-12 border-gray-200 text-black"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 hóspede</SelectItem>
-                    <SelectItem value="2">2 hóspedes</SelectItem>
-                    <SelectItem value="4">4 hóspedes</SelectItem>
-                    <SelectItem value="6">6 hóspedes</SelectItem>
-                    <SelectItem value="8">8+ hóspedes</SelectItem>
+                    <SelectItem value="mansoes">Mansões</SelectItem>
+                    <SelectItem value="iates">Iates</SelectItem>
+                    <SelectItem value="escuna">Escuna</SelectItem>
+                    <SelectItem value="transfer">Transfer</SelectItem>
+                    <SelectItem value="buggy">Buggy</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cidade
-                </label>
-                <Select value={searchParams.city} onValueChange={(value) => setSearchParams(prev => ({ ...prev, city: value }))}>
-                  <SelectTrigger className="h-12 border-gray-200"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="buzios">Búzios, RJ</SelectItem>
-                    <SelectItem value="cabo-frio">Cabo Frio, RJ</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Quartos
-                </label>
-                <Select value={searchParams.bedrooms} onValueChange={(value) => setSearchParams(prev => ({ ...prev, bedrooms: value }))}>
-                  <SelectTrigger className="h-12 border-gray-200"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 quarto</SelectItem>
-                    <SelectItem value="2">2 quartos</SelectItem>
-                    <SelectItem value="3">3 quartos</SelectItem>
-                    <SelectItem value="4">4 quartos</SelectItem>
-                    <SelectItem value="5">5+ quartos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
+
+              {renderFilters()}
+
               <Button 
-                className="h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium px-8 w-full sm:col-span-2 md:col-span-1"
+                className="h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium px-8 w-full"
                 onClick={handleSearch}
                 disabled={isSearching}
               >
-                {isSearching ? 'Procurando...' : 'Procurar'}
+                {isSearching ? 'Buscando...' : 'Buscar'}
               </Button>
             </div>
           </div>
@@ -201,7 +280,11 @@ const HeroSection = ({ onSearch, searchResults, isSearching }) => {
 
 // Search Results Section
 const SearchResults = ({ results, onClearSearch }) => {
-  if (!results || results.length === 0) {
+  if (results === null) {
+    return null;
+  }
+
+  if (results.length === 0) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
@@ -247,7 +330,8 @@ const PropertyCard = ({ listing, category }) => {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
       iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
-      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center'
+      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
+      buggy: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'
     };
     return categoryImages[category] || categoryImages.mansoes;
   };
@@ -684,10 +768,19 @@ const Footer = () => {
 // Main Homepage Component
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [allListings, setAllListings] = useState({ mansoes: [], iates: [], escuna: [], transfer: [] });
+  const [allListings, setAllListings] = useState({ mansoes: [], iates: [], escuna: [], transfer: [], buggy: [] });
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Estados para o novo formulário de busca
+  const [selectedService, setSelectedService] = useState('mansoes');
+  const [searchParams, setSearchParams] = useState({
+    guests: '',
+    bedrooms: '',
+    boat_length: '',
+    vehicle_type: '',
+  });
 
   const getFallbackData = () => ({
     mansoes: [
@@ -704,101 +797,28 @@ export default function HomePage() {
     transfer: [
       { id: '8', title: 'Helicóptero Executive', category: 'transfer', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
     ],
+    buggy: [
+      { id: '9', title: 'Buggy Aventura Off-Road', category: 'buggy', price_label: 'R$ 350,00', guests: 4, vehicle_model: 'Fyber 2000', duration: 'Diária', featured_image: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'}
+    ]
   });
 
-  const handleSearch = async (searchParams) => {
+  const handleSearch = async (category, params) => {
     setIsSearching(true);
-    
+    setSearchResults(null);
     try {
-      // Determinar quais categorias buscar
-      let categoriesToSearch = ['mansoes', 'iates', 'escuna', 'transfer', 'buggy'];
-      
-      if (searchParams.category !== 'all') {
-        categoriesToSearch = [searchParams.category];
-      }
-      
-      const promises = categoriesToSearch.map(category => 
-        fetch(`/api/listings?category=${category}&limit=50`)
-          .then(res => res.ok ? res.json() : { listings: [] })
-          .catch(() => ({ listings: [] }))
-      );
-      
-      const results = await Promise.all(promises);
-      let allResults = [];
-      
-      // Combinar todos os resultados
-      categoriesToSearch.forEach((category, index) => {
-        const categoryResults = results[index].listings || [];
-        allResults = [...allResults, ...categoryResults];
+      const query = new URLSearchParams({ category, limit: 50 });
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+          query.append(key, value);
+        }
       });
       
-      // Aplicar filtros baseados nos parâmetros de busca
-      let filteredResults = allResults.filter(listing => {
-        // Filtro por número de pessoas (aplicável a todas as categorias)
-        const guests = parseInt(searchParams.guests);
-        if (listing.guests && listing.guests < guests) {
-          return false;
-        }
-        
-        // Filtros específicos por categoria
-        if (searchParams.category === 'mansoes' || (searchParams.category === 'all' && listing.category === 'mansoes')) {
-          // Para mansões, também considerar quartos se especificado
-          if (searchParams.bedrooms) {
-            const bedrooms = parseInt(searchParams.bedrooms);
-            if (listing.bedrooms && listing.bedrooms < bedrooms) {
-              return false;
-            }
-          }
-        }
-        
-        // Filtro por data (por enquanto apenas valida se as datas foram preenchidas)
-        if (searchParams.checkIn && searchParams.checkOut) {
-          const checkIn = new Date(searchParams.checkIn);
-          const checkOut = new Date(searchParams.checkOut);
-          
-          if (checkIn >= checkOut) {
-            return false; // Data de check-in deve ser anterior ao check-out
-          }
-        }
-        
-        return true;
-      });
-      
-      // Se não encontrar resultados da API, usar dados de fallback filtrados
-      if (filteredResults.length === 0) {
-        const fallbackData = getFallbackData();
-        let fallbackResults = [];
-        
-        if (searchParams.category === 'all') {
-          fallbackResults = [
-            ...fallbackData.mansoes,
-            ...fallbackData.iates,
-            ...fallbackData.escuna,
-            ...fallbackData.transfer
-          ];
-        } else if (fallbackData[searchParams.category]) {
-          fallbackResults = fallbackData[searchParams.category];
-        }
-        
-        filteredResults = fallbackResults.filter(listing => {
-          const guests = parseInt(searchParams.guests);
-          if (listing.guests && listing.guests < guests) {
-            return false;
-          }
-          
-          if (listing.category === 'mansoes' && searchParams.bedrooms) {
-            const bedrooms = parseInt(searchParams.bedrooms);
-            if (listing.bedrooms && listing.bedrooms < bedrooms) {
-              return false;
-            }
-          }
-          
-          return true;
-        });
+      const response = await fetch(`/api/listings?${query.toString()}`);
+      if (!response.ok) {
+        throw new Error('A busca na API falhou');
       }
-      
-      setSearchResults(filteredResults);
-      
+      const data = await response.json();
+      setSearchResults(data.listings || []);
     } catch (error) {
       console.error('Erro na busca:', error);
       setSearchResults([]);
@@ -809,12 +829,13 @@ export default function HomePage() {
 
   const clearSearch = () => {
     setSearchResults(null);
+    setSearchParams({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
   };
 
   useEffect(() => {
     const fetchAllListings = async () => {
       try {
-        const categories = ['mansoes', 'iates', 'escuna', 'transfer'];
+        const categories = ['mansoes', 'iates', 'escuna', 'transfer', 'buggy'];
         const promises = categories.map(category => 
           fetch(`/api/listings?category=${category}&limit=8`).then(res => res.ok ? res.json() : { listings: [] }).catch(() => ({ listings: [] }))
         );
@@ -823,7 +844,7 @@ export default function HomePage() {
         const fallbackData = getFallbackData();
         categories.forEach((category, index) => {
           const apiListings = results[index].listings || [];
-          listingsData[category] = apiListings.length > 0 ? apiListings : fallbackData[category];
+          listingsData[category] = apiListings.length > 0 ? apiListings : (fallbackData[category] || []);
         });
         setAllListings(listingsData);
       } catch (error) {
@@ -839,7 +860,14 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <VillasNavbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-      <HeroSection onSearch={handleSearch} searchResults={searchResults} isSearching={isSearching} />
+      <HeroSection 
+        onSearch={handleSearch} 
+        isSearching={isSearching}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
+        selectedService={selectedService}
+        setSelectedService={setSelectedService}
+      />
       
       {/* Mostrar resultados de busca se existirem */}
       {searchResults !== null ? (
@@ -852,6 +880,7 @@ export default function HomePage() {
             <CategorySection title="ALUGUEL DE IATES DE LUXO" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer." listings={allListings.iates} category="iates" />
             <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas e desfrutando de um dia relaxante no mar." listings={allListings.escuna} category="escuna" />
             <CategorySection title="TRANSFER & TÁXI AÉREO" description="Oferecemos soluções de transporte terrestre e aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade." listings={allListings.transfer} category="transfer" />
+            <CategorySection title="ALUGUEL DE BUGGY" description="Explore as ruas e praias de Búzios com estilo e diversão em um de nossos buggies." listings={allListings.buggy} category="buggy" />
           </>
         )
       )}

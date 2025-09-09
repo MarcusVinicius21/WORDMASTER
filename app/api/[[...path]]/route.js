@@ -7,11 +7,12 @@ let client
 let db
 
 async function connectToMongo() {
-  if (!client) {
+  // Se o cliente não existir ou a topologia for destruída (conexão fechada), cria uma nova.
+  if (!client || !client.topology || client.topology.isDestroyed()) {
     client = new MongoClient(process.env.MONGO_URL)
     await client.connect()
-    db = client.db(process.env.DB_NAME || 'wordmaster_buzios')
   }
+  db = client.db(process.env.DB_NAME || 'wordmaster_buzios')
   return db
 }
 
@@ -47,7 +48,7 @@ async function handleRoute(request, { params }) {
   const method = request.method
 
   try {
-    const db = await connectToMongo()
+    const db = await connectToMongo() // Conexão garantida no início de cada requisição
 
     // Root endpoint
     if (route === '/' && method === 'GET') {
@@ -69,15 +70,35 @@ async function handleRoute(request, { params }) {
       const skip = parseInt(url.searchParams.get('skip')) || 0
 
       let filter = {}
-      if (category && (CATEGORIES[category] || CATEGORIES[`${category}s`])) {
-        filter.category = category === 'mansoes' ? 'mansoes' : category
+      if (category) {
+        filter.category = category;
       }
       if (featured === 'true') {
-        filter.is_featured = true
+        filter.is_featured = true;
       }
       if (active !== 'false') {
-        filter.is_active = true
+        filter.is_active = true;
       }
+
+      // LÓGICA DE FILTRO CORRIGIDA
+      const guests = url.searchParams.get('guests');
+      if (guests) {
+        filter.guests = { $gte: parseInt(guests, 10) };
+      }
+      const bedrooms = url.searchParams.get('bedrooms');
+       if (bedrooms) {
+        filter.bedrooms = { $gte: parseInt(bedrooms, 10) };
+      }
+      const boat_length = url.searchParams.get('boat_length');
+      if (boat_length) {
+        filter.boat_length = { $gte: parseInt(boat_length, 10) };
+      }
+      const vehicle_type = url.searchParams.get('vehicle_type');
+      if (vehicle_type) {
+        filter.vehicle_type = vehicle_type;
+      }
+      // FIM DA LÓGICA DE FILTRO CORRIGIDA
+
 
       const listings = await db.collection('listings')
         .find(filter)
