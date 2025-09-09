@@ -77,12 +77,12 @@ const ListingsManagement = () => {
   const [editingListing, setEditingListing] = useState(null)
   const [openModal, setOpenModal] = useState(false)
 
-  const categoryNames = { 
-    mansao: 'Mansão', mansoes: 'Mansão', 
-    iate: 'Iate', iates: 'Iate', 
-    escuna: 'Escuna', 
-    transfer: 'Transfer', 
-    buggy: 'Buggy' 
+  const categoryNames = {
+    mansao: 'Mansão', mansoes: 'Mansão',
+    iate: 'Iate', iates: 'Iate',
+    escuna: 'Escuna',
+    transfer: 'Transfer',
+    buggy: 'Buggy'
   }
 
   useEffect(() => { fetchListings() }, [])
@@ -95,7 +95,7 @@ const ListingsManagement = () => {
         const data = await response.json();
         setListings(data.listings || []);
       } else { setListings([]) }
-    } catch (error) { setListings([]) } 
+    } catch (error) { setListings([]) }
     finally { setLoading(false) }
   }
 
@@ -128,13 +128,13 @@ const ListingsManagement = () => {
           </Button>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-4 mb-6">
         <Input placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm" />
         <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="iates">Iates</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
       </div>
-      
-      {loading ? (<div className="text-center py-10">Carregando...</div>) : 
+
+      {loading ? (<div className="text-center py-10">Carregando...</div>) :
       filteredListings.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredListings.map((listing) => {
@@ -165,15 +165,11 @@ const ListingsManagement = () => {
   )
 }
 
-// Modal adaptado para diferentes categorias
 const CreateListingModal = ({ onSave, editingListing, onClose }) => {
   const [formData, setFormData] = useState({
     category: '', title: '', subtitle: '', description: '', neighborhood: '', guests: '', bedrooms: '', bathrooms: '', area_m2: '', base_price: '', price_label: '', is_featured: false,
-    // Campos específicos para iates/escunas
     boat_length: '', boat_year: '', duration: '', includes_meal: false,
-    // Campos específicos para transfer
-    vehicle_type: '', 
-    // Campos específicos para buggy  
+    vehicle_type: '',
     vehicle_model: ''
   });
   const [loading, setLoading] = useState(false);
@@ -182,7 +178,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
 
   useEffect(() => {
     if (editingListing && editingListing.id) {
-      // Editando um item existente
       setFormData({
         category: editingListing.category || '',
         title: editingListing.title || '',
@@ -204,7 +199,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
         vehicle_model: editingListing.vehicle_model || ''
       });
     } else if (editingListing && editingListing.category) {
-      // Criando novo item com categoria pré-definida
       resetForm();
       setFormData(prev => ({ ...prev, category: editingListing.category }));
     } else {
@@ -220,9 +214,9 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     setUploadedImages(prev => [...prev, ...newImages]);
     setUploading(false);
   };
-  
+
   const removeImage = (id) => { setUploadedImages(prev => prev.filter(img => img.id !== id)) };
-  
+
   const resetForm = () => {
     setFormData({
       category: '', title: '', subtitle: '', description: '', neighborhood: '', guests: '', bedrooms: '', bathrooms: '', area_m2: '', base_price: '', price_label: '', is_featured: false,
@@ -230,12 +224,17 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     });
     setUploadedImages([]);
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.category || !formData.title) { alert('Categoria e Título são obrigatórios.'); return; }
+    if (!formData.category || !formData.title) {
+      alert('Categoria e Título são obrigatórios.');
+      return;
+    }
     setLoading(true);
+
     try {
+      // 1. Salvar a propriedade para obter o ID
       const method = editingListing && editingListing.id ? 'PATCH' : 'POST';
       const url = editingListing && editingListing.id ? `/api/listings/${editingListing.id}` : '/api/listings';
       const payload = {
@@ -251,22 +250,42 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
       const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!response.ok) throw new Error('Falha ao salvar propriedade');
       const savedListing = await response.json();
+
+      // 2. Fazer o upload das imagens e associá-las
       if (uploadedImages.length > 0) {
         for (const image of uploadedImages) {
-          const mediaPayload = {
-            listing_id: savedListing.id,
-            type: "image",
-            url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop',
-            alt_text: formData.title,
-          };
-          await fetch('/api/media', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mediaPayload) });
+          if (image.file) { // Apenas para novos arquivos
+            // Faz o upload para o Vercel Blob
+            const uploadResponse = await fetch(`/api/upload?filename=${image.file.name}`, {
+              method: 'POST',
+              body: image.file,
+            });
+            const newBlob = await uploadResponse.json();
+
+            if (newBlob.url) {
+              // Salva a URL retornada no seu endpoint de mídia
+              const mediaPayload = {
+                listing_id: savedListing.id,
+                type: "image",
+                url: newBlob.url,
+                alt_text: formData.title,
+              };
+              await fetch('/api/media', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(mediaPayload) });
+            }
+          }
         }
       }
+
       onSave();
       resetForm();
-    } catch (error) { console.error('Error:', error); alert('Erro ao salvar.'); }
-    finally { setLoading(false); }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Erro ao salvar. Verifique o console para mais detalhes.');
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   // Campos específicos baseados na categoria
   const renderCategorySpecificFields = () => {
@@ -337,7 +356,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
   const getCategoryTitle = () => {
     const titles = {
       mansoes: 'Mansão',
-      iates: 'Iate', 
+      iates: 'Iate',
       escuna: 'Escuna',
       transfer: 'Transfer',
       buggy: 'Buggy'
@@ -361,27 +380,27 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
           </div>
           {uploadedImages.length > 0 && (<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">{uploadedImages.map((image) => (<div key={image.id} className="relative group"><img src={image.preview} alt={image.name} className="w-full h-24 object-cover rounded-lg" /><button type="button" onClick={() => removeImage(image.id)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"><X className="w-4 h-4" /></button></div>))}</div>)}
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!editingListing?.id && (
             <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="iates">Iate</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
           )}
           <div><label className="block text-sm font-medium mb-1">Bairro</label><Input value={formData.neighborhood} onChange={(e) => setFormData(p => ({ ...p, neighborhood: e.target.value }))} placeholder="Ex: Geribá" /></div>
         </div>
-        
+
         <div><label className="block text-sm font-medium mb-1">Título *</label><Input value={formData.title} onChange={(e) => setFormData(p => ({ ...p, title: e.target.value }))} placeholder={`Ex: ${getCategoryTitle()} de luxo`} required /></div>
         <div><label className="block text-sm font-medium mb-1">Subtítulo</label><Input value={formData.subtitle} onChange={(e) => setFormData(p => ({ ...p, subtitle: e.target.value }))} placeholder="Ex: Luxo e conforto" /></div>
         <div><label className="block text-sm font-medium mb-1">Descrição</label><textarea value={formData.description} onChange={(e) => setFormData(p => ({ ...p, description: e.target.value }))} className="w-full p-2 border rounded-md" rows={4} /></div>
-        
+
         {renderCategorySpecificFields()}
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div><label className="block text-sm font-medium mb-1">Preço Base (R$)</label><Input type="number" step="0.01" value={formData.base_price} onChange={(e) => setFormData(p => ({ ...p, base_price: e.target.value }))} /></div>
           <div><label className="block text-sm font-medium mb-1">Label do Preço</label><Input value={formData.price_label} onChange={(e) => setFormData(p => ({ ...p, price_label: e.target.value }))} placeholder="R$ 2.500/dia" /></div>
         </div>
-        
+
         <div className="flex items-center space-x-2"><input type="checkbox" id="featured" checked={formData.is_featured} onChange={(e) => setFormData(p => ({ ...p, is_featured: e.target.checked }))} /><label htmlFor="featured" className="text-sm font-medium">Marcar como destaque</label></div>
-        
+
         <div className="flex justify-end space-x-3 pt-4 border-t mt-6"><Button type="button" variant="outline" onClick={onClose}>Cancelar</Button><Button type="submit" disabled={loading || uploading}>{loading ? 'Salvando...' : 'Salvar'}</Button></div>
       </form>
     </DialogContent>
@@ -409,7 +428,7 @@ export default function AdminPanel() {
   if (isLoading || !isAuthenticated) {
     return <div className="flex h-screen w-full items-center justify-center">Carregando...</div>;
   }
-  
+
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'dashboard': return <Dashboard setCurrentPage={setCurrentPage} />
