@@ -120,7 +120,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Hóspedes</label>
-              <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
@@ -133,7 +133,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </div>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Quartos</label>
-              <Select value={searchParams.bedrooms} onValueChange={(value) => handleParamChange('bedrooms', value)}>
+              <Select value={searchParams.bedrooms || 'any'} onValueChange={(value) => handleParamChange('bedrooms', value)}>
                 <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
@@ -151,7 +151,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
@@ -178,7 +178,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
         return (
           <div className="text-left sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Pessoas</label>
-            <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+            <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
               <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Qualquer</SelectItem>
@@ -194,7 +194,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={searchParams.guests} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
@@ -206,7 +206,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </div>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <Select value={searchParams.vehicle_type} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
+              <Select value={searchParams.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
                 <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Todos</SelectItem>
