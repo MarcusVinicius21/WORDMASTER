@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import {
-  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent,
+  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent, Plane,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -77,10 +77,13 @@ const ListingsManagement = () => {
   const [editingListing, setEditingListing] = useState(null)
   const [openModal, setOpenModal] = useState(false)
 
+  // AQUI ESTÁ A CORREÇÃO PRINCIPAL:
+  // Agora, tanto 'transfer' quanto 'taxi-aereo' serão exibidos como 'Táxi Aéreo'
   const categoryNames = {
     mansao: 'Mansão', mansoes: 'Mansão',
     iate: 'Iate', iates: 'Iate',
     escuna: 'Escuna',
+    transfer: 'Táxi Aéreo', 
     'taxi-aereo': 'Táxi Aéreo',
     buggy: 'Buggy'
   }
@@ -104,7 +107,11 @@ const ListingsManagement = () => {
   const deleteListing = async (id) => { if (window.confirm('Tem certeza?')) { await fetch(`/api/listings/${id}`, { method: 'DELETE' }); fetchListings() }}
   const editListing = (listing) => { setEditingListing(listing); setOpenModal(true) }
 
-  const filteredListings = listings.filter(l => (l.title?.toLowerCase().includes(searchTerm.toLowerCase()) || l.neighborhood?.toLowerCase().includes(searchTerm.toLowerCase())) && (categoryFilter === 'all' || l.category === categoryFilter))
+  // Filtra as listagens, incluindo a categoria antiga 'transfer' se 'taxi-aereo' for selecionado
+  const filteredListings = listings.filter(l => 
+    (l.title?.toLowerCase().includes(searchTerm.toLowerCase()) || l.neighborhood?.toLowerCase().includes(searchTerm.toLowerCase())) && 
+    (categoryFilter === 'all' || l.category === categoryFilter || (categoryFilter === 'taxi-aereo' && l.category === 'transfer'))
+  )
 
   return (
     <div className="p-8">
@@ -120,6 +127,7 @@ const ListingsManagement = () => {
           <Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700">
             <Plus className="w-4 h-4 mr-2" /> Nova Escuna
           </Button>
+          {/* BOTÃO ATUALIZADO */}
           <Button onClick={() => { setEditingListing({ category: 'taxi-aereo' }); setOpenModal(true) }} className="bg-purple-600 hover:bg-purple-700">
             <Plus className="w-4 h-4 mr-2" /> Novo Táxi Aéreo
           </Button>
@@ -131,6 +139,7 @@ const ListingsManagement = () => {
 
       <div className="flex items-center space-x-4 mb-6">
         <Input placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm" />
+        {/* FILTRO ATUALIZADO */}
         <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="iates">Iates</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
       </div>
 
