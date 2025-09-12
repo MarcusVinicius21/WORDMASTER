@@ -1,28 +1,3 @@
-
-MarcusVinicius21/WORDMASTER
-main
-
-GITHUB
-
-Preciso atuallizar o código, ao invés de transfer meu chefe mudar para taxi áereo.
-essa é a ultima versão do meu app, que está na github, sendo hospedado pela vercel.
-
-depoys atualizaremos o page/page.js
-
-Vou ajudá-lo a atualizar o código para trocar "transfer" por "taxi-aereo" em todo o projeto. Vamos fazer isso em etapas para cada arquivo:
-
-app/[category]/[slug]/page.js - Atualizado
-Código 
-app/[category]/page.js - Atualizado
-Código 
-app/admin/page.js - Atualizado (parcial - muito grande)
-Código 
-
-
-Limite de 5 horas atingido ∙ reinicia 23:00
-Fazer Upgrade
-Continuar
-
 'use client'
 
 import { useState, useEffect } from "react"
