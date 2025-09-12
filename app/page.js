@@ -53,7 +53,7 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
             <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
             <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
             <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
+            <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
             <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             
             <div className="flex items-center space-x-2 text-gray-600 ml-4">
@@ -79,7 +79,7 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
               <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
               <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
               <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
-              <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
+              <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
               <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             </div>
           </div>
@@ -189,7 +189,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </Select>
           </div>
         );
-       case 'transfer':
+       case 'taxi-aereo':
          return (
           <>
             <div className="text-left">
@@ -255,7 +255,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
                     <SelectItem value="mansoes">Mansões</SelectItem>
                     <SelectItem value="iates">Iates</SelectItem>
                     <SelectItem value="escuna">Escuna</SelectItem>
-                    <SelectItem value="transfer">Transfer</SelectItem>
+                    <SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem>
                     <SelectItem value="buggy">Buggy</SelectItem>
                   </SelectContent>
                 </Select>
@@ -330,7 +330,7 @@ const PropertyCard = ({ listing, category }) => {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
       iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
-      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
+      'taxi-aereo': 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
       buggy: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'
     };
     return categoryImages[category] || categoryImages.mansoes;
@@ -445,7 +445,7 @@ const PropertyCard = ({ listing, category }) => {
         }
         break;
 
-      case 'transfer':
+      case 'taxi-aereo':
         if (listing.guests) {
           specs.push(
             <span key="guests" className="flex items-center">
@@ -734,7 +734,7 @@ const Footer = () => {
             <div className="mb-6">
               <Image src="/logo.png" alt="Wordmaster Beach Búzios Logo Rodapé" width={160} height={45} />
             </div>
-            <p className="text-gray-600 mb-6">Experiências de luxo em Búzios. Mansões, iates, transfers e muito mais.</p>
+            <p className="text-gray-600 mb-6">Experiências de luxo em Búzios. Mansões, iates, táxis aéreos e muito mais.</p>
             <p className="text-gray-500 text-sm">CNPJ: 22.269.571/0001-69</p> 
           </div>
           <div>
@@ -742,7 +742,7 @@ const Footer = () => {
             <div className="space-y-3">
               <Link href="/mansoes" className="block text-gray-600 hover:text-gray-900">Mansões de Luxo</Link>
               <Link href="/iates" className="block text-gray-600 hover:text-gray-900">Iates & Embarcações</Link>
-              <Link href="/transfer" className="block text-gray-600 hover:text-gray-900">Transfer & Táxi Aéreo</Link>
+              <Link href="/taxi-aereo" className="block text-gray-600 hover:text-gray-900">Táxi Aéreo</Link>
               <Link href="/escuna" className="block text-gray-600 hover:text-gray-900">Passeios de Escuna</Link>
             </div>
           </div>
@@ -768,7 +768,7 @@ const Footer = () => {
 // Main Homepage Component
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [allListings, setAllListings] = useState({ mansoes: [], iates: [], escuna: [], transfer: [], buggy: [] });
+  const [allListings, setAllListings] = useState({ mansoes: [], iates: [], escuna: [], 'taxi-aereo': [], buggy: [] });
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -794,8 +794,8 @@ export default function HomePage() {
     escuna: [
       { id: '7', title: 'Escuna Tradicional Búzios', category: 'escuna', price_label: 'R$ 180,00', guests: 40, duration: '4 horas', boat_length: 85, includes_meal: true, featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center' }
     ],
-    transfer: [
-      { id: '8', title: 'Helicóptero Executive', category: 'transfer', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
+    'taxi-aereo': [
+      { id: '8', title: 'Helicóptero Executive', category: 'taxi-aereo', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
     ],
     buggy: [
       { id: '9', title: 'Buggy Aventura Off-Road', category: 'buggy', price_label: 'R$ 350,00', guests: 4, vehicle_model: 'Fyber 2000', duration: 'Diária', featured_image: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'}
@@ -835,7 +835,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchAllListings = async () => {
       try {
-        const categories = ['mansoes', 'iates', 'escuna', 'transfer', 'buggy'];
+        const categories = ['mansoes', 'iates', 'escuna', 'taxi-aereo', 'buggy'];
         const promises = categories.map(category => 
           fetch(`/api/listings?category=${category}&limit=8`).then(res => res.ok ? res.json() : { listings: [] }).catch(() => ({ listings: [] }))
         );
@@ -879,7 +879,7 @@ export default function HomePage() {
             <CategorySection title="APARTAMENTOS E CASAS DE LUXO" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />
             <CategorySection title="ALUGUEL DE IATES DE LUXO" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer." listings={allListings.iates} category="iates" />
             <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas e desfrutando de um dia relaxante no mar." listings={allListings.escuna} category="escuna" />
-            <CategorySection title="TRANSFER & TÁXI AÉREO" description="Oferecemos soluções de transporte terrestre e aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade." listings={allListings.transfer} category="transfer" />
+            <CategorySection title="TÁXI AÉREO" description="Oferecemos soluções de transporte aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade." listings={allListings['taxi-aereo']} category="taxi-aereo" />
             <CategorySection title="ALUGUEL DE BUGGY" description="Explore as ruas e praias de Búzios com estilo e diversão em um de nossos buggies." listings={allListings.buggy} category="buggy" />
           </>
         )

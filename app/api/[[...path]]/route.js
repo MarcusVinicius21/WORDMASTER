@@ -37,7 +37,7 @@ const CATEGORIES = {
   iate: 'Iate',
   iates: 'Iate',
   escuna: 'Escuna',
-  transfer: 'Transfer',
+  'taxi-aereo': 'Táxi Aéreo',
   buggy: 'Buggy'
 }
 
@@ -189,7 +189,7 @@ async function handleRoute(request, { params }) {
         boat_year: body.boat_year || null,
         duration: body.duration || '',
         includes_meal: body.includes_meal || false,
-        // Campos específicos para transfer
+        // Campos específicos para taxi-aereo
         vehicle_type: body.vehicle_type || '',
         // Campos específicos para buggy
         vehicle_model: body.vehicle_model || '',

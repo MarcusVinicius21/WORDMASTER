@@ -81,7 +81,7 @@ const ListingsManagement = () => {
     mansao: 'Mansão', mansoes: 'Mansão',
     iate: 'Iate', iates: 'Iate',
     escuna: 'Escuna',
-    transfer: 'Transfer',
+    'taxi-aereo': 'Táxi Aéreo',
     buggy: 'Buggy'
   }
 
@@ -120,8 +120,8 @@ const ListingsManagement = () => {
           <Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700">
             <Plus className="w-4 h-4 mr-2" /> Nova Escuna
           </Button>
-          <Button onClick={() => { setEditingListing({ category: 'transfer' }); setOpenModal(true) }} className="bg-purple-600 hover:bg-purple-700">
-            <Plus className="w-4 h-4 mr-2" /> Novo Transfer
+          <Button onClick={() => { setEditingListing({ category: 'taxi-aereo' }); setOpenModal(true) }} className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 mr-2" /> Novo Táxi Aéreo
           </Button>
           <Button onClick={() => { setEditingListing({ category: 'buggy' }); setOpenModal(true) }} className="bg-orange-600 hover:bg-orange-700">
             <Plus className="w-4 h-4 mr-2" /> Novo Buggy
@@ -131,7 +131,7 @@ const ListingsManagement = () => {
 
       <div className="flex items-center space-x-4 mb-6">
         <Input placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm" />
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="iates">Iates</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="iates">Iates</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
       </div>
 
       {loading ? (<div className="text-center py-10">Carregando...</div>) :
@@ -326,7 +326,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
           </>
         );
 
-      case 'transfer':
+      case 'taxi-aereo':
         return (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -358,7 +358,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
       mansoes: 'Mansão',
       iates: 'Iate',
       escuna: 'Escuna',
-      transfer: 'Transfer',
+      'taxi-aereo': 'Táxi Aéreo',
       buggy: 'Buggy'
     };
     return titles[formData.category] || 'Propriedade';
@@ -383,7 +383,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!editingListing?.id && (
-            <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="iates">Iate</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
+            <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="iates">Iate</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
           )}
           <div><label className="block text-sm font-medium mb-1">Bairro</label><Input value={formData.neighborhood} onChange={(e) => setFormData(p => ({ ...p, neighborhood: e.target.value }))} placeholder="Ex: Geribá" /></div>
         </div>

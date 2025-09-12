@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, CarTaxiFront } from "lucide-react"
+import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
@@ -21,7 +21,7 @@ const VillasNavbar = () => (
             <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
             <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
             <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
+            <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
             <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Buggy</Link>
           </div>
         </div>
@@ -42,7 +42,7 @@ const PropertyCard = ({ listing, category }) => {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
       iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
-      transfer: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
+      'taxi-aereo': 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
       buggy: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center'
     }
     return images[category] || images.mansoes
@@ -88,7 +88,7 @@ export default function CategoryPage() {
         mansoes: { title: "Mansões de Luxo", icon: <Home className="w-8 h-8 mr-3" /> },
         iates: { title: "Iates & Lanchas", icon: <Anchor className="w-8 h-8 mr-3" /> },
         escuna: { title: "Passeios de Escuna", icon: <Sailboat className="w-8 h-8 mr-3" /> },
-        transfer: { title: "Transfer & Táxi Aéreo", icon: <CarTaxiFront className="w-8 h-8 mr-3" /> },
+        'taxi-aereo': { title: "Táxi Aéreo", icon: <Plane className="w-8 h-8 mr-3" /> },
         buggy: { title: "Aluguel de Buggy", icon: <Car className="w-8 h-8 mr-3" /> },
     };
     const currentCategory = categoryInfo[category] || { title: "Propriedades", icon: <Home className="w-8 h-8 mr-3" /> };
