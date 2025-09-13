@@ -873,7 +873,7 @@ export default function HomePage() {
       {searchResults !== null ? (
         <SearchResults results={searchResults} onClearSearch={clearSearch} />
       ) : (
-        /* Mostrar seções de categorias normalmeente */
+        /* Mostrar seções de categorias normalmente */
         !loading && (
           <>
             <CategorySection title="APARTAMENTOS E CASAS DE LUXO" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />

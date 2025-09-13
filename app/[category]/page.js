@@ -6,16 +6,21 @@ import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane } from "lucide-rea
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
+import Image from "next/image" // Adicionado o import da Imagem
 
 const VillasNavbar = () => (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center">
-            <div className="text-2xl font-bold text-gray-800">
-              <div className="text-sm font-normal text-gray-600">WORDMASTER</div>
-              <div className="text-base font-bold text-gray-900 -mt-1">in BÚZIOS</div>
-            </div>
+            {/* LOGO ADICIONADA AQUI */}
+            <Image
+              src="/logo.png"
+              alt="Wordmaster Beach Búzios Logo"
+              width={144}
+              height={40}
+              priority
+            />
           </Link>
           <div className="hidden lg:flex items-center space-x-8 text-sm">
             <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
