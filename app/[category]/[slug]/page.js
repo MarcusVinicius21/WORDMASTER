@@ -9,13 +9,14 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import Image from "next/image"
+import Image from "next/image" // Adicionado o import da Imagem
 
 const VillasNavbar = () => (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center">
+            {/* LOGO ADICIONADA AQUI */}
             <Image
               src="/logo.png"
               alt="Wordmaster Beach Búzios Logo"
