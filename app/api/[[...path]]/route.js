@@ -76,9 +76,14 @@ async function handleRoute(request, { params }) {
       if (featured === 'true') {
         filter.is_featured = true;
       }
-      if (active !== 'false') {
+      
+      // CORREÇÃO: Apenas filtra por 'is_active' se o parâmetro 'active' for explicitamente passado
+      if (active === 'true') {
         filter.is_active = true;
+      } else if (active === 'false') {
+        filter.is_active = false;
       }
+
 
       // LÓGICA DE FILTRO CORRIGIDA
       const guests = url.searchParams.get('guests');
