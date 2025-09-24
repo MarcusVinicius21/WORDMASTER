@@ -7,11 +7,8 @@ import { useState } from "react"
 export default function Navbar({ variant = "default" }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  // Define os textos baseado na variante
   const getMenuItems = () => {
-    // Agora usa os nomes completos em todas as variantes para consistência
-    return [
-      { href: "/", label: "Brasil" },
+    const commonItems = [
       { href: "/mansoes", label: "Aluguel de Mansões" },
       { href: "/lanchas", label: "Aluguel de Lanchas" },
       { href: "/escuna", label: "Passeios de Escuna" },
@@ -20,6 +17,13 @@ export default function Navbar({ variant = "default" }) {
       { href: "/buggy", label: "Aluguel de Buggy" },
       { href: "/admin", label: "Admin", isAdmin: true }
     ];
+
+    if (variant === "homepage") {
+      return [{ href: "/", label: "Brasil" }, ...commonItems];
+    }
+    
+    // Default for other pages
+    return [{ href: "/", label: "Home" }, ...commonItems];
   };
 
   const menuItems = getMenuItems();

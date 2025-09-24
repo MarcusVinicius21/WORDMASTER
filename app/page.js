@@ -1,16 +1,16 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from "react"
-import { Search, Menu, X, Star, MapPin, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Users, Bed, Bath, Eye, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus } from "lucide-react"
+import { Search, Star, MapPin, Phone, Instagram, Users, Bed, Bath, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import Image from "next/image"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
+import Navbar from "@/components/Navbar" // <-- Importado aqui
 
 // WhatsApp Component
 const WhatsAppButton = ({ listing, className = "" }) => {
@@ -28,67 +28,6 @@ const WhatsAppButton = ({ listing, className = "" }) => {
     >
       WhatsApp
     </Button>
-  )
-}
-
-// Villas in Brazil Style Navbar
-const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
-  return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/logo.png"
-              alt="Wordmaster Beach Búzios Logo"
-              width={144}
-              height={40}
-              priority
-            />
-          </Link>
-
-          <div className="hidden lg:flex items-center space-x-8 text-sm">
-            <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
-            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
-            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
-            <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
-            <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
-            
-            <div className="flex items-center space-x-2 text-gray-600 ml-4">
-              <span>PT</span>
-              <span>R$ BRL</span>
-            </div>
-          </div>
-
-          <Button
-            variant="ghost"
-            size="sm" 
-            className="lg:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
-        </div>
-
-        {isMenuOpen && (
-          <div className="lg:hidden py-6 border-t border-gray-100">
-            <div className="flex flex-col space-y-4">
-              <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
-              <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
-              <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
-              <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
-              <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
-              <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-              <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
-              <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
   )
 }
 
@@ -822,7 +761,6 @@ const Footer = () => {
 
 // Main Homepage Component
 export default function HomePage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [allListings, setAllListings] = useState({ mansoes: [], lanchas: [], escuna: [], 'taxi-aereo': [], transfer: [], buggy: [] });
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState(null);
@@ -918,7 +856,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <VillasNavbar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <Navbar variant="homepage" />
       <HeroSection 
         onSearch={handleSearch} 
         isSearching={isSearching}
