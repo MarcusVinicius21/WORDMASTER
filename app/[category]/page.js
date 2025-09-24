@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane } from "lucide-react"
+import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane, Bus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import Image from "next/image" // Adicionado o import da Imagem
+import Image from "next/image"
 
 const VillasNavbar = () => (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center">
-            {/* LOGO ADICIONADA AQUI */}
             <Image
               src="/logo.png"
               alt="Wordmaster Beach Búzios Logo"
@@ -24,9 +23,10 @@ const VillasNavbar = () => (
           </Link>
           <div className="hidden lg:flex items-center space-x-8 text-sm">
             <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-            <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
+            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
             <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
             <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
+            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
             <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Buggy</Link>
           </div>
         </div>
@@ -45,10 +45,11 @@ const PropertyCard = ({ listing, category }) => {
   const getCategoryImage = (category) => {
     const images = {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
-      iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
+      lanchas: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
       'taxi-aereo': 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
-      buggy: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center'
+      transfer: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=250&fit=crop&crop=center',
+      buggy: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'
     }
     return images[category] || images.mansoes
   }
@@ -90,10 +91,11 @@ export default function CategoryPage() {
     const [error, setError] = useState(null);
 
     const categoryInfo = {
-        mansoes: { title: "Mansões de Luxo", icon: <Home className="w-8 h-8 mr-3" /> },
-        iates: { title: "Iates & Lanchas", icon: <Anchor className="w-8 h-8 mr-3" /> },
+        mansoes: { title: "Aluguel de Mansões", icon: <Home className="w-8 h-8 mr-3" /> },
+        lanchas: { title: "Aluguel de Lanchas", icon: <Anchor className="w-8 h-8 mr-3" /> },
         escuna: { title: "Passeios de Escuna", icon: <Sailboat className="w-8 h-8 mr-3" /> },
         'taxi-aereo': { title: "Táxi Aéreo", icon: <Plane className="w-8 h-8 mr-3" /> },
+        transfer: { title: "Transfer", icon: <Bus className="w-8 h-8 mr-3" /> },
         buggy: { title: "Aluguel de Buggy", icon: <Car className="w-8 h-8 mr-3" /> },
     };
     const currentCategory = categoryInfo[category] || { title: "Propriedades", icon: <Home className="w-8 h-8 mr-3" /> };

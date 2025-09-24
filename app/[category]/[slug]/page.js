@@ -9,14 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import Image from "next/image" // Adicionado o import da Imagem
+import Image from "next/image"
 
 const VillasNavbar = () => (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center">
-            {/* LOGO ADICIONADA AQUI */}
             <Image
               src="/logo.png"
               alt="Wordmaster Beach Búzios Logo"
@@ -26,10 +25,11 @@ const VillasNavbar = () => (
             />
           </Link>
           <div className="hidden lg:flex items-center space-x-8 text-sm">
-             <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-            <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
+            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
+            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
             <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
             <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
+            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
             <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Buggy</Link>
           </div>
         </div>
@@ -79,7 +79,7 @@ const PropertySpecs = ({ listing, category }) => {
           </div>
         );
         
-      case 'iates':
+      case 'lanchas':
         return (
           <div className="flex flex-wrap gap-2">
             {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
@@ -104,7 +104,21 @@ const PropertySpecs = ({ listing, category }) => {
           <div className="flex flex-wrap gap-2">
             {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
             {listing.vehicle_type === 'helicopter' && <Badge variant="outline"><Plane className="w-4 h-4 mr-1" />Helicóptero</Badge>}
-            {listing.vehicle_type === 'car' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Veículo terrestre</Badge>}
+            {listing.vehicle_type === 'bimotor' && <Badge variant="outline"><Plane className="w-4 h-4 mr-1" />Bimotor</Badge>}
+            {listing.vehicle_type === 'jet' && <Badge variant="outline"><Plane className="w-4 h-4 mr-1" />Jato</Badge>}
+            {listing.vehicle_model && <Badge variant="outline">{listing.vehicle_model}</Badge>}
+            {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
+          </div>
+        );
+
+      case 'transfer':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
+            {listing.vehicle_type === 'van' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Van</Badge>}
+            {listing.vehicle_type === 'bus' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Ônibus</Badge>}
+            {listing.vehicle_type === 'luxury_car' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Carro de Luxo</Badge>}
+            {listing.vehicle_model && <Badge variant="outline">{listing.vehicle_model}</Badge>}
             {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
           </div>
         );
@@ -141,12 +155,14 @@ const ContactForm = ({ listing, category }) => {
 
   const getFormLabel = () => {
     switch (category) {
-      case 'iates':
+      case 'lanchas':
         return 'Data do passeio';
       case 'escuna':
         return 'Data do passeio';
       case 'taxi-aereo':
-        return 'Data do serviço';
+        return 'Data do voo';
+      case 'transfer':
+        return 'Data do transfer';
       case 'buggy':
         return 'Data do aluguel';
       default:
@@ -156,9 +172,10 @@ const ContactForm = ({ listing, category }) => {
 
   const getCheckoutLabel = () => {
     switch (category) {
-      case 'iates':
+      case 'lanchas':
       case 'escuna':
       case 'taxi-aereo':
+      case 'transfer':
         return 'Horário preferido';
       case 'buggy':
         return 'Data de devolução';
@@ -172,9 +189,10 @@ const ContactForm = ({ listing, category }) => {
     const whatsappNumber = "5521976860759"
     const serviceType = {
       mansoes: 'propriedade',
-      iates: 'iate',
+      lanchas: 'lancha',
       escuna: 'passeio de escuna',
       'taxi-aereo': 'táxi aéreo',
+      transfer: 'transfer',
       buggy: 'buggy'
     }[category] || 'serviço';
 
@@ -195,7 +213,7 @@ const ContactForm = ({ listing, category }) => {
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">{getFormLabel()}</label>
               <input 
-                type={category === 'mansoes' ? 'date' : category === 'taxi-aereo' || category === 'escuna' || category === 'iates' ? 'date' : 'date'} 
+                type="date" 
                 value={formData.checkIn} 
                 onChange={(e) => setFormData(p => ({ ...p, checkIn: e.target.value }))} 
                 className="w-full border-0 bg-transparent text-sm focus:outline-none" 
@@ -204,7 +222,7 @@ const ContactForm = ({ listing, category }) => {
             <div className="border-l border-gray-300 pl-3">
               <label className="block text-xs font-medium text-gray-700 mb-1">{getCheckoutLabel()}</label>
               <input 
-                type={category === 'taxi-aereo' || category === 'escuna' || category === 'iates' ? 'time' : 'date'} 
+                type={category === 'taxi-aereo' || category === 'transfer' || category === 'escuna' || category === 'lanchas' ? 'time' : 'date'} 
                 value={formData.checkOut} 
                 onChange={(e) => setFormData(p => ({ ...p, checkOut: e.target.value }))} 
                 className="w-full border-0 bg-transparent text-sm focus:outline-none" 
@@ -279,6 +297,18 @@ export default function PropertyDetailPage() {
     }
   }, [slug]);
 
+  const getCategoryDisplayName = (category) => {
+    const names = {
+      'mansoes': 'Mansões',
+      'lanchas': 'Lanchas',
+      'escuna': 'Escuna',
+      'taxi-aereo': 'Táxi Aéreo',
+      'transfer': 'Transfer',
+      'buggy': 'Buggy'
+    };
+    return names[category] || category;
+  };
+
   if (loading) {
     return (<div className="min-h-screen bg-white"><VillasNavbar /><div className="container mx-auto p-6 py-20 text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div><p className="mt-4 text-gray-600">Carregando...</p></div></div>);
   }
@@ -294,7 +324,7 @@ export default function PropertyDetailPage() {
         <nav className="mb-6 flex items-center space-x-2 text-sm text-gray-600">
           <Link href="/" className="hover:text-gray-900">Home</Link>
           <span>/</span>
-          <Link href={`/${category}`} className="hover:text-gray-900 capitalize">{category === 'taxi-aereo' ? 'Táxi Aéreo' : category}</Link>
+          <Link href={`/${category}`} className="hover:text-gray-900">{getCategoryDisplayName(category)}</Link>
           <span>/</span>
           <span className="text-gray-900">{listing.title}</span>
         </nav>
@@ -317,9 +347,10 @@ export default function PropertyDetailPage() {
             {listing.description && (
               <div className="prose max-w-none mb-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  {category === 'iates' ? 'Sobre o iate' : 
+                  {category === 'lanchas' ? 'Sobre a lancha' : 
                    category === 'escuna' ? 'Sobre o passeio' :
                    category === 'taxi-aereo' ? 'Sobre o táxi aéreo' :
+                   category === 'transfer' ? 'Sobre o transfer' :
                    category === 'buggy' ? 'Sobre o buggy' :
                    'Sobre a propriedade'}
                 </h3>

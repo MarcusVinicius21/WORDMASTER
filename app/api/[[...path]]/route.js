@@ -30,14 +30,15 @@ export async function OPTIONS() {
   return handleCORS(new NextResponse(null, { status: 200 }))
 }
 
-// Category type mapping
+// Category type mapping - ATUALIZADO
 const CATEGORIES = {
   mansao: 'Mansão',
   mansoes: 'Mansão',
-  iate: 'Iate',
-  iates: 'Iate',
+  lancha: 'Lancha',
+  lanchas: 'Lancha',
   escuna: 'Escuna',
   'taxi-aereo': 'Táxi Aéreo',
+  transfer: 'Transfer',
   buggy: 'Buggy'
 }
 
@@ -189,12 +190,12 @@ async function handleRoute(request, { params }) {
         price_label: body.price_label || '',
         is_featured: body.is_featured || false,
         is_active: body.is_active !== false,
-        // Campos específicos para iates/escunas
+        // Campos específicos para lanchas/escunas
         boat_length: body.boat_length || null,
         boat_year: body.boat_year || null,
         duration: body.duration || '',
         includes_meal: body.includes_meal || false,
-        // Campos específicos para taxi-aereo
+        // Campos específicos para taxi-aereo e transfer
         vehicle_type: body.vehicle_type || '',
         // Campos específicos para buggy
         vehicle_model: body.vehicle_model || '',

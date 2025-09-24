@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import {
-  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent, Plane,
+  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent, Plane, Bus,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -79,9 +79,10 @@ const ListingsManagement = () => {
 
   const categoryNames = {
     mansao: 'Mansão', mansoes: 'Mansão',
-    iate: 'Iate', iates: 'Iate',
+    lancha: 'Lancha', lanchas: 'Lancha',
     escuna: 'Escuna',
     'taxi-aereo': 'Táxi Aéreo',
+    transfer: 'Transfer',
     buggy: 'Buggy'
   }
 
@@ -110,18 +111,21 @@ const ListingsManagement = () => {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Gerenciar Propriedades</h2>
-        <div className="flex space-x-3">
+        <div className="flex flex-wrap gap-2">
           <Button onClick={() => { setEditingListing({ category: 'mansoes' }); setOpenModal(true) }} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" /> Nova Mansão
           </Button>
-          <Button onClick={() => { setEditingListing({ category: 'iates' }); setOpenModal(true) }} className="bg-cyan-600 hover:bg-cyan-700">
-            <Plus className="w-4 h-4 mr-2" /> Novo Iate
+          <Button onClick={() => { setEditingListing({ category: 'lanchas' }); setOpenModal(true) }} className="bg-cyan-600 hover:bg-cyan-700">
+            <Plus className="w-4 h-4 mr-2" /> Nova Lancha
           </Button>
           <Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700">
             <Plus className="w-4 h-4 mr-2" /> Nova Escuna
           </Button>
           <Button onClick={() => { setEditingListing({ category: 'taxi-aereo' }); setOpenModal(true) }} className="bg-purple-600 hover:bg-purple-700">
             <Plus className="w-4 h-4 mr-2" /> Novo Táxi Aéreo
+          </Button>
+          <Button onClick={() => { setEditingListing({ category: 'transfer' }); setOpenModal(true) }} className="bg-indigo-600 hover:bg-indigo-700">
+            <Plus className="w-4 h-4 mr-2" /> Novo Transfer
           </Button>
           <Button onClick={() => { setEditingListing({ category: 'buggy' }); setOpenModal(true) }} className="bg-orange-600 hover:bg-orange-700">
             <Plus className="w-4 h-4 mr-2" /> Novo Buggy
@@ -131,7 +135,7 @@ const ListingsManagement = () => {
 
       <div className="flex items-center space-x-4 mb-6">
         <Input placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="max-w-sm" />
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="iates">Iates</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas</SelectItem><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="lanchas">Lanchas</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select>
       </div>
 
       {loading ? (<div className="text-center py-10">Carregando...</div>) :
@@ -158,7 +162,7 @@ const ListingsManagement = () => {
           })}
         </div>
       ) : (
-        <div className="text-center py-12"><div className="text-gray-400 text-lg mb-4">Nenhuma propriedade encontrada</div><div className="flex justify-center space-x-2"><Button onClick={() => { setEditingListing({ category: 'mansoes' }); setOpenModal(true) }} className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Mansão</Button><Button onClick={() => { setEditingListing({ category: 'iates' }); setOpenModal(true) }} className="bg-cyan-600 hover:bg-cyan-700"><Plus className="w-4 h-4 mr-2" />Iate</Button><Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700"><Plus className="w-4 h-4 mr-2" />Escuna</Button></div></div>
+        <div className="text-center py-12"><div className="text-gray-400 text-lg mb-4">Nenhuma propriedade encontrada</div><div className="flex justify-center space-x-2 flex-wrap gap-2"><Button onClick={() => { setEditingListing({ category: 'mansoes' }); setOpenModal(true) }} className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-2" />Mansão</Button><Button onClick={() => { setEditingListing({ category: 'lanchas' }); setOpenModal(true) }} className="bg-cyan-600 hover:bg-cyan-700"><Plus className="w-4 h-4 mr-2" />Lancha</Button><Button onClick={() => { setEditingListing({ category: 'escuna' }); setOpenModal(true) }} className="bg-teal-600 hover:bg-teal-700"><Plus className="w-4 h-4 mr-2" />Escuna</Button></div></div>
       )}
       <Dialog open={openModal} onOpenChange={setOpenModal}><CreateListingModal onSave={handleSaveListing} editingListing={editingListing} onClose={() => setOpenModal(false)} /></Dialog>
     </div>
@@ -234,7 +238,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     setLoading(true);
 
     try {
-      // 1. Salvar a propriedade para obter o ID
       const method = editingListing && editingListing.id ? 'PATCH' : 'POST';
       const url = editingListing && editingListing.id ? `/api/listings/${editingListing.id}` : '/api/listings';
       const payload = {
@@ -251,11 +254,9 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
       if (!response.ok) throw new Error('Falha ao salvar propriedade');
       const savedListing = await response.json();
 
-      // 2. Fazer o upload das imagens e associá-las
       if (uploadedImages.length > 0) {
         for (const image of uploadedImages) {
-          if (image.file) { // Apenas para novos arquivos
-            // Faz o upload para o Vercel Blob
+          if (image.file) {
             const uploadResponse = await fetch(`/api/upload?filename=${image.file.name}`, {
               method: 'POST',
               body: image.file,
@@ -263,7 +264,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
             const newBlob = await uploadResponse.json();
 
             if (newBlob.url) {
-              // Salva a URL retornada no seu endpoint de mídia
               const mediaPayload = {
                 listing_id: savedListing.id,
                 type: "image",
@@ -286,8 +286,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     }
   };
 
-
-  // Campos específicos baseados na categoria
   const renderCategorySpecificFields = () => {
     switch (formData.category) {
       case 'mansoes':
@@ -302,7 +300,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
           </>
         );
 
-      case 'iates':
+      case 'lanchas':
         return (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -329,10 +327,23 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
       case 'taxi-aereo':
         return (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div><label className="block text-sm font-medium mb-1">Passageiros</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
-              <div><label className="block text-sm font-medium mb-1">Tipo de Veículo</label><Select value={formData.vehicle_type} onValueChange={(v) => setFormData(p => ({ ...p, vehicle_type: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="helicopter">Helicóptero</SelectItem><SelectItem value="car">Carro</SelectItem><SelectItem value="van">Van</SelectItem></SelectContent></Select></div>
+              <div><label className="block text-sm font-medium mb-1">Tipo de Aeronave</label><Select value={formData.vehicle_type} onValueChange={(v) => setFormData(p => ({ ...p, vehicle_type: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="helicopter">Helicóptero</SelectItem><SelectItem value="bimotor">Bimotor</SelectItem><SelectItem value="jet">Jato</SelectItem></SelectContent></Select></div>
+              <div><label className="block text-sm font-medium mb-1">Modelo</label><Input value={formData.vehicle_model} onChange={(e) => setFormData(p => ({ ...p, vehicle_model: e.target.value }))} placeholder="Ex: Robinson 44" /></div>
               <div><label className="block text-sm font-medium mb-1">Duração</label><Input value={formData.duration} onChange={(e) => setFormData(p => ({ ...p, duration: e.target.value }))} placeholder="Ex: 45 min" /></div>
+            </div>
+          </>
+        );
+
+      case 'transfer':
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div><label className="block text-sm font-medium mb-1">Passageiros</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1">Tipo de Veículo</label><Select value={formData.vehicle_type} onValueChange={(v) => setFormData(p => ({ ...p, vehicle_type: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="van">Van</SelectItem><SelectItem value="bus">Ônibus</SelectItem><SelectItem value="luxury_car">Carro de Luxo</SelectItem></SelectContent></Select></div>
+              <div><label className="block text-sm font-medium mb-1">Modelo</label><Input value={formData.vehicle_model} onChange={(e) => setFormData(p => ({ ...p, vehicle_model: e.target.value }))} placeholder="Ex: Mercedes Sprinter" /></div>
+              <div><label className="block text-sm font-medium mb-1">Duração</label><Input value={formData.duration} onChange={(e) => setFormData(p => ({ ...p, duration: e.target.value }))} placeholder="Ex: 2 horas" /></div>
             </div>
           </>
         );
@@ -342,7 +353,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div><label className="block text-sm font-medium mb-1">Pessoas</label><Input type="number" value={formData.guests} onChange={(e) => setFormData(p => ({ ...p, guests: e.target.value }))} /></div>
-              <div><label className="block text-sm font-medium mb-1">Modelo</label><Input value={formData.vehicle_model} onChange={(e) => setFormData(p => ({ ...p, vehicle_model: e.target.value }))} placeholder="Ex: Polaris RZR" /></div>
+              <div><label className="block text-sm font-medium mb-1">Modelo</label><Input value={formData.vehicle_model} onChange={(e) => setFormData(p => ({ ...p, vehicle_model: e.target.value }))} placeholder="Ex: Fyber 2000" /></div>
               <div><label className="block text-sm font-medium mb-1">Duração</label><Input value={formData.duration} onChange={(e) => setFormData(p => ({ ...p, duration: e.target.value }))} placeholder="Ex: Dia completo" /></div>
             </div>
           </>
@@ -356,9 +367,10 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
   const getCategoryTitle = () => {
     const titles = {
       mansoes: 'Mansão',
-      iates: 'Iate',
+      lanchas: 'Lancha',
       escuna: 'Escuna',
       'taxi-aereo': 'Táxi Aéreo',
+      transfer: 'Transfer',
       buggy: 'Buggy'
     };
     return titles[formData.category] || 'Propriedade';
@@ -383,7 +395,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!editingListing?.id && (
-            <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="iates">Iate</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
+            <div><label className="block text-sm font-medium mb-1">Categoria *</label><Select required value={formData.category} onValueChange={(v) => setFormData(p => ({ ...p, category: v }))}><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger><SelectContent><SelectItem value="mansoes">Mansão</SelectItem><SelectItem value="lanchas">Lancha</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent></Select></div>
           )}
           <div><label className="block text-sm font-medium mb-1">Bairro</label><Input value={formData.neighborhood} onChange={(e) => setFormData(p => ({ ...p, neighborhood: e.target.value }))} placeholder="Ex: Geribá" /></div>
         </div>

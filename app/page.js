@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from "react"
-import { Search, Menu, X, Star, MapPin, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Users, Bed, Bath, Eye, Anchor, Calendar, Clock, Car, Plane, Maximize } from "lucide-react"
+import { Search, Menu, X, Star, MapPin, ChevronLeft, ChevronRight, Phone, Mail, Instagram, Users, Bed, Bath, Eye, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
-
 
 // WhatsApp Component
 const WhatsAppButton = ({ listing, className = "" }) => {
@@ -51,9 +50,10 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
           <div className="hidden lg:flex items-center space-x-8 text-sm">
             <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
             <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-            <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
+            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
             <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
             <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
+            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
             <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             
             <div className="flex items-center space-x-2 text-gray-600 ml-4">
@@ -77,9 +77,10 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
             <div className="flex flex-col space-y-4">
               <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
               <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-              <Link href="/iates" className="text-gray-700 hover:text-gray-900 font-medium">Iates</Link>
+              <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
               <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
               <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
+              <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
               <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             </div>
           </div>
@@ -94,7 +95,6 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
 
   const handleServiceChange = (value) => {
     setSelectedService(value);
-    // Reseta os filtros específicos ao mudar de serviço
     setSearchParams({
       guests: '',
       bedrooms: '',
@@ -104,7 +104,6 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
   };
 
   const handleParamChange = (key, value) => {
-    // Se o valor for "any", salva como string vazia para limpar o filtro
     setSearchParams(prev => ({ ...prev, [key]: value === 'any' ? '' : value }));
   };
 
@@ -112,7 +111,6 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
     onSearch(selectedService, searchParams);
   };
 
-  // Renderiza os filtros corretos baseados no serviço selecionado
   const renderFilters = () => {
     switch (selectedService) {
       case 'mansoes':
@@ -146,7 +144,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </div>
           </>
         );
-      case 'iates':
+      case 'lanchas':
         return (
           <>
             <div className="text-left">
@@ -211,8 +209,38 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
                 <SelectContent>
                   <SelectItem value="any">Todos</SelectItem>
                   <SelectItem value="helicopter">Helicóptero</SelectItem>
+                  <SelectItem value="bimotor">Bimotor</SelectItem>
+                  <SelectItem value="jet">Jato</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+       case 'transfer':
+         return (
+          <>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
+              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Qualquer</SelectItem>
+                  <SelectItem value="1">1+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                  <SelectItem value="8">8+</SelectItem>
+                  <SelectItem value="15">15+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="text-left">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+              <Select value={searchParams.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
+                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Todos</SelectItem>
+                  <SelectItem value="luxury_car">Carro de Luxo</SelectItem>
                   <SelectItem value="van">Van</SelectItem>
-                  <SelectItem value="car">Carro</SelectItem>
+                  <SelectItem value="bus">Ônibus</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -253,9 +281,10 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
                   <SelectTrigger className="h-12 border-gray-200 text-black"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="mansoes">Mansões</SelectItem>
-                    <SelectItem value="iates">Iates</SelectItem>
+                    <SelectItem value="lanchas">Lanchas</SelectItem>
                     <SelectItem value="escuna">Escuna</SelectItem>
                     <SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem>
+                    <SelectItem value="transfer">Transfer</SelectItem>
                     <SelectItem value="buggy">Buggy</SelectItem>
                   </SelectContent>
                 </Select>
@@ -321,22 +350,22 @@ const SearchResults = ({ results, onClearSearch }) => {
   );
 };
 
-// Property Card Component - ATUALIZADO PARA MOSTRAR ESPECIFICAÇÕES CORRETAS
+// Property Card Component
 const PropertyCard = ({ listing, category }) => {
   const getPropertyImage = (listing, category) => {
     if (listing.featured_image) return listing.featured_image;
     if (listing.media && listing.media.length > 0) return listing.media[0].url;
     const categoryImages = {
       mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
-      iates: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
+      lanchas: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
       escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
       'taxi-aereo': 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
+      transfer: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=250&fit=crop&crop=center',
       buggy: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'
     };
     return categoryImages[category] || categoryImages.mansoes;
   };
 
-  // Função para renderizar especificações baseadas na categoria
   const renderSpecifications = () => {
     const specs = [];
     
@@ -376,7 +405,7 @@ const PropertyCard = ({ listing, category }) => {
         }
         break;
 
-      case 'iates':
+      case 'lanchas':
         if (listing.guests) {
           specs.push(
             <span key="guests" className="flex items-center">
@@ -455,11 +484,45 @@ const PropertyCard = ({ listing, category }) => {
           );
         }
         if (listing.vehicle_type) {
-          const vehicleIcon = listing.vehicle_type === 'helicopter' ? <Plane className="w-4 h-4 mr-1.5" /> : <Car className="w-4 h-4 mr-1.5" />;
+          const vehicleIcon = listing.vehicle_type === 'helicopter' || listing.vehicle_type === 'bimotor' || listing.vehicle_type === 'jet' ? <Plane className="w-4 h-4 mr-1.5" /> : <Plane className="w-4 h-4 mr-1.5" />;
           const vehicleText = {
             'helicopter': 'Helicóptero',
-            'car': 'Carro',
-            'van': 'Van'
+            'bimotor': 'Bimotor',
+            'jet': 'Jato'
+          }[listing.vehicle_type] || listing.vehicle_type;
+          
+          specs.push(
+            <span key="vehicle" className="flex items-center">
+              {vehicleIcon}
+              {vehicleText}
+            </span>
+          );
+        }
+        if (listing.duration) {
+          specs.push(
+            <span key="duration" className="flex items-center">
+              <Clock className="w-4 h-4 mr-1.5" />
+              {listing.duration}
+            </span>
+          );
+        }
+        break;
+
+      case 'transfer':
+        if (listing.guests) {
+          specs.push(
+            <span key="guests" className="flex items-center">
+              <Users className="w-4 h-4 mr-1.5" />
+              {listing.guests} {listing.guests === 1 ? 'Passageiro' : 'Passageiros'}
+            </span>
+          );
+        }
+        if (listing.vehicle_type) {
+          const vehicleIcon = listing.vehicle_type === 'bus' ? <Bus className="w-4 h-4 mr-1.5" /> : <Car className="w-4 h-4 mr-1.5" />;
+          const vehicleText = {
+            'luxury_car': 'Carro de Luxo',
+            'van': 'Van',
+            'bus': 'Ônibus'
           }[listing.vehicle_type] || listing.vehicle_type;
           
           specs.push(
@@ -507,7 +570,6 @@ const PropertyCard = ({ listing, category }) => {
         break;
 
       default:
-        // Fallback para categorias não identificadas
         if (listing.guests) {
           specs.push(
             <span key="guests" className="flex items-center">
@@ -543,7 +605,6 @@ const PropertyCard = ({ listing, category }) => {
               {listing.title}
             </h3>
             
-            {/* Especificações dinâmicas baseadas na categoria */}
             {specifications.length > 0 && (
               <div className="flex flex-wrap items-center text-sm text-gray-600 gap-x-4 gap-y-2 mb-4">
                 {specifications.slice(0, 3).map((spec, index) => (
@@ -555,7 +616,6 @@ const PropertyCard = ({ listing, category }) => {
               </div>
             )}
 
-            {/* Exibir subtítulo se não houver especificações */}
             {specifications.length === 0 && listing.subtitle && (
               <p className="text-sm text-gray-600 mb-4">{listing.subtitle}</p>
             )}
@@ -574,7 +634,7 @@ const PropertyCard = ({ listing, category }) => {
   );
 }
 
-// **COMPONENTE CATEGORYSECTION CORRIGIDO COM MELHOR RESPONSIVIDADE E SETAS**
+// Category Section Component
 const CategorySection = ({ title, description, listings, category }) => {
   if (!listings || listings.length === 0) return null;
 
@@ -586,7 +646,6 @@ const CategorySection = ({ title, description, listings, category }) => {
     <section className="py-16 md:py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Texto da seção - melhor responsividade */}
           <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 tracking-wide">
               {title}
@@ -601,7 +660,6 @@ const CategorySection = ({ title, description, listings, category }) => {
             </Link>
           </div>
 
-          {/* Carrossel - melhor responsividade */}
           <div className="lg:col-span-7 w-full">
             <div className="relative">
               <Carousel
@@ -630,7 +688,6 @@ const CategorySection = ({ title, description, listings, category }) => {
                   ))}
                 </CarouselContent>
                 
-                {/* Setas customizadas com melhor estilo */}
                 <div className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10">
                   <CarouselPrevious className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" />
                 </div>
@@ -639,7 +696,6 @@ const CategorySection = ({ title, description, listings, category }) => {
                 </div>
               </Carousel>
               
-              {/* Indicadores de navegação para mobile */}
               <div className="flex md:hidden justify-center mt-6 space-x-2">
                 {Array.from({ length: Math.ceil(listings.length / 1) }).map((_, index) => (
                   <div
@@ -656,8 +712,6 @@ const CategorySection = ({ title, description, listings, category }) => {
   );
 }
 
-
-// INÍCIO DO NOVO CÓDIGO ADICIONADO
 // Google Reviews Section
 const GoogleReviewsSection = () => {
   const reviews = [
@@ -721,8 +775,6 @@ const GoogleReviewsSection = () => {
     </section>
   );
 }
-// FIM DO NOVO CÓDIGO ADICIONADO
-
 
 // Footer
 const Footer = () => {
@@ -734,15 +786,16 @@ const Footer = () => {
             <div className="mb-6">
               <Image src="/logo.png" alt="Wordmaster Beach Búzios Logo Rodapé" width={160} height={45} />
             </div>
-            <p className="text-gray-600 mb-6">Experiências de luxo em Búzios. Mansões, iates, táxis aéreos e muito mais.</p>
+            <p className="text-gray-600 mb-6">Experiências de luxo em Búzios. Mansões, lanchas, táxis aéreos e muito mais.</p>
             <p className="text-gray-500 text-sm">CNPJ: 22.269.571/0001-69</p> 
           </div>
           <div>
             <h4 className="text-lg font-medium text-gray-900 mb-6">Destinos</h4>
             <div className="space-y-3">
-              <Link href="/mansoes" className="block text-gray-600 hover:text-gray-900">Mansões de Luxo</Link>
-              <Link href="/iates" className="block text-gray-600 hover:text-gray-900">Iates & Embarcações</Link>
+              <Link href="/mansoes" className="block text-gray-600 hover:text-gray-900">Aluguel de Mansões</Link>
+              <Link href="/lanchas" className="block text-gray-600 hover:text-gray-900">Aluguel de Lanchas</Link>
               <Link href="/taxi-aereo" className="block text-gray-600 hover:text-gray-900">Táxi Aéreo</Link>
+              <Link href="/transfer" className="block text-gray-600 hover:text-gray-900">Transfer</Link>
               <Link href="/escuna" className="block text-gray-600 hover:text-gray-900">Passeios de Escuna</Link>
             </div>
           </div>
@@ -768,12 +821,11 @@ const Footer = () => {
 // Main Homepage Component
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [allListings, setAllListings] = useState({ mansoes: [], iates: [], escuna: [], 'taxi-aereo': [], buggy: [] });
+  const [allListings, setAllListings] = useState({ mansoes: [], lanchas: [], escuna: [], 'taxi-aereo': [], transfer: [], buggy: [] });
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   
-  // Estados para o novo formulário de busca
   const [selectedService, setSelectedService] = useState('mansoes');
   const [searchParams, setSearchParams] = useState({
     guests: '',
@@ -787,18 +839,23 @@ export default function HomePage() {
       { id: '1', title: 'Villa paradisíaca em Geribá', category: 'mansoes', price_label: 'R$ 3.500,00', guests: 12, bedrooms: 6, bathrooms: 4, area_m2: 350, featured_image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center' },
       { id: '2', title: 'Luxuosa cobertura no Centro', category: 'mansoes', price_label: 'R$ 2.500,00', guests: 8, bedrooms: 4, bathrooms: 3, area_m2: 280, featured_image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=250&fit=crop&crop=center' },
     ],
-    iates: [
-      { id: '5', title: 'Iate de luxo de 62 pés', category: 'iates', price_label: 'R$ 8.500,00', guests: 20, bedrooms: 4, boat_length: 62, boat_year: 2020, featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center' },
-      { id: '6', title: 'Lancha esportiva premium', category: 'iates', price_label: 'R$ 4.200,00', guests: 12, bedrooms: 2, boat_length: 45, boat_year: 2019, featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center' }
+    lanchas: [
+      { id: '5', title: 'Lancha de luxo de 62 pés', category: 'lanchas', price_label: 'R$ 8.500,00', guests: 20, bedrooms: 4, boat_length: 62, boat_year: 2020, featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center' },
+      { id: '6', title: 'Lancha esportiva premium', category: 'lanchas', price_label: 'R$ 4.200,00', guests: 12, bedrooms: 2, boat_length: 45, boat_year: 2019, featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center' }
     ],
     escuna: [
       { id: '7', title: 'Escuna Tradicional Búzios', category: 'escuna', price_label: 'R$ 180,00', guests: 40, duration: '4 horas', boat_length: 85, includes_meal: true, featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center' }
     ],
     'taxi-aereo': [
-      { id: '8', title: 'Helicóptero Executive', category: 'taxi-aereo', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' }
+      { id: '8', title: 'Helicóptero Robinson 44', category: 'taxi-aereo', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', vehicle_model: 'Robinson 44', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' },
+      { id: '9', title: 'Bimotor Baron G58', category: 'taxi-aereo', price_label: 'R$ 3.500,00', guests: 6, vehicle_type: 'bimotor', vehicle_model: 'Baron G58', duration: '30 min', featured_image: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=400&h=250&fit=crop&crop=center' }
+    ],
+    transfer: [
+      { id: '10', title: 'Mercedes Sprinter Executive', category: 'transfer', price_label: 'R$ 800,00', guests: 15, vehicle_type: 'van', vehicle_model: 'Mercedes Sprinter', duration: '2 horas', featured_image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=250&fit=crop&crop=center' },
+      { id: '11', title: 'BMW 740i M Sport', category: 'transfer', price_label: 'R$ 500,00', guests: 4, vehicle_type: 'luxury_car', vehicle_model: 'BMW 740i', duration: '2 horas', featured_image: 'https://images.unsplash.com/photo-1555215858-91f61e11ce5f?w=400&h=250&fit=crop&crop=center' }
     ],
     buggy: [
-      { id: '9', title: 'Buggy Aventura Off-Road', category: 'buggy', price_label: 'R$ 350,00', guests: 4, vehicle_model: 'Fyber 2000', duration: 'Diária', featured_image: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'}
+      { id: '12', title: 'Buggy Aventura Off-Road', category: 'buggy', price_label: 'R$ 350,00', guests: 4, vehicle_model: 'Fyber 2000', duration: 'Diária', featured_image: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'}
     ]
   });
 
@@ -835,7 +892,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchAllListings = async () => {
       try {
-        const categories = ['mansoes', 'iates', 'escuna', 'taxi-aereo', 'buggy'];
+        const categories = ['mansoes', 'lanchas', 'escuna', 'taxi-aereo', 'transfer', 'buggy'];
         const promises = categories.map(category => 
           fetch(`/api/listings?category=${category}&limit=8`).then(res => res.ok ? res.json() : { listings: [] }).catch(() => ({ listings: [] }))
         );
@@ -869,17 +926,16 @@ export default function HomePage() {
         setSelectedService={setSelectedService}
       />
       
-      {/* Mostrar resultados de busca se existirem */}
       {searchResults !== null ? (
         <SearchResults results={searchResults} onClearSearch={clearSearch} />
       ) : (
-        /* Mostrar seções de categorias normalmente */
         !loading && (
           <>
-            <CategorySection title="APARTAMENTOS E CASAS DE LUXO" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />
-            <CategorySection title="ALUGUEL DE IATES DE LUXO" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura que nossos serviços de concierge podem oferecer." listings={allListings.iates} category="iates" />
-            <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas e desfrutando de um dia relaxante no mar." listings={allListings.escuna} category="escuna" />
-            <CategorySection title="TÁXI AÉREO" description="Oferecemos soluções de transporte aéreo para garantir sua chegada e partida com total conforto, segurança e exclusividade." listings={allListings['taxi-aereo']} category="taxi-aereo" />
+            <CategorySection title="ALUGUEL DE MANSÕES" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />
+            <CategorySection title="ALUGUEL DE LANCHAS" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura." listings={allListings.lanchas} category="lanchas" />
+            <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas." listings={allListings.escuna} category="escuna" />
+            <CategorySection title="TÁXI AÉREO" description="Helicópteros, bimotores e jatos para garantir sua chegada com total conforto, segurança e exclusividade." listings={allListings['taxi-aereo']} category="taxi-aereo" />
+            <CategorySection title="TRANSFER" description="Vans, ônibus e carros de luxo para seu transporte terrestre com máximo conforto." listings={allListings.transfer} category="transfer" />
             <CategorySection title="ALUGUEL DE BUGGY" description="Explore as ruas e praias de Búzios com estilo e diversão em um de nossos buggies." listings={allListings.buggy} category="buggy" />
           </>
         )
@@ -896,7 +952,6 @@ export default function HomePage() {
         </div>
       )}
       
-      {/* Só mostrar as reviews se não estiver em modo de busca */}
       {searchResults === null && <GoogleReviewsSection />}
       
       <Footer />
