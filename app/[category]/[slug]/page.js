@@ -25,12 +25,12 @@ const VillasNavbar = () => (
             />
           </Link>
           <div className="hidden lg:flex items-center space-x-8 text-sm">
-            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
+            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
+            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
+            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
             <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
             <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Buggy</Link>
+            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
           </div>
         </div>
       </div>
@@ -299,12 +299,12 @@ export default function PropertyDetailPage() {
 
   const getCategoryDisplayName = (category) => {
     const names = {
-      'mansoes': 'Mansões',
-      'lanchas': 'Lanchas',
-      'escuna': 'Escuna',
+      'mansoes': 'Aluguel de Mansões',
+      'lanchas': 'Aluguel de Lanchas',
+      'escuna': 'Passeios de Escuna',
       'taxi-aereo': 'Táxi Aéreo',
       'transfer': 'Transfer',
-      'buggy': 'Buggy'
+      'buggy': 'Aluguel de Buggy'
     };
     return names[category] || category;
   };

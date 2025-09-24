@@ -9,31 +9,17 @@ export default function Navbar({ variant = "default" }) {
   
   // Define os textos baseado na variante
   const getMenuItems = () => {
-    if (variant === "homepage") {
-      // Na homepage, mostra apenas os nomes simples
-      return [
-        { href: "/", label: "Brasil" },
-        { href: "/mansoes", label: "Mansões" },
-        { href: "/lanchas", label: "Lanchas" },
-        { href: "/escuna", label: "Escuna" },
-        { href: "/taxi-aereo", label: "Táxi Aéreo" },
-        { href: "/transfer", label: "Transfer" },
-        { href: "/buggy", label: "Buggy" },
-        { href: "/admin", label: "Admin", isAdmin: true }
-      ];
-    } else {
-      // Nas outras páginas, mostra os nomes completos
-      return [
-        { href: "/", label: "Home" },
-        { href: "/mansoes", label: "Aluguel de Mansões" },
-        { href: "/lanchas", label: "Aluguel de Lanchas" },
-        { href: "/escuna", label: "Passeios de Escuna" },
-        { href: "/taxi-aereo", label: "Táxi Aéreo" },
-        { href: "/transfer", label: "Transfer" },
-        { href: "/buggy", label: "Aluguel de Buggy" },
-        { href: "/admin", label: "Admin", isAdmin: true }
-      ];
-    }
+    // Agora usa os nomes completos em todas as variantes para consistência
+    return [
+      { href: "/", label: "Brasil" },
+      { href: "/mansoes", label: "Aluguel de Mansões" },
+      { href: "/lanchas", label: "Aluguel de Lanchas" },
+      { href: "/escuna", label: "Passeios de Escuna" },
+      { href: "/taxi-aereo", label: "Táxi Aéreo" },
+      { href: "/transfer", label: "Transfer" },
+      { href: "/buggy", label: "Aluguel de Buggy" },
+      { href: "/admin", label: "Admin", isAdmin: true }
+    ];
   };
 
   const menuItems = getMenuItems();

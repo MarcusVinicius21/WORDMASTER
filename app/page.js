@@ -49,11 +49,12 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
 
           <div className="hidden lg:flex items-center space-x-8 text-sm">
             <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
-            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
+            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
+            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
+            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
             <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
             <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
+            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
             <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             
             <div className="flex items-center space-x-2 text-gray-600 ml-4">
@@ -76,11 +77,12 @@ const VillasNavbar = ({ isMenuOpen, setIsMenuOpen }) => {
           <div className="lg:hidden py-6 border-t border-gray-100">
             <div className="flex flex-col space-y-4">
               <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
-              <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Mansões</Link>
-              <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Lanchas</Link>
-              <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Escuna</Link>
+              <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
+              <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
+              <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
               <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
               <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
+              <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
               <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
             </div>
           </div>
