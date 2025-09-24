@@ -31,13 +31,12 @@ const WhatsAppButton = ({ listing, className = "" }) => {
   )
 }
 
-// PASSO 2: A definição do VillasNavbar foi REMOVIDA daqui para evitar duplicação
-
-// Hero Section with NEW Search Logic
+// Hero Section with CORRECTED Search Logic
 const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, selectedService, setSelectedService }) => {
 
   const handleServiceChange = (value) => {
     setSelectedService(value);
+    // Resetar apenas alguns campos específicos, mas manter o que faz sentido
     setSearchParams({
       guests: '',
       bedrooms: '',
@@ -62,7 +61,11 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Hóspedes</label>
               <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Qualquer">
+                    {searchParams.guests ? `${searchParams.guests}+` : 'Qualquer'}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
                   <SelectItem value="2">2+</SelectItem>
@@ -75,7 +78,11 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Quartos</label>
               <Select value={searchParams.bedrooms || 'any'} onValueChange={(value) => handleParamChange('bedrooms', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Qualquer">
+                    {searchParams.bedrooms ? `${searchParams.bedrooms}+` : 'Qualquer'}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
                   <SelectItem value="2">2+</SelectItem>
@@ -93,7 +100,11 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
               <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Qualquer">
+                    {searchParams.guests ? `${searchParams.guests}+` : 'Qualquer'}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
                   <SelectItem value="4">4+</SelectItem>
@@ -120,7 +131,11 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <div className="text-left sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Pessoas</label>
             <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-              <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+              <SelectTrigger className="h-12 border-gray-200">
+                <SelectValue placeholder="Qualquer">
+                  {searchParams.guests ? `${searchParams.guests}+` : 'Qualquer'}
+                </SelectValue>
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Qualquer</SelectItem>
                 <SelectItem value="1">1+</SelectItem>
@@ -136,7 +151,11 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
               <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Qualquer">
+                    {searchParams.guests ? `${searchParams.guests}+` : 'Qualquer'}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
                   <SelectItem value="1">1+</SelectItem>
@@ -148,7 +167,17 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
               <Select value={searchParams.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Todos">
+                    {searchParams.vehicle_type && searchParams.vehicle_type !== 'any' ? 
+                      ({
+                        'helicopter': 'Helicóptero',
+                        'bimotor': 'Bimotor',
+                        'jet': 'Jato'
+                      }[searchParams.vehicle_type] || searchParams.vehicle_type) : 'Todos'
+                    }
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Todos</SelectItem>
                   <SelectItem value="helicopter">Helicóptero</SelectItem>
@@ -165,7 +194,11 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
               <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Qualquer">
+                    {searchParams.guests ? `${searchParams.guests}+` : 'Qualquer'}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Qualquer</SelectItem>
                   <SelectItem value="1">1+</SelectItem>
@@ -178,7 +211,17 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
               <Select value={searchParams.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
+                <SelectTrigger className="h-12 border-gray-200">
+                  <SelectValue placeholder="Todos">
+                    {searchParams.vehicle_type && searchParams.vehicle_type !== 'any' ? 
+                      ({
+                        'luxury_car': 'Carro de Luxo',
+                        'van': 'Van',
+                        'bus': 'Ônibus'
+                      }[searchParams.vehicle_type] || searchParams.vehicle_type) : 'Todos'
+                    }
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="any">Todos</SelectItem>
                   <SelectItem value="luxury_car">Carro de Luxo</SelectItem>
@@ -221,7 +264,18 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
               <div className="text-left md:col-span-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Serviço</label>
                 <Select value={selectedService} onValueChange={handleServiceChange}>
-                  <SelectTrigger className="h-12 border-gray-200 text-black"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-12 border-gray-200 text-black">
+                    <SelectValue>
+                      {{
+                        'mansoes': 'Mansões',
+                        'lanchas': 'Lanchas',
+                        'escuna': 'Escuna',
+                        'taxi-aereo': 'Táxi Aéreo',
+                        'transfer': 'Transfer',
+                        'buggy': 'Buggy'
+                      }[selectedService] || 'Selecione'}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="mansoes">Mansões</SelectItem>
                     <SelectItem value="lanchas">Lanchas</SelectItem>

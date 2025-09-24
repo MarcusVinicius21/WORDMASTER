@@ -37,7 +37,7 @@ const VillasNavbar = () => (
     </nav>
 )
 
-// NOVO COMPONENTE DE GALERIA COM LIGHTBOX E TODAS AS FOTOS
+// COMPONENTE DE GALERIA ATUALIZADO
 const VillasGallery = ({ images, title }) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -69,7 +69,6 @@ const VillasGallery = ({ images, title }) => {
   return (
     <div className="w-full relative">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {/* Imagem Principal */}
         <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
           <img src={visibleImages[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
@@ -77,12 +76,10 @@ const VillasGallery = ({ images, title }) => {
           </div>
         </div>
 
-        {/* Grid de Imagens Menores */}
         <div className="grid grid-cols-2 gap-2 h-full">
           {visibleImages.slice(1).map((img, index) => (
             <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
               <img src={img} alt={`${title} - ${index + 2}`} className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" />
-              {/* Overlay para a última imagem visível, se houver mais */}
               {index === 3 && remainingImagesCount > 0 && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-2xl font-bold rounded-md">
                   +{remainingImagesCount}
@@ -93,7 +90,6 @@ const VillasGallery = ({ images, title }) => {
         </div>
       </div>
       
-      {/* Botão "Ver todas as fotos" */}
       {galleryImages.length > 5 && (
         <div className="absolute bottom-4 right-4">
           <Button onClick={() => openLightbox(0)} variant="secondary" className="bg-white/90 hover:bg-white text-gray-800 shadow-lg">
@@ -102,7 +98,6 @@ const VillasGallery = ({ images, title }) => {
         </div>
       )}
 
-      {/* Lightbox */}
       {lightboxOpen && (
         <div className="fixed inset-0 z-[100] bg-black bg-opacity-90 flex items-center justify-center" onClick={closeLightbox}>
           <button onClick={closeLightbox} className="absolute top-4 right-4 text-white z-20 p-2"><X className="w-8 h-8" /></button>
@@ -122,9 +117,8 @@ const VillasGallery = ({ images, title }) => {
   )
 }
 
-
-// Componente de informações específicas por categoria
 const PropertySpecs = ({ listing, category }) => {
+  // ... (código do PropertySpecs - sem alterações)
   const renderSpecs = () => {
     switch (category) {
       case 'mansoes':
@@ -136,7 +130,6 @@ const PropertySpecs = ({ listing, category }) => {
             {listing.area_m2 && <Badge variant="outline"><Maximize className="w-4 h-4 mr-1" />{listing.area_m2}m²</Badge>}
           </div>
         );
-        
       case 'lanchas':
         return (
           <div className="flex flex-wrap gap-2">
@@ -146,7 +139,6 @@ const PropertySpecs = ({ listing, category }) => {
             {listing.boat_year && <Badge variant="outline"><Calendar className="w-4 h-4 mr-1" />Ano {listing.boat_year}</Badge>}
           </div>
         );
-        
       case 'escuna':
         return (
           <div className="flex flex-wrap gap-2">
@@ -156,7 +148,6 @@ const PropertySpecs = ({ listing, category }) => {
             {listing.includes_meal && <Badge variant="outline">🍽️ Refeição inclusa</Badge>}
           </div>
         );
-        
       case 'taxi-aereo':
         return (
           <div className="flex flex-wrap gap-2">
@@ -168,7 +159,6 @@ const PropertySpecs = ({ listing, category }) => {
             {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
           </div>
         );
-
       case 'transfer':
         return (
           <div className="flex flex-wrap gap-2">
@@ -180,7 +170,6 @@ const PropertySpecs = ({ listing, category }) => {
             {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
           </div>
         );
-        
       case 'buggy':
         return (
           <div className="flex flex-wrap gap-2">
@@ -189,7 +178,6 @@ const PropertySpecs = ({ listing, category }) => {
             {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
           </div>
         );
-        
       default:
         return (
           <div className="flex flex-wrap gap-2">
@@ -198,7 +186,6 @@ const PropertySpecs = ({ listing, category }) => {
         );
     }
   };
-
   return renderSpecs();
 };
 
@@ -215,27 +202,18 @@ const ContactForm = ({ listing, category }) => {
 
   const getFormLabel = () => {
     switch (category) {
-      case 'lanchas':
-        return 'Data do passeio';
-      case 'escuna':
-        return 'Data do passeio';
-      case 'taxi-aereo':
-        return 'Data do voo';
-      case 'transfer':
-        return 'Data do transfer';
-      case 'buggy':
-        return 'Data do aluguel';
-      default:
-        return 'Check-in';
+      case 'lanchas': return 'Data do passeio';
+      case 'escuna': return 'Data do passeio';
+      case 'taxi-aereo': return 'Data do voo';
+      case 'transfer': return 'Data do transfer';
+      case 'buggy': return 'Data do aluguel';
+      default: return 'Check-in';
     }
   };
 
   const getCheckoutLabel = () => {
     switch (category) {
-      case 'lanchas':
-      case 'escuna':
-      case 'taxi-aereo':
-      case 'transfer':
+      case 'lanchas': case 'escuna': case 'taxi-aereo': case 'transfer':
         return 'Horário preferido';
       case 'buggy':
         return 'Data de devolução';
@@ -255,9 +233,7 @@ const ContactForm = ({ listing, category }) => {
       transfer: 'transfer',
       buggy: 'buggy'
     }[category] || 'serviço';
-
     const chefMessage = formData.wantChef ? '\n- 🍽️ CONTRATAR CHEF: SIM' : '';
-
     const message = `Olá! Tenho interesse no ${serviceType} "${listing?.title}".\n\n- ${getFormLabel()}: ${formData.checkIn}\n- ${getCheckoutLabel()}: ${formData.checkOut}\n- ${category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}: ${formData.guests}\n- Email: ${formData.email}${chefMessage}\n- Mensagem: ${formData.message}\n\nVi no site.`
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
@@ -274,76 +250,34 @@ const ContactForm = ({ listing, category }) => {
           <div className="grid grid-cols-2 gap-2 border border-gray-300 rounded-lg p-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">{getFormLabel()}</label>
-              <input 
-                type="date" 
-                value={formData.checkIn} 
-                onChange={(e) => setFormData(p => ({ ...p, checkIn: e.target.value }))} 
-                className="w-full border-0 bg-transparent text-sm focus:outline-none" 
-              />
+              <input type="date" value={formData.checkIn} onChange={(e) => setFormData(p => ({ ...p, checkIn: e.target.value }))} className="w-full border-0 bg-transparent text-sm focus:outline-none" />
             </div>
             <div className="border-l border-gray-300 pl-3">
               <label className="block text-xs font-medium text-gray-700 mb-1">{getCheckoutLabel()}</label>
-              <input 
-                type={category === 'taxi-aereo' || category === 'transfer' || category === 'escuna' || category === 'lanchas' ? 'time' : 'date'} 
-                value={formData.checkOut} 
-                onChange={(e) => setFormData(p => ({ ...p, checkOut: e.target.value }))} 
-                className="w-full border-0 bg-transparent text-sm focus:outline-none" 
-              />
+              <input type={category === 'taxi-aereo' || category === 'transfer' || category === 'escuna' || category === 'lanchas' ? 'time' : 'date'} value={formData.checkOut} onChange={(e) => setFormData(p => ({ ...p, checkOut: e.target.value }))} className="w-full border-0 bg-transparent text-sm focus:outline-none" />
             </div>
           </div>
-          
           <div className="border border-gray-300 rounded-lg p-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              {category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">{category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}</label>
             <Select value={formData.guests} onValueChange={(v) => setFormData(p => ({ ...p, guests: v }))}>
               <SelectTrigger className="border-0 p-0 h-auto"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="4">4</SelectItem>
-                <SelectItem value="6">6</SelectItem>
-                <SelectItem value="8">8+</SelectItem>
+                <SelectItem value="1">1</SelectItem><SelectItem value="2">2</SelectItem><SelectItem value="4">4</SelectItem><SelectItem value="6">6</SelectItem><SelectItem value="8">8+</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
           {category === 'mansoes' && (
             <div className="border border-gray-300 rounded-lg p-4 bg-gray-50/50">
               <div className="flex items-center space-x-3">
-                <input 
-                  type="checkbox" 
-                  id="wantChef" 
-                  checked={formData.wantChef} 
-                  onChange={(e) => setFormData(p => ({ ...p, wantChef: e.target.checked }))} 
-                  className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label htmlFor="wantChef" className="text-sm font-medium text-gray-800">
-                  👨‍🍳 Contratar Chef Exclusivo
-                </label>
+                <input type="checkbox" id="wantChef" checked={formData.wantChef} onChange={(e) => setFormData(p => ({ ...p, wantChef: e.target.checked }))} className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                <label htmlFor="wantChef" className="text-sm font-medium text-gray-800">👨‍🍳 Contratar Chef Exclusivo</label>
               </div>
               <p className="text-xs text-gray-500 mt-1 pl-8">Adicione um chef particular para sua estadia.</p>
             </div>
           )}
-
-          <Input 
-            type="email" 
-            placeholder="Seu e-mail" 
-            value={formData.email} 
-            onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))} 
-            className="border-gray-300" 
-            required
-          />
-          <textarea 
-            placeholder="Mensagem" 
-            value={formData.message} 
-            onChange={(e) => setFormData(p => ({ ...p, message: e.target.value }))} 
-            className="w-full p-3 border border-gray-300 rounded-lg" 
-            rows={3}
-          />
-          <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-900 text-white">
-            Entrar em contato
-          </Button>
+          <Input type="email" placeholder="Seu e-mail" value={formData.email} onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))} className="border-gray-300" required />
+          <textarea placeholder="Mensagem" value={formData.message} onChange={(e) => setFormData(p => ({ ...p, message: e.target.value }))} className="w-full p-3 border border-gray-300 rounded-lg" rows={3}/>
+          <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-900 text-white">Entrar em contato</Button>
         </form>
       </CardContent>
     </Card>
