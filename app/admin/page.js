@@ -91,7 +91,7 @@ const ListingsManagement = () => {
   const fetchListings = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/listings?active=false&limit=100')
+      const response = await fetch('/api/listings?limit=100')
       if (response.ok) {
         const data = await response.json();
         setListings(data.listings || []);
