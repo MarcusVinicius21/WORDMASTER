@@ -10,7 +10,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
-import Navbar from "@/components/Navbar" // <-- Importado aqui
+import Navbar from "@/components/Navbar" // <-- PASSO 1: Importa o Navbar centralizado
 
 // WhatsApp Component
 const WhatsAppButton = ({ listing, className = "" }) => {
@@ -30,6 +30,8 @@ const WhatsAppButton = ({ listing, className = "" }) => {
     </Button>
   )
 }
+
+// PASSO 2: A definição do VillasNavbar foi REMOVIDA daqui para evitar duplicação
 
 // Hero Section with NEW Search Logic
 const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, selectedService, setSelectedService }) => {
@@ -856,7 +858,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar variant="homepage" />
+      <Navbar variant="homepage" /> 
       <HeroSection 
         onSearch={handleSearch} 
         isSearching={isSearching}

@@ -7,39 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
-
-const VillasNavbar = () => (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/logo.png"
-              alt="Wordmaster Beach Búzios Logo"
-              width={144}
-              height={40}
-              priority
-            />
-          </Link>
-          <div className="hidden lg:flex items-center space-x-8 text-sm">
-            <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium">Brasil</Link>
-            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
-            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
-            <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
-            <Link href="/admin" className="text-blue-700 hover:text-blue-900 font-medium">Admin</Link>
-            
-            <div className="flex items-center space-x-2 text-gray-600 ml-4">
-              <span>PT</span>
-              <span>R$ BRL</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-)
+import Navbar from "@/components/Navbar" // Importa o componente centralizado
 
 const WhatsAppButton = ({ listing }) => {
   const whatsappNumber = "5521976860759"
@@ -129,7 +97,7 @@ export default function CategoryPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <VillasNavbar />
+            <Navbar />
             <main className="container mx-auto px-6 py-12">
                 <div className="mb-10 text-center border-b pb-6"><div className="flex items-center justify-center">{currentCategory.icon}<h1 className="text-4xl font-light text-gray-800 tracking-wide">{currentCategory.title} em Búzios</h1></div><p className="mt-2 text-lg text-gray-600">Explore nossa seleção exclusiva.</p></div>
                 {loading && (<div className="text-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div><p className="mt-4 text-gray-600">Carregando...</p></div>)}
