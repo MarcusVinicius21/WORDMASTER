@@ -144,13 +144,15 @@ const PropertySpecs = ({ listing, category }) => {
   return renderSpecs();
 };
 
+// FORMULÁRIO COM OPÇÃO DE CHEF CORRIGIDO
 const ContactForm = ({ listing, category }) => {
   const [formData, setFormData] = useState({ 
     checkIn: '', 
     checkOut: '', 
     guests: '2', 
     email: '', 
-    message: '' 
+    message: '',
+    wantChef: false // NOVO CAMPO PARA CHEF
   })
 
   const getFormLabel = () => {
@@ -196,7 +198,10 @@ const ContactForm = ({ listing, category }) => {
       buggy: 'buggy'
     }[category] || 'serviço';
 
-    const message = `Olá! Tenho interesse no ${serviceType} "${listing?.title}".\n\n- ${getFormLabel()}: ${formData.checkIn}\n- ${getCheckoutLabel()}: ${formData.checkOut}\n- ${category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}: ${formData.guests}\n- Email: ${formData.email}\n- Mensagem: ${formData.message}\n\nVi no site.`
+    // ADICIONA INFORMAÇÃO DO CHEF NA MENSAGEM
+    const chefMessage = formData.wantChef ? '\n- Contratar Chef: SIM' : '';
+
+    const message = `Olá! Tenho interesse no ${serviceType} "${listing?.title}".\n\n- ${getFormLabel()}: ${formData.checkIn}\n- ${getCheckoutLabel()}: ${formData.checkOut}\n- ${category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}: ${formData.guests}\n- Email: ${formData.email}${chefMessage}\n- Mensagem: ${formData.message}\n\nVi no site.`
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }
@@ -229,6 +234,7 @@ const ContactForm = ({ listing, category }) => {
               />
             </div>
           </div>
+          
           <div className="border border-gray-300 rounded-lg p-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">
               {category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}
@@ -244,6 +250,26 @@ const ContactForm = ({ listing, category }) => {
               </SelectContent>
             </Select>
           </div>
+
+          {/* NOVA OPÇÃO DE CHEF - só aparece para mansões */}
+          {category === 'mansoes' && (
+            <div className="border border-gray-300 rounded-lg p-3">
+              <div className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  id="wantChef" 
+                  checked={formData.wantChef} 
+                  onChange={(e) => setFormData(p => ({ ...p, wantChef: e.target.checked }))} 
+                  className="rounded border-gray-300"
+                />
+                <label htmlFor="wantChef" className="text-sm font-medium text-gray-700">
+                  🍽️ Contratar Chef
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Solicite um chef particular para sua estadia</p>
+            </div>
+          )}
+
           <Input 
             type="email" 
             placeholder="Seu e-mail" 
