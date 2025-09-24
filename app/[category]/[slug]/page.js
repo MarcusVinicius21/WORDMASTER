@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { MapPin, Users, Bed, Bath, Maximize, X, Phone, Anchor, Calendar, Clock, Car, Plane } from "lucide-react"
+import { MapPin, Users, Bed, Bath, Maximize, X, Phone, Anchor, Calendar, Clock, Car, Plane, ArrowLeft, ArrowRight, Camera } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -37,33 +37,91 @@ const VillasNavbar = () => (
     </nav>
 )
 
+// NOVO COMPONENTE DE GALERIA COM LIGHTBOX E TODAS AS FOTOS
 const VillasGallery = ({ images, title }) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const galleryImages = images && images.length > 0 ? images.map(img => img.url) : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const galleryImages = images && images.length > 0 
+    ? images.map(img => img.url) 
+    : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"];
+
+  const openLightbox = (index) => {
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => setLightboxOpen(false);
+
+  const goToPrevious = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1));
+  };
+
+  const goToNext = (e) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => (prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1));
+  };
+
+  const visibleImages = galleryImages.slice(0, 5);
+  const remainingImagesCount = galleryImages.length - visibleImages.length;
 
   return (
     <div className="w-full relative">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        <div className="relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
-          <img src={galleryImages[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3]" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {/* Imagem Principal */}
+        <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
+          <img src={visibleImages[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+            <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
         </div>
+
+        {/* Grid de Imagens Menores */}
         <div className="grid grid-cols-2 gap-2 h-full">
-          {galleryImages.slice(1, 5).map((img, index) => (
-            <div key={index} className="relative cursor-pointer" onClick={() => setLightboxOpen(true)}>
-              <img src={img} alt={title} className="w-full h-full object-cover rounded-md aspect-video" />
+          {visibleImages.slice(1).map((img, index) => (
+            <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
+              <img src={img} alt={`${title} - ${index + 2}`} className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" />
+              {/* Overlay para a última imagem visível, se houver mais */}
+              {index === 3 && remainingImagesCount > 0 && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-2xl font-bold rounded-md">
+                  +{remainingImagesCount}
+                </div>
+              )}
             </div>
           ))}
         </div>
       </div>
+      
+      {/* Botão "Ver todas as fotos" */}
+      {galleryImages.length > 5 && (
+        <div className="absolute bottom-4 right-4">
+          <Button onClick={() => openLightbox(0)} variant="secondary" className="bg-white/90 hover:bg-white text-gray-800 shadow-lg">
+            Ver todas as {galleryImages.length} fotos
+          </Button>
+        </div>
+      )}
+
+      {/* Lightbox */}
       {lightboxOpen && (
-        <div className="fixed inset-0 z-[100] bg-black bg-opacity-90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
-            <button onClick={() => setLightboxOpen(false)} className="absolute top-4 right-4 text-white z-10 p-2"><X className="w-8 h-8" /></button>
-            <img src={galleryImages[0]} alt={title} className="max-w-full max-h-[90vh] object-contain" />
+        <div className="fixed inset-0 z-[100] bg-black bg-opacity-90 flex items-center justify-center" onClick={closeLightbox}>
+          <button onClick={closeLightbox} className="absolute top-4 right-4 text-white z-20 p-2"><X className="w-8 h-8" /></button>
+          
+          <button onClick={goToPrevious} className="absolute left-4 z-20 text-white p-2 bg-black/30 rounded-full hover:bg-black/50"><ArrowLeft className="w-6 h-6" /></button>
+          <button onClick={goToNext} className="absolute right-4 z-20 text-white p-2 bg-black/30 rounded-full hover:bg-black/50"><ArrowRight className="w-6 h-6" /></button>
+          
+          <div className="relative w-full max-w-4xl max-h-[90vh]">
+            <img src={galleryImages[currentImageIndex]} alt={title} className="max-w-full max-h-[90vh] object-contain mx-auto" />
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-3 py-1 rounded-full text-sm">
+              {currentImageIndex + 1} / {galleryImages.length}
+            </div>
+          </div>
         </div>
       )}
     </div>
   )
 }
+
 
 // Componente de informações específicas por categoria
 const PropertySpecs = ({ listing, category }) => {
@@ -144,13 +202,15 @@ const PropertySpecs = ({ listing, category }) => {
   return renderSpecs();
 };
 
+// FORMULÁRIO COM OPÇÃO DE CHEF APRIMORADA
 const ContactForm = ({ listing, category }) => {
   const [formData, setFormData] = useState({ 
     checkIn: '', 
     checkOut: '', 
     guests: '2', 
     email: '', 
-    message: '' 
+    message: '',
+    wantChef: false
   })
 
   const getFormLabel = () => {
@@ -196,7 +256,9 @@ const ContactForm = ({ listing, category }) => {
       buggy: 'buggy'
     }[category] || 'serviço';
 
-    const message = `Olá! Tenho interesse no ${serviceType} "${listing?.title}".\n\n- ${getFormLabel()}: ${formData.checkIn}\n- ${getCheckoutLabel()}: ${formData.checkOut}\n- ${category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}: ${formData.guests}\n- Email: ${formData.email}\n- Mensagem: ${formData.message}\n\nVi no site.`
+    const chefMessage = formData.wantChef ? '\n- 🍽️ CONTRATAR CHEF: SIM' : '';
+
+    const message = `Olá! Tenho interesse no ${serviceType} "${listing?.title}".\n\n- ${getFormLabel()}: ${formData.checkIn}\n- ${getCheckoutLabel()}: ${formData.checkOut}\n- ${category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}: ${formData.guests}\n- Email: ${formData.email}${chefMessage}\n- Mensagem: ${formData.message}\n\nVi no site.`
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
   }
@@ -229,6 +291,7 @@ const ContactForm = ({ listing, category }) => {
               />
             </div>
           </div>
+          
           <div className="border border-gray-300 rounded-lg p-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">
               {category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}
@@ -244,6 +307,25 @@ const ContactForm = ({ listing, category }) => {
               </SelectContent>
             </Select>
           </div>
+
+          {category === 'mansoes' && (
+            <div className="border border-gray-300 rounded-lg p-4 bg-gray-50/50">
+              <div className="flex items-center space-x-3">
+                <input 
+                  type="checkbox" 
+                  id="wantChef" 
+                  checked={formData.wantChef} 
+                  onChange={(e) => setFormData(p => ({ ...p, wantChef: e.target.checked }))} 
+                  className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="wantChef" className="text-sm font-medium text-gray-800">
+                  👨‍🍳 Contratar Chef Exclusivo
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 pl-8">Adicione um chef particular para sua estadia.</p>
+            </div>
+          )}
+
           <Input 
             type="email" 
             placeholder="Seu e-mail" 
@@ -340,7 +422,6 @@ export default function PropertyDetailPage() {
                 <span>{listing.neighborhood}</span>
               </div>
               
-              {/* Especificações específicas por categoria */}
               <PropertySpecs listing={listing} category={category} />
             </div>
             
