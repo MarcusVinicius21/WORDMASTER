@@ -396,7 +396,9 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     }
   }, [editingListing]);
 
-  // CORREÇÃO: Upload múltiplo ilimitado de imagens
+  // ==========================================================
+  // INÍCIO DA CORREÇÃO NA FUNÇÃO DE UPLOAD
+  // ==========================================================
   const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
@@ -404,10 +406,13 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     setUploading(true);
     
     try {
-      // Processa todas as imagens em paralelo (sem limite de quantidade)
       const uploadPromises = files.map(async (file) => {
-        const uploadResponse = await fetch(`/api/upload?filename=${file.name}`, {
+        // Garantindo que o método é POST
+        const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
           method: 'POST',
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+          },
           body: file,
         });
         
@@ -415,27 +420,30 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
           const blob = await uploadResponse.json();
           return {
             id: Date.now() + Math.random(),
-            file: null, // Não precisa manter o arquivo após upload
             preview: blob.url,
             name: file.name,
             uploaded: true,
             url: blob.url
           };
         }
-        throw new Error('Upload failed');
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.details || 'Falha no upload');
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
       setUploadedImages(prev => [...prev, ...uploadedFiles]);
+
     } catch (error) {
       console.error('Error uploading images:', error);
-      alert('Erro ao fazer upload de algumas imagens. Tente novamente.');
+      alert(`Erro ao fazer upload de imagens: ${error.message}`);
     } finally {
       setUploading(false);
-      // Limpa o input para permitir upload dos mesmos arquivos novamente se necessário
       event.target.value = '';
     }
   };
+  // ==========================================================
+  // FIM DA CORREÇÃO NA FUNÇÃO DE UPLOAD
+  // ==========================================================
 
   const removeImage = (id) => { 
     setUploadedImages(prev => prev.filter(img => img.id !== id)) 
@@ -480,7 +488,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
       if (!response.ok) throw new Error('Falha ao salvar propriedade');
       const savedListing = await response.json();
 
-      // Salva as imagens já uploadadas no banco
       if (uploadedImages.length > 0) {
         for (const image of uploadedImages) {
           if (image.uploaded && image.url) {
