@@ -36,13 +36,8 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
 
   const handleServiceChange = (value) => {
     setSelectedService(value);
-    // Resetar apenas alguns campos específicos, mas manter o que faz sentido
-    setSearchParams({
-      guests: '',
-      bedrooms: '',
-      boat_length: '',
-      vehicle_type: '',
-    });
+    // Não resetar os parâmetros para manter as seleções visíveis
+    // Os filtros serão aplicados corretamente baseados no serviço selecionado
   };
 
   const handleParamChange = (key, value) => {
