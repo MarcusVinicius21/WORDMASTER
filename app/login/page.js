@@ -109,14 +109,6 @@ export default function LoginPage() {
               ← Voltar para o site
             </Link>
           </div>
-
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">Credenciais de Demonstração:</h4>
-            <div className="text-xs space-y-1">
-              <p><strong>Admin:</strong> admin@wordmaster.com / admin123</p>
-              <p><strong>Editor:</strong> editor@wordmaster.com / editor123</p>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
