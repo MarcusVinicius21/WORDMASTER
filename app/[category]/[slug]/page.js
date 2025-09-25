@@ -37,12 +37,12 @@ const VillasNavbar = () => (
     </nav>
 )
 
-// COMPONENTE DE GALERIA TOTALMENTE REFORMULADO
+// COMPONENTE DE GALERIA TOTALMENTE REFORMULADO E CORRIGIDO
 const VillasGallery = ({ images, title }) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [gridExpanded, setGridExpanded] = useState(false);
-  
+
   const galleryImages = images && images.length > 0 
     ? images.map(img => img.url) 
     : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"];
@@ -63,7 +63,7 @@ const VillasGallery = ({ images, title }) => {
     if (e) e.stopPropagation();
     setCurrentImageIndex((prevIndex) => (prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1));
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowLeft') goToPrevious();
     if (e.key === 'ArrowRight') goToNext();
@@ -77,237 +77,102 @@ const VillasGallery = ({ images, title }) => {
     }
   }, [lightboxOpen, currentImageIndex]);
 
-
-  const visibleImages = galleryImages.slice(0, 5);
   const remainingImagesCount = galleryImages.length - 5;
 
-  if (!gridExpanded && galleryImages.length > 5) {
-     return (
-      <div className="w-full relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
-            <img 
-              src={galleryImages[0]} 
-              alt={title} 
-              className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" 
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-              <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </div>
-
-          {galleryImages.length > 1 && (
-            <div className="grid grid-cols-2 gap-2 h-full">
-              {galleryImages.slice(1, 5).map((img, index) => (
-                <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
-                  <img 
-                    src={img} 
-                    alt={`${title} - ${index + 2}`} 
-                    className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" 
-                  />
-                  {index === 3 && remainingImagesCount > 0 && (
-                    <div 
-                      className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white rounded-md hover:bg-opacity-70 transition-all cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGridExpanded(true);
-                      }}
-                    >
-                      <div className="text-center">
-                        <div className="text-3xl font-bold">+{remainingImagesCount}</div>
-                        <div className="text-sm mt-1">Ver mais</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+  const renderGrid = (imageSet, isCompact) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
+        <img src={imageSet[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+          <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
+      </div>
+      {imageSet.length > 1 && (
+        <div className="grid grid-cols-2 gap-2 h-full">
+          {imageSet.slice(1, 5).map((img, index) => (
+            <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
+              <img src={img} alt={`${title} - ${index + 2}`} className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" />
+              {isCompact && index === 3 && remainingImagesCount > 0 && (
+                <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white rounded-md hover:bg-opacity-70 transition-all cursor-pointer"
+                  onClick={(e) => { e.stopPropagation(); setGridExpanded(true); }}>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">+{remainingImagesCount}</div>
+                    <div className="text-sm mt-1">Ver mais</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
+  const renderLightbox = () => (
+    lightboxOpen && (
+      <div className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center" onClick={closeLightbox}>
+        <button onClick={closeLightbox} className="absolute top-4 right-4 text-white z-20 p-2 hover:bg-white/10 rounded-full transition-colors">
+          <X className="w-8 h-8" />
+        </button>
+        {galleryImages.length > 1 && (
+          <>
+            <button onClick={goToPrevious} className="absolute left-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button onClick={goToNext} className="absolute right-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </>
+        )}
+        <div className="relative w-full max-w-6xl max-h-[90vh] px-4">
+          <img src={galleryImages[currentImageIndex]} alt={`${title} - ${currentImageIndex + 1}`} className="max-w-full max-h-[85vh] object-contain mx-auto" />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full text-sm">
+            {currentImageIndex + 1} / {galleryImages.length}
+          </div>
+        </div>
+      </div>
+    )
+  );
+  
+  if (gridExpanded) {
+    return (
+        <div className="w-full relative">
+            <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-medium text-gray-900">Todas as fotos ({galleryImages.length})</h3>
+                <Button onClick={() => setGridExpanded(false)} variant="outline" size="sm">
+                    Voltar ao layout compacto
+                </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {galleryImages.map((img, index) => (
+                    <div key={index} className="relative cursor-pointer group aspect-video" onClick={() => openLightbox(index)}>
+                        <img src={img} alt={`${title} - ${index + 1}`} className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity" />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center rounded-md">
+                            <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+            {renderLightbox()}
+        </div>
+    );
+  }
+
+  return (
+    <div className="w-full relative">
+      {renderGrid(galleryImages.slice(0, 5), true)}
+      {galleryImages.length > 5 && !gridExpanded && (
         <div className="mt-4 text-center">
-          <Button 
-            onClick={() => setGridExpanded(true)} 
-            variant="outline" 
-            className="bg-white hover:bg-gray-50"
-          >
+          <Button onClick={() => setGridExpanded(true)} variant="outline" className="bg-white hover:bg-gray-50">
             <Camera className="w-4 h-4 mr-2" />
             Ver todas as {galleryImages.length} fotos
           </Button>
         </div>
-
-        {lightboxOpen && (
-          <div 
-            className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center" 
-            onClick={closeLightbox}
-          >
-            <button 
-              onClick={closeLightbox} 
-              className="absolute top-4 right-4 text-white z-20 p-2 hover:bg-white/10 rounded-full transition-colors"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            
-            {galleryImages.length > 1 && (
-              <>
-                <button 
-                  onClick={goToPrevious} 
-                  className="absolute left-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button 
-                  onClick={goToNext} 
-                  className="absolute right-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </>
-            )}
-            
-            <div className="relative w-full max-w-6xl max-h-[90vh] px-4">
-              <img 
-                src={galleryImages[currentImageIndex]} 
-                alt={`${title} - ${currentImageIndex + 1}`} 
-                className="max-w-full max-h-[85vh] object-contain mx-auto" 
-              />
-              
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full text-sm">
-                {currentImageIndex + 1} / {galleryImages.length}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // GRID EXPANDIDO - mostra todas as imagens
-  if (gridExpanded) {
-    return (
-      <div className="w-full relative">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900">Todas as fotos ({galleryImages.length})</h3>
-          <Button 
-            onClick={() => setGridExpanded(false)} 
-            variant="outline" 
-            size="sm"
-          >
-            Voltar ao layout compacto
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {galleryImages.map((img, index) => (
-            <div 
-              key={index} 
-              className="relative cursor-pointer group aspect-video" 
-              onClick={() => openLightbox(index)}
-            >
-              <img 
-                src={img} 
-                alt={`${title} - ${index + 1}`} 
-                className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity" 
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center rounded-md">
-                <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {lightboxOpen && (
-           <div 
-            className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center" 
-            onClick={closeLightbox}
-          >
-            <button 
-              onClick={closeLightbox} 
-              className="absolute top-4 right-4 text-white z-20 p-2 hover:bg-white/10 rounded-full transition-colors"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            
-            {galleryImages.length > 1 && (
-              <>
-                <button 
-                  onClick={goToPrevious} 
-                  className="absolute left-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button 
-                  onClick={goToNext} 
-                  className="absolute right-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </>
-            )}
-            
-            <div className="relative w-full max-w-6xl max-h-[90vh] px-4">
-              <img 
-                src={galleryImages[currentImageIndex]} 
-                alt={`${title} - ${currentImageIndex + 1}`} 
-                className="max-w-full max-h-[85vh] object-contain mx-auto" 
-              />
-              
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full text-sm">
-                {currentImageIndex + 1} / {galleryImages.length}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Fallback para quando tem 5 ou menos imagens
-  return (
-      <div className="w-full relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
-                <img src={galleryImages[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-            </div>
-            {galleryImages.length > 1 && (
-                <div className="grid grid-cols-2 gap-2 h-full">
-                    {galleryImages.slice(1, 5).map((img, index) => (
-                        <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
-                            <img src={img} alt={`${title} - ${index + 2}`} className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" />
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-        {lightboxOpen && (
-            <div className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center" onClick={closeLightbox}>
-                <button onClick={closeLightbox} className="absolute top-4 right-4 text-white z-20 p-2 hover:bg-white/10 rounded-full transition-colors">
-                    <X className="w-8 h-8" />
-                </button>
-                {galleryImages.length > 1 && (
-                    <>
-                        <button onClick={goToPrevious} className="absolute left-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
-                            <ChevronLeft className="w-6 h-6" />
-                        </button>
-                        <button onClick={goToNext} className="absolute right-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
-                            <ChevronRight className="w-6 h-6" />
-                        </button>
-                    </>
-                )}
-                <div className="relative w-full max-w-6xl max-h-[90vh] px-4">
-                    <img src={galleryImages[currentImageIndex]} alt={`${title} - ${currentImageIndex + 1}`} className="max-w-full max-h-[85vh] object-contain mx-auto" />
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full text-sm">
-                        {currentImageIndex + 1} / {galleryImages.length}
-                    </div>
-                </div>
-            </div>
-        )}
+      )}
+      {renderLightbox()}
     </div>
   );
-}
+};
 
 
 const PropertySpecs = ({ listing, category }) => {
