@@ -1,4 +1,3 @@
-
 'use client'
 
 import React, { useState, useEffect, useRef } from "react"
@@ -11,7 +10,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
-import Navbar from "@/components/Navbar" // <-- PASSO 1: Importa o Navbar centralizado
+import Navbar from "@/components/Navbar"
 
 // WhatsApp Component
 const WhatsAppButton = ({ listing, className = "" }) => {
@@ -32,21 +31,39 @@ const WhatsAppButton = ({ listing, className = "" }) => {
   )
 }
 
-// Hero Section with CORRECTED Search Logic
-const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, selectedService, setSelectedService }) => {
+// Hero Section with FIXED Search Logic
+const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, setSelectedService }) => {
+  // Estado local para os filtros que estão sendo editados
+  const [localFilters, setLocalFilters] = useState({
+    guests: '',
+    bedrooms: '',
+    boat_length: '',
+    vehicle_type: '',
+  });
+
+  // Sincroniza os filtros locais com os filtros atuais quando eles mudam (após uma busca)
+  useEffect(() => {
+    setLocalFilters(currentFilters);
+  }, [currentFilters]);
 
   const handleServiceChange = (value) => {
     setSelectedService(value);
-    // Não resetar os parâmetros para manter as seleções visíveis
-    // Os filtros serão aplicados corretamente baseados no serviço selecionado
+    // Ao mudar de serviço, limpa apenas os filtros locais temporários
+    setLocalFilters({
+      guests: '',
+      bedrooms: '',
+      boat_length: '',
+      vehicle_type: '',
+    });
   };
 
   const handleParamChange = (key, value) => {
-    setSearchParams(prev => ({ ...prev, [key]: value === 'any' ? '' : value }));
+    setLocalFilters(prev => ({ ...prev, [key]: value === 'any' ? '' : value }));
   };
 
   const handleSearch = () => {
-    onSearch(selectedService, searchParams);
+    // Passa os filtros locais para a busca, que então atualiza os currentFilters
+    onSearch(selectedService, localFilters);
   };
 
   const renderFilters = () => {
@@ -56,7 +73,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Hóspedes</label>
-              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Qualquer" />
                 </SelectTrigger>
@@ -71,7 +88,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </div>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Quartos</label>
-              <Select value={searchParams.bedrooms || 'any'} onValueChange={(value) => handleParamChange('bedrooms', value)}>
+              <Select value={localFilters.bedrooms || 'any'} onValueChange={(value) => handleParamChange('bedrooms', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Qualquer" />
                 </SelectTrigger>
@@ -91,7 +108,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Qualquer" />
                 </SelectTrigger>
@@ -109,7 +126,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
                 type="number"
                 placeholder="Ex: 50"
                 className="h-12 border-gray-200 rounded-md"
-                value={searchParams.boat_length || ''}
+                value={localFilters.boat_length || ''}
                 onChange={(e) => handleParamChange('boat_length', e.target.value)}
               />
             </div>
@@ -120,7 +137,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
         return (
           <div className="text-left sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Pessoas</label>
-            <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
+            <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
               <SelectTrigger className="h-12 border-gray-200">
                 <SelectValue placeholder="Qualquer" />
               </SelectTrigger>
@@ -138,7 +155,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Qualquer" />
                 </SelectTrigger>
@@ -152,7 +169,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </div>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <Select value={searchParams.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
+              <Select value={localFilters.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
@@ -171,7 +188,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
           <>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
+              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Qualquer" />
                 </SelectTrigger>
@@ -186,7 +203,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             </div>
             <div className="text-left">
               <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <Select value={searchParams.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
+              <Select value={localFilters.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
                 <SelectTrigger className="h-12 border-gray-200">
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
@@ -767,7 +784,9 @@ export default function HomePage() {
   const [isSearching, setIsSearching] = useState(false);
   
   const [selectedService, setSelectedService] = useState('mansoes');
-  const [searchParams, setSearchParams] = useState({
+  
+  // Estado para os filtros atuais (persistentes após busca)
+  const [currentFilters, setCurrentFilters] = useState({
     guests: '',
     bedrooms: '',
     boat_length: '',
@@ -799,12 +818,16 @@ export default function HomePage() {
     ]
   });
 
-  const handleSearch = async (category, params) => {
+  const handleSearch = async (category, filters) => {
     setIsSearching(true);
     setSearchResults(null);
+    
+    // Atualiza os filtros atuais para manter selecionados após busca
+    setCurrentFilters(filters);
+    
     try {
       const query = new URLSearchParams({ category, limit: 50 });
-      Object.entries(params).forEach(([key, value]) => {
+      Object.entries(filters).forEach(([key, value]) => {
         if (value) {
           query.append(key, value);
         }
@@ -826,7 +849,7 @@ export default function HomePage() {
 
   const clearSearch = () => {
     setSearchResults(null);
-    setSearchParams({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
+    setCurrentFilters({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
   };
 
   useEffect(() => {
@@ -866,8 +889,7 @@ export default function HomePage() {
         <HeroSection 
           onSearch={handleSearch} 
           isSearching={isSearching} 
-          searchParams={searchParams}
-          setSearchParams={setSearchParams}
+          currentFilters={currentFilters}
           selectedService={selectedService}
           setSelectedService={setSelectedService}
         />
@@ -919,5 +941,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
