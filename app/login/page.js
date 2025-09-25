@@ -42,7 +42,7 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">W</span>
             </div>
-            <span className="font-bold text-2xl text-gray-900">Wordmaster Beach</span>
+            <span className="font-bold text-2xl text-gray-900">Wordmaster Beach Búzios</span>
           </div>
           <CardTitle className="text-2xl">Entrar na sua conta</CardTitle>
           <p className="text-gray-600">Acesse o painel administrativo</p>
