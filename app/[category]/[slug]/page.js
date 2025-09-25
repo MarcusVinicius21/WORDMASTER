@@ -309,6 +309,7 @@ const VillasGallery = ({ images, title }) => {
   );
 }
 
+
 const PropertySpecs = ({ listing, category }) => {
   const renderSpecs = () => {
     switch (category) {
@@ -516,11 +517,28 @@ export default function PropertyDetailPage() {
   };
 
   if (loading) {
-    return (<div className="min-h-screen bg-white"><VillasNavbar /><div className="container mx-auto p-6 py-20 text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div><p className="mt-4 text-gray-600">Carregando...</div></div>);
+    return (
+      <div className="min-h-screen bg-white">
+        <VillasNavbar />
+        <div className="container mx-auto p-6 py-20 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!listing) {
-    return (<div className="min-h-screen bg-white"><VillasNavbar /><div className="container mx-auto p-6 py-20 text-center"><h1 className="text-2xl font-bold text-gray-900 mb-4">Propriedade não encontrada</h1><p className="text-gray-600 mb-6">O item que você está procurando não existe ou foi removido.</p><Link href="/"><Button>Voltar ao início</Button></Link></div></div>);
+    return (
+        <div className="min-h-screen bg-white">
+            <VillasNavbar />
+            <div className="container mx-auto p-6 py-20 text-center">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Propriedade não encontrada</h1>
+                <p className="text-gray-600 mb-6">O item que você está procurando não existe ou foi removido.</p>
+                <Link href="/"><Button>Voltar ao início</Button></Link>
+            </div>
+        </div>
+    );
   }
 
   return (
