@@ -1,3 +1,4 @@
+
 'use client'
 
 import React, { useState, useEffect, useRef } from "react"
@@ -121,9 +122,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
             <label className="block text-sm font-medium text-gray-700 mb-2">Pessoas</label>
             <Select value={searchParams.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
               <SelectTrigger className="h-12 border-gray-200">
-                <SelectValue placeholder="Qualquer">
-                  {searchParams.guests ? `${searchParams.guests}+` : 'Qualquer'}
-                </SelectValue>
+                <SelectValue placeholder="Qualquer" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Qualquer</SelectItem>
@@ -234,16 +233,7 @@ const HeroSection = ({ onSearch, isSearching, searchParams, setSearchParams, sel
                 <label className="block text-sm font-medium text-gray-700 mb-2">Serviço</label>
                 <Select value={selectedService} onValueChange={handleServiceChange}>
                   <SelectTrigger className="h-12 border-gray-200 text-black">
-                    <SelectValue>
-                      {{
-                        'mansoes': 'Mansões',
-                        'lanchas': 'Lanchas',
-                        'escuna': 'Escuna',
-                        'taxi-aereo': 'Táxi Aéreo',
-                        'transfer': 'Transfer',
-                        'buggy': 'Buggy'
-                      }[selectedService] || 'Selecione'}
-                    </SelectValue>
+                    <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="mansoes">Mansões</SelectItem>
@@ -400,7 +390,7 @@ const PropertyCard = ({ listing, category }) => {
           specs.push(
             <span key="year" className="flex items-center">
               <Calendar className="w-4 h-4 mr-1.5" />
-              Ano {listing.boat_year}
+              {listing.boat_year}
             </span>
           );
         }
@@ -411,7 +401,7 @@ const PropertyCard = ({ listing, category }) => {
           specs.push(
             <span key="guests" className="flex items-center">
               <Users className="w-4 h-4 mr-1.5" />
-              {listing.guests} {listing.guests === 1 ? 'Passageiro' : 'Passageiros'}
+              {listing.guests} {listing.guests === 1 ? 'Pessoa' : 'Pessoas'}
             </span>
           );
         }
@@ -420,21 +410,6 @@ const PropertyCard = ({ listing, category }) => {
             <span key="duration" className="flex items-center">
               <Clock className="w-4 h-4 mr-1.5" />
               {listing.duration}
-            </span>
-          );
-        }
-        if (listing.boat_length) {
-          specs.push(
-            <span key="length" className="flex items-center">
-              <Anchor className="w-4 h-4 mr-1.5" />
-              {listing.boat_length} pés
-            </span>
-          );
-        }
-        if (listing.includes_meal) {
-          specs.push(
-            <span key="meal" className="flex items-center">
-              🍽️ Refeição inclusa
             </span>
           );
         }
@@ -450,7 +425,7 @@ const PropertyCard = ({ listing, category }) => {
           );
         }
         if (listing.vehicle_type) {
-          const vehicleIcon = listing.vehicle_type === 'helicopter' || listing.vehicle_type === 'bimotor' || listing.vehicle_type === 'jet' ? <Plane className="w-4 h-4 mr-1.5" /> : <Plane className="w-4 h-4 mr-1.5" />;
+          const vehicleIcon = listing.vehicle_type === 'helicopter' ? <Plane className="w-4 h-4 mr-1.5" /> : <Car className="w-4 h-4 mr-1.5" />;
           const vehicleText = {
             'helicopter': 'Helicóptero',
             'bimotor': 'Bimotor',
@@ -858,73 +833,91 @@ export default function HomePage() {
     const fetchAllListings = async () => {
       try {
         const categories = ['mansoes', 'lanchas', 'escuna', 'taxi-aereo', 'transfer', 'buggy'];
-        const promises = categories.map(category => 
-          fetch(`/api/listings?category=${category}&limit=8`).then(res => res.ok ? res.json() : { listings: [] }).catch(() => ({ listings: [] }))
-        );
-        const results = await Promise.all(promises);
-        const listingsData = {};
-        const fallbackData = getFallbackData();
-        categories.forEach((category, index) => {
-          const apiListings = results[index].listings || [];
-          listingsData[category] = apiListings.length > 0 ? apiListings : (fallbackData[category] || []);
-        });
-        setAllListings(listingsData);
+        const fetchedData = {};
+
+        for (const category of categories) {
+          const response = await fetch(`/api/listings?category=${category}&limit=50`);
+          if (!response.ok) {
+            console.warn(`Falha ao buscar ${category}, usando dados de fallback.`);
+            fetchedData[category] = getFallbackData()[category];
+          } else {
+            const data = await response.json();
+            fetchedData[category] = data.listings || [];
+          }
+        }
+        setAllListings(fetchedData);
       } catch (error) {
-        console.error('Error fetching listings:', error);
+        console.error('Erro ao buscar todas as listagens:', error);
         setAllListings(getFallbackData());
       } finally {
         setLoading(false);
       }
     };
+
     fetchAllListings();
   }, []);
 
+  const getCategoryListings = (category) => allListings[category] || [];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar variant="homepage" /> 
-      <HeroSection 
-        onSearch={handleSearch} 
-        isSearching={isSearching}
-        searchParams={searchParams}
-        setSearchParams={setSearchParams}
-        selectedService={selectedService}
-        setSelectedService={setSelectedService}
-      />
-      
-      {searchResults !== null ? (
-        <SearchResults results={searchResults} onClearSearch={clearSearch} />
-      ) : (
-        !loading && (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <HeroSection 
+          onSearch={handleSearch} 
+          isSearching={isSearching} 
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+          selectedService={selectedService}
+          setSelectedService={setSelectedService}
+        />
+        {searchResults !== null ? (
+          <SearchResults results={searchResults} onClearSearch={clearSearch} />
+        ) : (
           <>
-            <CategorySection title="ALUGUEL DE MANSÕES" description="Propriedades exclusivas para uma estadia inesquecível, combinando conforto, elegância e as melhores localizações de Búzios." listings={allListings.mansoes} category="mansoes" />
-            <CategorySection title="ALUGUEL DE LANCHAS" description="Confira nossas opções de lanchas para complementar sua viagem com luxo, apreciação e aventura." listings={allListings.lanchas} category="lanchas" />
-            <CategorySection title="PASSEIOS DE ESCUNA" description="Navegue pelas águas cristalinas de Búzios a bordo de nossas escunas, visitando as praias mais famosas." listings={allListings.escuna} category="escuna" />
-            <CategorySection title="TÁXI AÉREO" description="Helicópteros, bimotores e jatos para garantir sua chegada com total conforto, segurança e exclusividade." listings={allListings['taxi-aereo']} category="taxi-aereo" />
-            <CategorySection title="TRANSFER" description="Vans, ônibus e carros de luxo para seu transporte terrestre com máximo conforto." listings={allListings.transfer} category="transfer" />
-            <CategorySection title="ALUGUEL DE BUGGY" description="Explore as ruas e praias de Búzios com estilo e diversão em um de nossos buggies." listings={allListings.buggy} category="buggy" />
+            <CategorySection 
+              title="Mansões de Luxo em Búzios"
+              description="Descubra as mais exclusivas mansões para aluguel, perfeitas para suas férias ou eventos especiais."
+              listings={getCategoryListings('mansoes')}
+              category="mansoes"
+            />
+            <CategorySection 
+              title="Lanchas e Iates para Aluguel"
+              description="Explore as belezas de Búzios pelo mar com nossa seleção de lanchas e iates de luxo."
+              listings={getCategoryListings('lanchas')}
+              category="lanchas"
+            />
+            <CategorySection 
+              title="Passeios de Escuna Inesquecíveis"
+              description="Aproveite um dia relaxante navegando pelas águas cristalinas de Búzios em nossas escunas."
+              listings={getCategoryListings('escuna')}
+              category="escuna"
+            />
+            <CategorySection 
+              title="Táxi Aéreo e Voos Panorâmicos"
+              description="Chegue em Búzios com estilo ou desfrute de vistas aéreas deslumbrantes com nosso serviço de táxi aéreo."
+              listings={getCategoryListings('taxi-aereo')}
+              category="taxi-aereo"
+            />
+            <CategorySection 
+              title="Transfer Executivo e VIP"
+              description="Garanta sua chegada e partida com conforto e segurança. Oferecemos transfer executivo para Búzios e região."
+              listings={getCategoryListings('transfer')}
+              category="transfer"
+            />
+            <CategorySection 
+              title="Aventura de Buggy em Búzios"
+              description="Explore as trilhas e praias escondidas de Búzios com nossos emocionantes passeios de buggy."
+              listings={getCategoryListings('buggy')}
+              category="buggy"
+            />
           </>
-        )
-      )}
-      
-      {loading && (
-        <div className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Carregando propriedades...</p>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {searchResults === null && <GoogleReviewsSection />}
-      
+        )}
+        <GoogleReviewsSection />
+      </main>
       <Footer />
-      <div className="fixed bottom-6 right-6 z-50">
-        <button onClick={() => window.open('https://wa.me/5521976860759', '_blank')} className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-110">
-          <Phone className="w-6 h-6" />
-        </button>
-      </div>
     </div>
-  )
+  );
 }
+
+
