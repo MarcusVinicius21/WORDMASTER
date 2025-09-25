@@ -407,7 +407,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     
     try {
       const uploadPromises = files.map(async (file) => {
-        // Garantindo que o método é POST
+        // Garantindo que o método é POST e incluindo o Content-Type
         const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
           method: 'POST',
           headers: {
@@ -426,6 +426,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
             url: blob.url
           };
         }
+        // Tenta extrair uma mensagem de erro mais detalhada do backend
         const errorData = await uploadResponse.json();
         throw new Error(errorData.details || 'Falha no upload');
       });
@@ -435,6 +436,7 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
 
     } catch (error) {
       console.error('Error uploading images:', error);
+      // Mostra a mensagem de erro específica vinda da API
       alert(`Erro ao fazer upload de imagens: ${error.message}`);
     } finally {
       setUploading(false);
