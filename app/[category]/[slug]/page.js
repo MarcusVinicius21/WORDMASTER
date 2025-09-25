@@ -65,34 +65,36 @@ const VillasGallery = ({ images, title }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'ArrowLeft') goToPrevious();
-    if (e.key === 'ArrowRight') goToNext();
-    if (e.key === 'Escape') closeLightbox();
+    if (lightboxOpen) {
+        if (e.key === 'ArrowLeft') goToPrevious(e);
+        if (e.key === 'ArrowRight') goToNext(e);
+        if (e.key === 'Escape') closeLightbox();
+    }
   };
 
   useEffect(() => {
-    if (lightboxOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [lightboxOpen, currentImageIndex]);
 
   const remainingImagesCount = galleryImages.length - 5;
 
-  const renderGrid = (imageSet, isCompact) => (
+  const renderGrid = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
-        <img src={imageSet[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
+        <img src={galleryImages[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
           <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
       </div>
-      {imageSet.length > 1 && (
+      {galleryImages.length > 1 && (
         <div className="grid grid-cols-2 gap-2 h-full">
-          {imageSet.slice(1, 5).map((img, index) => (
+          {galleryImages.slice(1, 5).map((img, index) => (
             <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
               <img src={img} alt={`${title} - ${index + 2}`} className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" />
-              {isCompact && index === 3 && remainingImagesCount > 0 && (
+              {index === 3 && remainingImagesCount > 0 && (
                 <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white rounded-md hover:bg-opacity-70 transition-all cursor-pointer"
                   onClick={(e) => { e.stopPropagation(); setGridExpanded(true); }}>
                   <div className="text-center">
@@ -133,39 +135,38 @@ const VillasGallery = ({ images, title }) => {
       </div>
     )
   );
-  
+
   if (gridExpanded) {
     return (
-        <div className="w-full relative">
-            <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">Todas as fotos ({galleryImages.length})</h3>
-                <Button onClick={() => setGridExpanded(false)} variant="outline" size="sm">
-                    Voltar ao layout compacto
-                </Button>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {galleryImages.map((img, index) => (
-                    <div key={index} className="relative cursor-pointer group aspect-video" onClick={() => openLightbox(index)}>
-                        <img src={img} alt={`${title} - ${index + 1}`} className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity" />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center rounded-md">
-                            <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-            {renderLightbox()}
+      <div className="w-full relative">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-medium text-gray-900">Todas as fotos ({galleryImages.length})</h3>
+          <Button onClick={() => setGridExpanded(false)} variant="outline" size="sm">
+            Voltar ao layout compacto
+          </Button>
         </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {galleryImages.map((img, index) => (
+            <div key={index} className="relative cursor-pointer group aspect-video" onClick={() => openLightbox(index)}>
+              <img src={img} alt={`${title} - ${index + 1}`} className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity" />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center rounded-md">
+                <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </div>
+          ))}
+        </div>
+        {renderLightbox()}
+      </div>
     );
   }
 
   return (
     <div className="w-full relative">
-      {renderGrid(galleryImages.slice(0, 5), true)}
-      {galleryImages.length > 5 && !gridExpanded && (
-        <div className="mt-4 text-center">
-          <Button onClick={() => setGridExpanded(true)} variant="outline" className="bg-white hover:bg-gray-50">
-            <Camera className="w-4 h-4 mr-2" />
-            Ver todas as {galleryImages.length} fotos
+      {renderGrid()}
+      {galleryImages.length > 5 && (
+        <div className="absolute bottom-4 right-4">
+          <Button onClick={() => setGridExpanded(true)} variant="secondary" className="bg-white/90 hover:bg-white text-gray-800 shadow-lg">
+             Ver todas as {galleryImages.length} fotos
           </Button>
         </div>
       )}
