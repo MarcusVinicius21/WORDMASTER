@@ -1,4 +1,4 @@
-import { SpeedInsights } from "@vercel/speed-insights"
+import { SpeedInsights } from "@vercel/speed-insights/next"; // <-- CORREÇÃO AQUI
 import './globals.css'
 import { Inter } from 'next/font/google'
 
@@ -14,7 +14,7 @@ export const metadata = {
     images: ['/og-image.jpg'],
   },
   icons: {
-    icon: '/logo.png', // <-- ADICIONADO AQUI
+    icon: '/logo.png',
   },
 }
 
