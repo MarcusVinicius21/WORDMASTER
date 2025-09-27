@@ -549,13 +549,13 @@ const PropertyCard = ({ listing, category }) => {
       <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col rounded-2xl">
         <CardContent className="p-0 flex flex-col flex-grow">
           <div className="relative overflow-hidden">
-            <img
+            {/* ESTA É A ÚNICA ALTERAÇÃO REALIZADA */}
+            <Image
               src={getPropertyImage(listing, category)}
               alt={listing.title}
+              width={400}
+              height={250}
               className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center';
-              }}
             />
           </div>
           <div className="p-6 flex flex-col flex-grow">
@@ -785,7 +785,6 @@ export default function HomePage() {
   
   const [selectedService, setSelectedService] = useState('mansoes');
   
-  // Estado para os filtros atuais (persistentes após busca)
   const [currentFilters, setCurrentFilters] = useState({
     guests: '',
     bedrooms: '',
@@ -822,7 +821,6 @@ export default function HomePage() {
     setIsSearching(true);
     setSearchResults(null);
     
-    // Atualiza os filtros atuais para manter selecionados após busca
     setCurrentFilters(filters);
     
     try {

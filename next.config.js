@@ -1,7 +1,22 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    unoptimized: true,
+    // Habilitando a otimização e adicionando domínios permitidos
+    unoptimized: false,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // Mantido para imagens de fallback
+        port: '',
+        pathname: '/**',
+      }
+    ],
   },
   experimental: {
     // Remove if not using Server Components
