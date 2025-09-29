@@ -60,11 +60,11 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
         <div className="flex items-center space-x-3 mb-4">
           <img 
             src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
-            alt="Adson Carlos" 
+            alt="Adson Santos" 
             className="w-10 h-10 rounded-full" 
           />
           <div>
-            <p className="font-medium">Adson Carlos</p>
+            <p className="font-medium">Adson Santos</p>
             <p className="text-gray-400 text-sm">Administrador</p>
           </div>
         </div>
@@ -396,9 +396,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     }
   }, [editingListing]);
 
-  // ==========================================================
-  // INÍCIO DA CORREÇÃO NA FUNÇÃO DE UPLOAD
-  // ==========================================================
   const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
@@ -407,7 +404,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
     
     try {
       const uploadPromises = files.map(async (file) => {
-        // Garantindo que o método é POST e incluindo o Content-Type
         const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
           method: 'POST',
           headers: {
@@ -426,7 +422,6 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
             url: blob.url
           };
         }
-        // Tenta extrair uma mensagem de erro mais detalhada do backend
         const errorData = await uploadResponse.json();
         throw new Error(errorData.details || 'Falha no upload');
       });
@@ -436,16 +431,12 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
 
     } catch (error) {
       console.error('Error uploading images:', error);
-      // Mostra a mensagem de erro específica vinda da API
       alert(`Erro ao fazer upload de imagens: ${error.message}`);
     } finally {
       setUploading(false);
       event.target.value = '';
     }
   };
-  // ==========================================================
-  // FIM DA CORREÇÃO NA FUNÇÃO DE UPLOAD
-  // ==========================================================
 
   const removeImage = (id) => { 
     setUploadedImages(prev => prev.filter(img => img.id !== id)) 
@@ -901,7 +892,7 @@ const Settings = () => (
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Nome Padrão</label>
-            <Input value="Adson Carlos dos Santos" readOnly />
+            <Input value="Adson Santos" readOnly />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Cidade Base</label>
