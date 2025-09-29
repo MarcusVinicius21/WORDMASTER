@@ -59,7 +59,7 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
       <div className="mt-auto p-6 border-t border-gray-800">
         <div className="flex items-center space-x-3 mb-4">
           <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+            src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" 
             alt="Adson Santos" 
             className="w-10 h-10 rounded-full" 
           />
