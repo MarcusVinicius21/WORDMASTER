@@ -31,7 +31,7 @@ const nextConfig = {
   
   experimental: {
     serverComponentsExternalPackages: ['mongodb'],
-    optimizeCss: true, // Otimização de CSS
+    // optimizeCss removido - causa erro no build da Vercel
   },
   
   // Compressão habilitada
