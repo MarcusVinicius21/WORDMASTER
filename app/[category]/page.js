@@ -13,7 +13,7 @@ const WhatsAppButton = ({ listing }) => {
   const whatsappNumber = "5521976860759"
   const message = `Olá! Tenho interesse em "${listing?.title || 'propriedade'}". Vi no site.`
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
-  return (<Button className="bg-green-600 hover:bg-green-700 text-white transition-transform hover:scale-105" onClick={(e) => { e.preventDefault(); window.open(whatsappUrl, '_blank')}}>WhatsApp</Button>)
+  return (<Button className="bg-brand-teal hover:bg-brand-teal/90 text-white transition-transform hover:scale-105" onClick={(e) => { e.preventDefault(); window.open(whatsappUrl, '_blank')}}>WhatsApp</Button>)
 }
 
 // Esqueleto de Carregamento para os Cards de Propriedade
@@ -57,9 +57,11 @@ const PropertyCard = ({ listing, category }) => {
     <Link href={`/${category}/${listing.slug || listing.id}`}>
       <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full hover:-translate-y-1">
         <div className="relative overflow-hidden">
-          <img
+          <Image
             src={imageUrl}
             alt={listing.title}
+            width={400}
+            height={250}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
           />
         </div>
@@ -136,4 +138,3 @@ export default function CategoryPage() {
         </div>
     );
 }
-

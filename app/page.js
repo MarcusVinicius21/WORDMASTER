@@ -20,7 +20,7 @@ const WhatsAppButton = ({ listing, className = "" }) => {
   
   return (
     <Button 
-      className={`bg-green-600 hover:bg-green-700 text-white transition-transform hover:scale-105 ${className}`}
+      className={`bg-brand-teal hover:bg-brand-teal/90 text-white transition-transform hover:scale-105 ${className}`}
       onClick={(e) => {
         e.preventDefault();
         window.open(whatsappUrl, '_blank')
@@ -530,4 +530,3 @@ export default function HomePage() {
     </div>
   );
 }
-
