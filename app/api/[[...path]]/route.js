@@ -59,6 +59,81 @@ async function handleRoute(request, { params }) {
       }))
     }
 
+    // **SETTINGS ENDPOINTS**
+
+    // Get settings - GET /api/settings
+    if (route === '/settings' && method === 'GET') {
+      let settings = await db.collection('settings').findOne({ id: 'feature_flags' });
+
+      if (!settings) {
+        // Se não houver configurações, cria com valores padrão (desativados)
+        settings = {
+          id: 'feature_flags',
+          enableConcierge: false,
+          enableMap: false,
+          enablePackages: false,
+          updated_at: new Date(),
+        };
+        await db.collection('settings').insertOne(settings);
+      }
+
+      const { _id, ...cleanSettings } = settings;
+      return handleCORS(NextResponse.json(cleanSettings));
+    }
+
+    // Update settings - PATCH /api/settings
+    if (route === '/settings' && method === 'PATCH') {
+      const body = await request.json();
+      delete body.id; // Impede a alteração do ID
+
+      const updateFields = {
+        ...body,
+        updated_at: new Date(),
+      };
+
+      await db.collection('settings').updateOne(
+        { id: 'feature_flags' },
+        { $set: updateFields },
+        { upsert: true } // Cria o documento se ele não existir
+      );
+
+      const updatedSettings = await db.collection('settings').findOne({ id: 'feature_flags' });
+      const { _id, ...cleanUpdatedSettings } = updatedSettings;
+      return handleCORS(NextResponse.json(cleanUpdatedSettings));
+    }
+
+    // **PACOTES DE EXPERIÊNCIA ENDPOINTS**
+
+    // Get all packages - GET /api/packages
+    if (route === '/packages' && method === 'GET') {
+        const packages = await db.collection('packages').find({ is_active: true }).toArray();
+        const packagesWithDetails = await Promise.all(packages.map(async (pkg) => {
+            const listings = await db.collection('listings').find({ id: { $in: pkg.listing_ids } }).toArray();
+            return {
+                ...pkg,
+                listings: listings.map(({ _id, ...rest }) => rest)
+            };
+        }));
+        return handleCORS(NextResponse.json({ packages: packagesWithDetails.map(({ _id, ...rest }) => rest) }));
+    }
+
+    // Create package - POST /api/packages
+    if (route === '/packages' && method === 'POST') {
+        const body = await request.json();
+        const newPackage = {
+            id: uuidv4(),
+            title: body.title,
+            slug: `${body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${uuidv4().substring(0,4)}`,
+            description: body.description,
+            listing_ids: body.listing_ids,
+            featured_image: body.featured_image || '',
+            is_active: true,
+            created_at: new Date(),
+        };
+        await db.collection('packages').insertOne(newPackage);
+        return handleCORS(NextResponse.json(newPackage, { status: 201 }));
+    }
+
     // **LISTINGS ENDPOINTS**
 
     // Get all listings - GET /api/listings
@@ -304,3 +379,4 @@ export const POST = handleRoute
 export const PUT = handleRoute
 export const DELETE = handleRoute
 export const PATCH = handleRoute
+

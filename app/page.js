@@ -389,7 +389,7 @@ const HostSection = () => (
               <div className="relative aspect-square">
                 <Image
                   src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg"
-                  alt="Adson Carlos, seu anfitrião em Búzios"
+                  alt="Adson Santos, seu anfitrião em Búzios"
                   width={400}
                   height={400}
                   className="rounded-full object-cover shadow-xl mx-auto"
@@ -399,8 +399,8 @@ const HostSection = () => (
           </div>
           <div className="lg:w-2/3 text-center lg:text-left">
             <p className="text-brand-teal font-semibold mb-2">SEU ANFITRIÃO EM BÚZIOS</p>
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-wide">Adson Carlos</h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">"Com anos de experiência no mercado de luxo de Búzios, meu objetivo é garantir que sua estadia seja nada menos que extraordinária. Da escolha da propriedade perfeita aos passeios mais exclusivos, estou aqui para transformar seus sonhos em realidade."</p>
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-wide">Adson Santos</h2>
+            <p className="text-gray-600 mb-6 leading-relaxed">"Sou Adson Carlos, seu anfitrião em Búzios. Trabalho com um portfólio seleto de mansões de alto padrão e experiências únicas — de táxi aéreo e transfer privativo a aluguel de lanchas, buggys e passeios exclusivos. Cada detalhe da sua estadia é planejado para que você viva Búzios de uma forma que poucos têm acesso. Aqui, você não encontra apenas hospedagem: encontra momentos raros, que transformam sua viagem em algo inesquecível."</p>
             <div className="flex items-center justify-center lg:justify-start gap-4 text-gray-700">
                <Award className="w-5 h-5 text-brand-teal" />
                <span>Especialista em aluguéis de alto padrão</span>

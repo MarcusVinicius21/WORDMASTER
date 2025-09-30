@@ -3,29 +3,33 @@
 import { useState, useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import {
-  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent, Plane, Bus,
+  Plus, Search, Edit, Trash2, Eye, EyeOff, BarChart3, Home, Star, MessageSquare, Settings as SettingsIcon, LogOut, Upload, X, Camera, Percent, Plane, Bus, Package as PackageIcon, Wand2, Map,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Switch } from "@/components/ui/switch"
+import { useToast } from "@/hooks/use-toast"
+import { Toaster } from "@/components/ui/toaster"
 
-const AdminSidebar = ({ currentPage, setCurrentPage }) => {
+const AdminSidebar = ({ currentPage, setCurrentPage, features }) => {
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     window.location.href = '/';
   };
+  
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 }, 
     { id: 'listings', label: 'Propriedades', icon: Home },
+    { id: 'packages', label: 'Pacotes', icon: PackageIcon, feature: features?.enablePackages },
     { id: 'promotions', label: 'Promoções', icon: Percent }, 
     { id: 'reviews', label: 'Avaliações', icon: MessageSquare },
     { id: 'settings', label: 'Configurações', icon: SettingsIcon }
   ];
+
   return (
     <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0 flex flex-col">
       <div className="p-6">
@@ -39,7 +43,7 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
           </div>
         </div>
         <nav className="space-y-2">
-          {menuItems.map((item) => { 
+          {menuItems.filter(item => item.feature !== false).map((item) => { 
             const IconComponent = item.icon; 
             return (
               <button 
@@ -58,22 +62,13 @@ const AdminSidebar = ({ currentPage, setCurrentPage }) => {
       </div>
       <div className="mt-auto p-6 border-t border-gray-800">
         <div className="flex items-center space-x-3 mb-4">
-          <img 
-            src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" 
-            alt="Adson Santos" 
-            className="w-10 h-10 rounded-full" 
-          />
+          <img src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" alt="Adson Santos" className="w-10 h-10 rounded-full" />
           <div>
             <p className="font-medium">Adson Santos</p>
             <p className="text-gray-400 text-sm">Administrador</p>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full text-gray-300 border-gray-600 hover:bg-gray-800" 
-          onClick={handleLogout}
-        >
+        <Button variant="outline" size="sm" className="w-full text-gray-300 border-gray-600 hover:bg-gray-800" onClick={handleLogout}>
           <LogOut className="w-4 h-4 mr-2" />Sair
         </Button>
       </div>
@@ -863,61 +858,52 @@ const CreateListingModal = ({ onSave, editingListing, onClose }) => {
   );
 };
 
-const Settings = () => (
-  <div className="p-8">
-    <div className="mb-8">
-      <h1 className="text-3xl font-bold mb-2">Configurações</h1>
-      <p className="text-gray-600">Gerencie as configurações do sistema</p>
-    </div>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações da Empresa</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">WhatsApp Oficial</label>
-            <Input value="+55 21 97686-0759" readOnly />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <Input value="wordmaster01@outlook.com" readOnly />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Configurações do Anfitrião</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Nome Padrão</label>
-            <Input value="Adson Santos" readOnly />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Cidade Base</label>
-            <Input value="Búzios, RJ" readOnly />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  </div>
-)
+const PackagesManagement = () => {
+    // Lógica para gerenciar pacotes
+    return (
+        <div className="p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Gerenciar Pacotes de Experiência</h2>
+            {/* Aqui virá a UI para criar, listar, editar e deletar pacotes */}
+            <div className="text-center py-12 bg-gray-100 rounded-lg">
+                <PackageIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-700">Funcionalidade em Desenvolvimento</h3>
+                <p className="text-gray-500 mt-2">Em breve você poderá criar e gerenciar pacotes de experiências aqui.</p>
+            </div>
+        </div>
+    );
+};
+
 
 export default function AdminPanel() {
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [features, setFeatures] = useState({});
   const router = useRouter()
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isAuthenticated') === 'true';
     if (!loggedIn) {
       router.push('/login');
-    } else {
-      setIsAuthenticated(true);
-    }
-    setIsLoading(false)
+      return;
+    } 
+    setIsAuthenticated(true);
+
+    const fetchFeatures = async () => {
+      try {
+        const response = await fetch('/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          setFeatures(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch features for sidebar", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchFeatures();
   }, [router]);
 
   if (isLoading || !isAuthenticated) {
@@ -928,6 +914,7 @@ export default function AdminPanel() {
     switch (currentPage) {
       case 'dashboard': return <Dashboard setCurrentPage={setCurrentPage} />
       case 'listings': return <ListingsManagement />
+      case 'packages': return features.enablePackages ? <PackagesManagement /> : null;
       case 'promotions': return <div className="p-8"><h1 className="text-2xl font-bold">Promoções (em breve)</h1></div>
       case 'reviews': return <div className="p-8"><h1 className="text-2xl font-bold">Avaliações (em breve)</h1></div>
       case 'settings': return <Settings />
@@ -937,10 +924,12 @@ export default function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <AdminSidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <AdminSidebar currentPage={currentPage} setCurrentPage={setCurrentPage} features={features} />
       <div className="flex-1 ml-64">
+        <Toaster />
         {renderCurrentPage()}
       </div>
     </div>
   )
 }
+
