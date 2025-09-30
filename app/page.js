@@ -1,7 +1,8 @@
+// app/page.js
 'use client'
 
 import React, { useState, useEffect, useRef } from "react"
-import { Search, Star, MapPin, Phone, Instagram, Users, Bed, Bath, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus, Loader2, Award } from "lucide-react"
+import { Search, Star, Users, Bed, Bath, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus, Loader2, Award, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,7 +13,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import Autoplay from "embla-carousel-autoplay"
 import Navbar from "@/components/Navbar"
 
-// Componente de Botão do WhatsApp
 const WhatsAppButton = ({ listing, className = "" }) => {
   const whatsappNumber = "5521976860759"
   const message = `Olá! Tenho interesse em "${listing?.title || 'um de seus serviços'}". Vi no site.`
@@ -31,39 +31,37 @@ const WhatsAppButton = ({ listing, className = "" }) => {
   )
 }
 
-// Esqueleto de Carregamento para os Cards
 const PropertyCardSkeleton = () => (
-    <Card className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl animate-pulse">
-      <CardContent className="p-0 flex flex-col flex-grow">
-        <div className="bg-gray-200 h-56 w-full rounded-t-2xl" />
+    <div className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl">
+      <div className="p-0 flex flex-col flex-grow">
+        <div className="bg-gray-200 h-56 w-full rounded-t-2xl shimmer" />
         <div className="p-6 flex flex-col flex-grow space-y-4">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
+          <div className="h-5 bg-gray-200 rounded w-3/4 shimmer" />
           <div className="flex gap-4">
-            <div className="h-4 bg-gray-200 rounded w-16" />
-            <div className="h-4 bg-gray-200 rounded w-16" />
+            <div className="h-4 bg-gray-200 rounded w-16 shimmer" />
+            <div className="h-4 bg-gray-200 rounded w-16 shimmer" />
           </div>
           <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="space-y-2">
-              <div className="h-3 bg-gray-200 rounded w-20" />
-              <div className="h-4 bg-gray-200 rounded w-24" />
+              <div className="h-3 bg-gray-200 rounded w-20 shimmer" />
+              <div className="h-4 bg-gray-200 rounded w-24 shimmer" />
             </div>
-            <div className="h-8 bg-gray-200 rounded w-20" />
+            <div className="h-8 bg-gray-200 rounded w-20 shimmer" />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
 )
 
-// Esqueleto de Carregamento para as Seções de Categoria
 const CategorySectionSkeleton = () => (
   <section className="py-16 md:py-20 bg-white overflow-hidden">
     <div className="container mx-auto px-4 md:px-6">
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0 space-y-4 animate-pulse">
-          <div className="h-10 bg-gray-200 rounded w-3/4 mx-auto lg:mx-0" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-5/6" />
-          <div className="h-10 bg-gray-200 rounded-full w-32 mx-auto lg:mx-0" />
+        <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0 space-y-4">
+          <div className="h-10 bg-gray-200 rounded w-3/4 mx-auto lg:mx-0 shimmer" />
+          <div className="h-4 bg-gray-200 rounded w-full shimmer" />
+          <div className="h-4 bg-gray-200 rounded w-5/6 shimmer" />
+          <div className="h-10 bg-gray-200 rounded-full w-32 mx-auto lg:mx-0 shimmer" />
         </div>
         <div className="lg:col-span-7 w-full">
           <div className="flex gap-4 overflow-hidden">
@@ -76,7 +74,6 @@ const CategorySectionSkeleton = () => (
   </section>
 )
 
-// Seção Hero com a Busca
 const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, setSelectedService }) => {
   const [localFilters, setLocalFilters] = useState({
     guests: '', bedrooms: '', boat_length: '', vehicle_type: '',
@@ -96,7 +93,6 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
   const handleSearch = () => { onSearch(selectedService, localFilters); };
 
   const renderFilters = () => {
-    // ... (código dos filtros permanece o mesmo)
     switch (selectedService) {
       case 'mansoes':
         return (
@@ -213,7 +209,6 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
   )
 }
 
-// Seção de Resultados da Busca
 const SearchResults = ({ results, onClearSearch, isLoading }) => {
   if (results === null && !isLoading) return null;
   if (isLoading) {
@@ -249,7 +244,6 @@ const SearchResults = ({ results, onClearSearch, isLoading }) => {
   );
 };
 
-// Card de Propriedade (com micro-interação)
 const PropertyCard = ({ listing, category }) => {
     const getPropertyImage = (listing, category) => {
         if (listing.featured_image) return listing.featured_image;
@@ -335,7 +329,6 @@ const PropertyCard = ({ listing, category }) => {
   );
 }
 
-// Seção de Categoria
 const CategorySection = ({ title, description, listings, category, isLoading }) => {
     const plugin = React.useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
     if (isLoading) { return <CategorySectionSkeleton />; }
@@ -353,7 +346,7 @@ const CategorySection = ({ title, description, listings, category, isLoading }) 
             <div className="relative">
               <Carousel 
                 plugins={[plugin.current]} 
-                opts={{ align: "start", loop: true }} // <-- LOOP ADICIONADO AQUI
+                opts={{ align: "start", loop: true }}
                 className="w-full" 
                 onMouseEnter={plugin.current.stop} 
                 onMouseLeave={plugin.current.reset}>
@@ -370,7 +363,6 @@ const CategorySection = ({ title, description, listings, category, isLoading }) 
   );
 }
 
-// **NOVO** - Banner de Chamada para Ação
 const CtaBanner = () => (
     <section className="py-16 md:py-20 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
@@ -389,7 +381,6 @@ const CtaBanner = () => (
     </section>
   );
 
-// **NOVO** - Seção do Anfitrião com Estilo Melhorado
 const HostSection = () => (
     <section className="py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6">
@@ -397,7 +388,7 @@ const HostSection = () => (
           <div className="lg:w-1/3">
               <div className="relative aspect-square">
                 <Image
-                  src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" // Imagem do Adson
+                  src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg"
                   alt="Adson Carlos, seu anfitrião em Búzios"
                   width={400}
                   height={400}
@@ -420,7 +411,6 @@ const HostSection = () => (
     </section>
   );
 
-// Seção de Avaliações do Google
 const GoogleReviewsSection = () => {
   const reviews = [
     { id: 1, name: "Julia Mendes", avatar: "https://randomuser.me/api/portraits/women/44.jpg", stars: 5, text: "Serviço impecável e propriedades deslumbrantes. A equipe da Wordmaster foi extremamente atenciosa e tornou nossa viagem a Búzios inesquecível. Recomendo fortemente!", date: "2 meses atrás" },
@@ -437,7 +427,6 @@ const GoogleReviewsSection = () => {
   );
 }
 
-// Rodapé
 const Footer = () => {
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
@@ -454,7 +443,6 @@ const Footer = () => {
   )
 }
 
-// Componente Principal da Homepage
 export default function HomePage() {
   const [allListings, setAllListings] = useState({ mansoes: [], lanchas: [], escuna: [], 'taxi-aereo': [], transfer: [], buggy: [] });
   const [categoryLoading, setCategoryLoading] = useState({ mansoes: true, lanchas: true, escuna: true, 'taxi-aereo': true, transfer: true, buggy: true });

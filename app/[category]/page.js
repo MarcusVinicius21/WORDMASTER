@@ -1,8 +1,9 @@
+// app/[category]/page.js
 'use client'
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane, Bus, Maximize, Clock, Loader2 } from "lucide-react"
+import { Home, Anchor, Sailboat, Car, Plane, Bus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
@@ -16,24 +17,24 @@ const WhatsAppButton = ({ listing }) => {
   return (<Button className="bg-brand-teal hover:bg-brand-teal/90 text-white transition-transform hover:scale-105" onClick={(e) => { e.preventDefault(); window.open(whatsappUrl, '_blank')}}>WhatsApp</Button>)
 }
 
-// Esqueleto de Carregamento para os Cards de Propriedade
+// Esqueleto de Carregamento para os Cards de Propriedade com Efeito Shimmer
 const PropertyCardSkeleton = () => (
-    <Card className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl animate-pulse">
-      <CardContent className="p-0 flex flex-col flex-grow">
-        <div className="bg-gray-200 h-64 w-full" />
+    <div className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl">
+      <div className="p-0 flex flex-col flex-grow">
+        <div className="bg-gray-200 h-64 w-full shimmer" />
         <div className="p-6 flex flex-col flex-grow space-y-4">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-5/6" />
+          <div className="h-5 bg-gray-200 rounded w-3/4 shimmer" />
+          <div className="h-4 bg-gray-200 rounded w-5/6 shimmer" />
           <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="space-y-2">
-              <div className="h-3 bg-gray-200 rounded w-20" />
-              <div className="h-4 bg-gray-200 rounded w-24" />
+              <div className="h-3 bg-gray-200 rounded w-20 shimmer" />
+              <div className="h-4 bg-gray-200 rounded w-24 shimmer" />
             </div>
-            <div className="h-10 bg-gray-200 rounded-full w-24" />
+            <div className="h-10 bg-gray-200 rounded-full w-24 shimmer" />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
 );
 
 const PropertyCard = ({ listing, category }) => {
@@ -63,6 +64,7 @@ const PropertyCard = ({ listing, category }) => {
             width={400}
             height={250}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
           />
         </div>
         <CardContent className="p-6">

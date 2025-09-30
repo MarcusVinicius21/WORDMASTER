@@ -1,8 +1,9 @@
+// app/[category]/[slug]/page.js
 'use client'
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { MapPin, Users, Bed, Bath, Maximize, X, Anchor, Calendar, Clock, Car, Plane, ChevronLeft, ChevronRight, Camera, Loader2, Award, Instagram } from "lucide-react"
+import { MapPin, Users, Bed, Bath, Maximize, X, Anchor, Calendar, Clock, Car, Plane, ChevronLeft, ChevronRight, Camera, Award, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
