@@ -1,506 +1,491 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from "react"
-import { Search, Star, MapPin, Phone, Instagram, Users, Bed, Bath, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus, Loader2, Award } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
+import { MapPin, Users, Bed, Bath, Maximize, X, Anchor, Calendar, Clock, Car, Plane, ChevronLeft, ChevronRight, Camera, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import Image from "next/image"
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel"
-import Autoplay from "embla-carousel-autoplay"
 import Navbar from "@/components/Navbar"
 
-// Componente de Botão do WhatsApp
-const WhatsAppButton = ({ listing, className = "" }) => {
-  const whatsappNumber = "5521976860759" // Para centralizar, idealmente viria de process.env
-  const message = `Olá! Tenho interesse em "${listing?.title || 'um de seus serviços'}". Vi no site.`
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
-  
-  return (
-    <Button 
-      className={`bg-green-600 hover:bg-green-700 text-white transition-transform hover:scale-105 ${className}`}
-      onClick={(e) => {
-        e.preventDefault();
-        window.open(whatsappUrl, '_blank')
-      }}
-    >
-      WhatsApp
-    </Button>
-  )
-}
+const VillasGallery = ({ images, title }) => {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [gridExpanded, setGridExpanded] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
-// Esqueleto de Carregamento para os Cards
-const PropertyCardSkeleton = () => (
-    <Card className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl animate-pulse">
-      <CardContent className="p-0 flex flex-col flex-grow">
-        <div className="bg-gray-200 h-56 w-full rounded-t-2xl" />
-        <div className="p-6 flex flex-col flex-grow space-y-4">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
-          <div className="flex gap-4">
-            <div className="h-4 bg-gray-200 rounded w-16" />
-            <div className="h-4 bg-gray-200 rounded w-16" />
-          </div>
-          <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-200 rounded w-20" />
-              <div className="h-4 bg-gray-200 rounded w-24" />
-            </div>
-            <div className="h-8 bg-gray-200 rounded w-20" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-)
+  const galleryImages = images && images.length > 0 
+    ? images.map(img => img.url) 
+    : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"];
 
-// Esqueleto de Carregamento para as Seções de Categoria
-const CategorySectionSkeleton = () => (
-  <section className="py-16 md:py-20 bg-white overflow-hidden">
-    <div className="container mx-auto px-4 md:px-6">
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0 space-y-4 animate-pulse">
-          <div className="h-10 bg-gray-200 rounded w-3/4 mx-auto lg:mx-0" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-5/6" />
-          <div className="h-10 bg-gray-200 rounded-full w-32 mx-auto lg:mx-0" />
-        </div>
-        <div className="lg:col-span-7 w-full">
-          <div className="flex gap-4 overflow-hidden">
-            <div className="min-w-[280px]"><PropertyCardSkeleton /></div>
-            <div className="min-w-[280px] hidden md:block"><PropertyCardSkeleton /></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-)
+  useEffect(() => {
+    if (galleryImages[0]) {
+      const img = new window.Image();
+      img.src = galleryImages[0];
+      img.onload = () => setImagesLoaded(true);
+    }
+  }, [galleryImages]);
 
-// Seção Hero com a Busca
-const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, setSelectedService }) => {
-  const [localFilters, setLocalFilters] = useState({
-    guests: '', bedrooms: '', boat_length: '', vehicle_type: '',
-  });
-
-  useEffect(() => { setLocalFilters(currentFilters); }, [currentFilters]);
-
-  const handleServiceChange = (value) => {
-    setSelectedService(value);
-    setLocalFilters({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
+  const openLightbox = (index) => {
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
   };
 
-  const handleParamChange = (key, value) => {
-    setLocalFilters(prev => ({ ...prev, [key]: value === 'any' ? '' : value }));
+  const closeLightbox = () => setLightboxOpen(false);
+
+  const goToPrevious = (e) => {
+    if (e) e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1));
   };
 
-  const handleSearch = () => { onSearch(selectedService, localFilters); };
+  const goToNext = (e) => {
+    if (e) e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => (prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1));
+  };
 
-  const renderFilters = () => {
-    // ... (código dos filtros permanece o mesmo)
-    switch (selectedService) {
-      case 'mansoes':
-        return (
-          <>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Hóspedes</label>
-              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Qualquer</SelectItem><SelectItem value="2">2+</SelectItem><SelectItem value="4">4+</SelectItem><SelectItem value="6">6+</SelectItem><SelectItem value="8">8+</SelectItem></SelectContent>
-              </Select>
-            </div>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quartos</label>
-              <Select value={localFilters.bedrooms || 'any'} onValueChange={(value) => handleParamChange('bedrooms', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Qualquer</SelectItem><SelectItem value="2">2+</SelectItem><SelectItem value="3">3+</SelectItem><SelectItem value="4">4+</SelectItem><SelectItem value="5">5+</SelectItem></SelectContent>
-              </Select>
-            </div>
-          </>
-        );
-      case 'lanchas':
-        return (
-          <>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Qualquer</SelectItem><SelectItem value="4">4+</SelectItem><SelectItem value="8">8+</SelectItem><SelectItem value="12">12+</SelectItem></SelectContent>
-              </Select>
-            </div>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Pés</label>
-              <Input type="number" placeholder="Ex: 50" className="h-12 border-gray-200 rounded-md" value={localFilters.boat_length || ''} onChange={(e) => handleParamChange('boat_length', e.target.value)} />
-            </div>
-          </>
-        );
-      case 'escuna': case 'buggy':
-        return (
-          <div className="text-left sm:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Pessoas</label>
-            <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Qualquer</SelectItem><SelectItem value="1">1+</SelectItem><SelectItem value="4">4+</SelectItem><SelectItem value="10">10+</SelectItem></SelectContent>
-            </Select>
-          </div>
-        );
-       case 'taxi-aereo':
-         return (
-          <>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Qualquer</SelectItem><SelectItem value="1">1+</SelectItem><SelectItem value="2">2+</SelectItem><SelectItem value="4">4+</SelectItem></SelectContent>
-              </Select>
-            </div>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <Select value={localFilters.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Todos</SelectItem><SelectItem value="helicopter">Helicóptero</SelectItem><SelectItem value="bimotor">Bimotor</SelectItem><SelectItem value="jet">Jato</SelectItem></SelectContent>
-              </Select>
-            </div>
-          </>
-        );
-       case 'transfer':
-         return (
-          <>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Passageiros</label>
-              <Select value={localFilters.guests || 'any'} onValueChange={(value) => handleParamChange('guests', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Qualquer" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Qualquer</SelectItem><SelectItem value="1">1+</SelectItem><SelectItem value="4">4+</SelectItem><SelectItem value="8">8+</SelectItem><SelectItem value="15">15+</SelectItem></SelectContent>
-              </Select>
-            </div>
-            <div className="text-left">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <Select value={localFilters.vehicle_type || 'any'} onValueChange={(value) => handleParamChange('vehicle_type', value)}>
-                <SelectTrigger className="h-12 border-gray-200"><SelectValue placeholder="Todos" /></SelectTrigger>
-                <SelectContent><SelectItem value="any">Todos</SelectItem><SelectItem value="luxury_car">Carro de Luxo</SelectItem><SelectItem value="van">Van</SelectItem><SelectItem value="bus">Ônibus</SelectItem></SelectContent>
-              </Select>
-            </div>
-          </>
-        );
-      default: return <div className="sm:col-span-2"></div>;
+  const handleKeyDown = (e) => {
+    if (lightboxOpen) {
+      if (e.key === 'ArrowLeft') goToPrevious(e);
+      if (e.key === 'ArrowRight') goToNext(e);
+      if (e.key === 'Escape') closeLightbox();
     }
   };
 
-  return (
-    <div className="relative h-screen overflow-hidden">
-      <div className="absolute inset-0"><Image src="/banner.jpg" alt="Búzios" fill style={{objectFit: "cover"}} priority quality={85} /><div className="absolute inset-0 bg-black/40" /></div>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center text-white w-full max-w-4xl mx-auto px-6">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light mb-4 tracking-wide">UM PORTAL PARA O LUXO</h1>
-          <p className="text-xl md:text-2xl lg:text-3xl font-light mb-12 tracking-wider opacity-90">EXPLORE NOSSAS PROPRIEDADES EM BÚZIOS</p>
-          <div className="bg-white rounded-lg shadow-2xl p-4 sm:p-6 w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
-              <div className="text-left md:col-span-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Serviço</label>
-                <Select value={selectedService} onValueChange={handleServiceChange}>
-                  <SelectTrigger className="h-12 border-gray-200 text-black"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent><SelectItem value="mansoes">Mansões</SelectItem><SelectItem value="lanchas">Lanchas</SelectItem><SelectItem value="escuna">Escuna</SelectItem><SelectItem value="taxi-aereo">Táxi Aéreo</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="buggy">Buggy</SelectItem></SelectContent>
-                </Select>
-              </div>
-              {renderFilters()}
-              <Button className="h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium px-8 w-full transition-transform hover:scale-105" onClick={handleSearch} disabled={isSearching}>
-                {isSearching ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />Buscando...</>) : ('Buscar')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+  useEffect(() => {
+    if (lightboxOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [lightboxOpen, currentImageIndex]);
 
-// Seção de Resultados da Busca
-const SearchResults = ({ results, onClearSearch, isLoading }) => {
-  if (results === null && !isLoading) return null;
-  if (isLoading) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-center mb-8"><Loader2 className="w-8 h-8 animate-spin text-gray-600 mr-3" /><h2 className="text-2xl font-bold text-gray-900">Buscando...</h2></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"><_array(4) />.map((_, i) => (<PropertyCardSkeleton key={i} />))}</div>
+  const remainingImagesCount = galleryImages.length - 5;
+
+  const renderGrid = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
+        {!imagesLoaded && (
+          <div className="w-full aspect-[4/3] bg-gray-200 rounded-md animate-pulse" />
+        )}
+        <Image
+          src={galleryImages[0]}
+          alt={title}
+          width={800}
+          height={600}
+          className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity"
+          priority
+          quality={85}
+          onLoadingComplete={() => setImagesLoaded(true)}
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+          <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-      </section>
-    );
-  }
-  if (results.length === 0) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Nenhuma propriedade encontrada</h2>
-            <p className="text-gray-600 mb-6">Tente ajustar seus filtros de busca ou explore nossas categorias abaixo.</p>
-            <Button onClick={onClearSearch} variant="outline">Ver todas as propriedades</Button>
+      </div>
+      {galleryImages.length > 1 && (
+        <div className="grid grid-cols-2 gap-2 h-full">
+          {galleryImages.slice(1, 5).map((img, index) => (
+            <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
+              <Image
+                src={img}
+                alt={`${title} - ${index + 2}`}
+                width={400}
+                height={300}
+                className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity"
+                loading="lazy"
+                quality={75}
+              />
+              {index === 3 && remainingImagesCount > 0 && (
+                <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white rounded-md hover:bg-opacity-70 transition-all cursor-pointer"
+                  onClick={(e) => { e.stopPropagation(); setGridExpanded(true); }}>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">+{remainingImagesCount}</div>
+                    <div className="text-sm mt-1">Ver mais</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderLightbox = () => (
+    lightboxOpen && (
+      <div className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center" onClick={closeLightbox}>
+        <button onClick={closeLightbox} className="absolute top-4 right-4 text-white z-20 p-2 hover:bg-white/10 rounded-full transition-colors">
+          <X className="w-8 h-8" />
+        </button>
+        {galleryImages.length > 1 && (
+          <>
+            <button onClick={goToPrevious} className="absolute left-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button onClick={goToNext} className="absolute right-4 z-20 text-white p-3 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </>
+        )}
+        <div className="relative w-full max-w-6xl max-h-[90vh] px-4">
+          <Image
+            src={galleryImages[currentImageIndex]}
+            alt={`${title} - ${currentImageIndex + 1}`}
+            width={1200}
+            height={800}
+            className="max-w-full max-h-[85vh] object-contain mx-auto"
+            quality={90}
+          />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full text-sm">
+            {currentImageIndex + 1} / {galleryImages.length}
           </div>
         </div>
-      </section>
+      </div>
+    )
+  );
+
+  if (gridExpanded) {
+    return (
+      <div className="w-full relative">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-medium text-gray-900">Todas as fotos ({galleryImages.length})</h3>
+          <Button onClick={() => setGridExpanded(false)} variant="outline" size="sm">
+            Voltar ao layout compacto
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {galleryImages.map((img, index) => (
+            <div key={index} className="relative cursor-pointer group aspect-video" onClick={() => openLightbox(index)}>
+              <Image
+                src={img}
+                alt={`${title} - ${index + 1}`}
+                width={400}
+                height={300}
+                className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity"
+                loading="lazy"
+                quality={75}
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center rounded-md">
+                <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </div>
+          ))}
+        </div>
+        {renderLightbox()}
+      </div>
     );
   }
+
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between mb-8"><h2 className="text-2xl font-bold text-gray-900">Resultados da busca ({results.length} {results.length === 1 ? 'encontrada' : 'encontradas'})</h2><Button onClick={onClearSearch} variant="outline" size="sm">Limpar busca</Button></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">{results.map((listing) => (<PropertyCard key={listing.id} listing={listing} category={listing.category} />))}</div>
-      </div>
-    </section>
+    <div className="w-full relative">
+      {renderGrid()}
+      {galleryImages.length > 5 && (
+        <div className="absolute bottom-4 right-4">
+          <Button onClick={() => setGridExpanded(true)} variant="secondary" className="bg-white/90 hover:bg-white text-gray-800 shadow-lg">
+            Ver todas as {galleryImages.length} fotos
+          </Button>
+        </div>
+      )}
+      {renderLightbox()}
+    </div>
   );
 };
 
-// Card de Propriedade (com micro-interação)
-const PropertyCard = ({ listing, category }) => {
-    // ... (lógica do getPropertyImage e renderSpecifications permanece a mesma)
-    const getPropertyImage = (listing, category) => {
-        if (listing.featured_image) return listing.featured_image;
-        if (listing.media && listing.media.length > 0) return listing.media[0].url;
-        const categoryImages = {
-          mansoes: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center',
-          lanchas: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center',
-          escuna: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center',
-          'taxi-aereo': 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center',
-          transfer: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=250&fit=crop&crop=center',
-          buggy: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'
-        };
-        return categoryImages[category] || categoryImages.mansoes;
-      };
-    
-      const renderSpecifications = () => {
-        const specs = [];
-        switch (category) {
-          case 'mansoes': if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Hóspedes</span>); if (listing.bedrooms) specs.push(<span key="bedrooms" className="flex items-center"><Bed className="w-4 h-4 mr-1.5" />{listing.bedrooms} Quartos</span>); if (listing.bathrooms) specs.push(<span key="bathrooms" className="flex items-center"><Bath className="w-4 h-4 mr-1.5" />{listing.bathrooms} Banheiros</span>); if (listing.area_m2) specs.push(<span key="area" className="flex items-center"><Maximize className="w-4 h-4 mr-1.5" />{listing.area_m2}m²</span>); break;
-          case 'lanchas': if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Passageiros</span>); if (listing.boat_length) specs.push(<span key="length" className="flex items-center"><Anchor className="w-4 h-4 mr-1.5" />{listing.boat_length} pés</span>); if (listing.bedrooms) specs.push(<span key="cabins" className="flex items-center"><Bed className="w-4 h-4 mr-1.5" />{listing.bedrooms} Cabines</span>); if (listing.boat_year) specs.push(<span key="year" className="flex items-center"><Calendar className="w-4 h-4 mr-1.5" />{listing.boat_year}</span>); break;
-          case 'escuna': if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Pessoas</span>); if (listing.duration) specs.push(<span key="duration" className="flex items-center"><Clock className="w-4 h-4 mr-1.5" />{listing.duration}</span>); break;
-          case 'taxi-aereo': if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Passageiros</span>); if (listing.vehicle_type) { const vehicleIcon = <Plane className="w-4 h-4 mr-1.5" />; const vehicleText = {'helicopter': 'Helicóptero', 'bimotor': 'Bimotor', 'jet': 'Jato'}[listing.vehicle_type] || listing.vehicle_type; specs.push(<span key="vehicle" className="flex items-center">{vehicleIcon}{vehicleText}</span>); } if (listing.duration) specs.push(<span key="duration" className="flex items-center"><Clock className="w-4 h-4 mr-1.5" />{listing.duration}</span>); break;
-          case 'transfer': if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Passageiros</span>); if (listing.vehicle_type) { const vehicleIcon = listing.vehicle_type === 'bus' ? <Bus className="w-4 h-4 mr-1.5" /> : <Car className="w-4 h-4 mr-1.5" />; const vehicleText = {'luxury_car': 'Carro de Luxo', 'van': 'Van', 'bus': 'Ônibus'}[listing.vehicle_type] || listing.vehicle_type; specs.push(<span key="vehicle" className="flex items-center">{vehicleIcon}{vehicleText}</span>); } if (listing.duration) specs.push(<span key="duration" className="flex items-center"><Clock className="w-4 h-4 mr-1.5" />{listing.duration}</span>); break;
-          case 'buggy': if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Pessoas</span>); if (listing.vehicle_model) specs.push(<span key="model" className="flex items-center"><Car className="w-4 h-4 mr-1.5" />{listing.vehicle_model}</span>); if (listing.duration) specs.push(<span key="duration" className="flex items-center"><Clock className="w-4 h-4 mr-1.5" />{listing.duration}</span>); break;
-          default: if (listing.guests) specs.push(<span key="guests" className="flex items-center"><Users className="w-4 h-4 mr-1.5" />{listing.guests} Pessoas</span>); break;
-        }
-        return specs;
-      };
-    
-      const specifications = renderSpecifications();
+const PropertySpecs = ({ listing, category }) => {
+  const renderSpecs = () => {
+    switch (category) {
+      case 'mansoes':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} pessoas</Badge>}
+            {listing.bedrooms && <Badge variant="outline"><Bed className="w-4 h-4 mr-1" />{listing.bedrooms} Quartos</Badge>}
+            {listing.bathrooms && <Badge variant="outline"><Bath className="w-4 h-4 mr-1" />{listing.bathrooms} Banheiros</Badge>}
+            {listing.area_m2 && <Badge variant="outline"><Maximize className="w-4 h-4 mr-1" />{listing.area_m2}m²</Badge>}
+          </div>
+        );
+      case 'lanchas':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
+            {listing.boat_length && <Badge variant="outline"><Anchor className="w-4 h-4 mr-1" />{listing.boat_length} pés</Badge>}
+            {listing.bedrooms && <Badge variant="outline"><Bed className="w-4 h-4 mr-1" />{listing.bedrooms} cabines</Badge>}
+            {listing.boat_year && <Badge variant="outline"><Calendar className="w-4 h-4 mr-1" />Ano {listing.boat_year}</Badge>}
+          </div>
+        );
+      case 'escuna':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
+            {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
+            {listing.boat_length && <Badge variant="outline"><Anchor className="w-4 h-4 mr-1" />{listing.boat_length} pés</Badge>}
+            {listing.includes_meal && <Badge variant="outline">🍽️ Refeição inclusa</Badge>}
+          </div>
+        );
+      case 'taxi-aereo':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
+            {listing.vehicle_type === 'helicopter' && <Badge variant="outline"><Plane className="w-4 h-4 mr-1" />Helicóptero</Badge>}
+            {listing.vehicle_type === 'bimotor' && <Badge variant="outline"><Plane className="w-4 h-4 mr-1" />Bimotor</Badge>}
+            {listing.vehicle_type === 'jet' && <Badge variant="outline"><Plane className="w-4 h-4 mr-1" />Jato</Badge>}
+            {listing.vehicle_model && <Badge variant="outline">{listing.vehicle_model}</Badge>}
+            {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
+          </div>
+        );
+      case 'transfer':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} passageiros</Badge>}
+            {listing.vehicle_type === 'van' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Van</Badge>}
+            {listing.vehicle_type === 'bus' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Ônibus</Badge>}
+            {listing.vehicle_type === 'luxury_car' && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />Carro de Luxo</Badge>}
+            {listing.vehicle_model && <Badge variant="outline">{listing.vehicle_model}</Badge>}
+            {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
+          </div>
+        );
+      case 'buggy':
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} pessoas</Badge>}
+            {listing.vehicle_model && <Badge variant="outline"><Car className="w-4 h-4 mr-1" />{listing.vehicle_model}</Badge>}
+            {listing.duration && <Badge variant="outline"><Clock className="w-4 h-4 mr-1" />{listing.duration}</Badge>}
+          </div>
+        );
+      default:
+        return (
+          <div className="flex flex-wrap gap-2">
+            {listing.guests && <Badge variant="outline"><Users className="w-4 h-4 mr-1" />{listing.guests} pessoas</Badge>}
+          </div>
+        );
+    }
+  };
+  return renderSpecs();
+};
+
+const ContactForm = ({ listing, category }) => {
+  const [formData, setFormData] = useState({ 
+    checkIn: '', 
+    checkOut: '', 
+    guests: '2', 
+    email: '', 
+    message: '',
+    wantChef: false
+  })
+
+  const getFormLabel = () => {
+    switch (category) {
+      case 'lanchas': return 'Data do passeio';
+      case 'escuna': return 'Data do passeio';
+      case 'taxi-aereo': return 'Data do voo';
+      case 'transfer': return 'Data do transfer';
+      case 'buggy': return 'Data do aluguel';
+      default: return 'Check-in';
+    }
+  };
+
+  const getCheckoutLabel = () => {
+    switch (category) {
+      case 'lanchas': case 'escuna': case 'taxi-aereo': case 'transfer':
+        return 'Horário preferido';
+      case 'buggy':
+        return 'Data de devolução';
+      default:
+        return 'Check-out';
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const whatsappNumber = "5521976860759"
+    const serviceType = {
+      mansoes: 'propriedade',
+      lanchas: 'lancha',
+      escuna: 'passeio de escuna',
+      'taxi-aereo': 'táxi aéreo',
+      transfer: 'transfer',
+      buggy: 'buggy'
+    }[category] || 'serviço';
+    const chefMessage = formData.wantChef ? '\n- 🍽️ CONTRATAR CHEF: SIM' : '';
+    const message = `Olá! Tenho interesse no ${serviceType} "${listing?.title}".\n\n- ${getFormLabel()}: ${formData.checkIn}\n- ${getCheckoutLabel()}: ${formData.checkOut}\n- ${category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}: ${formData.guests}\n- Email: ${formData.email}${chefMessage}\n- Mensagem: ${formData.message}\n\nVi no site.`
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+  }
 
   return (
-    <Link href={`/${category}/${listing.slug || listing.id}`} className="block h-full">
-      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col rounded-2xl hover:-translate-y-1">
-        <CardContent className="p-0 flex flex-col flex-grow">
-          <div className="relative overflow-hidden">
-            <Image src={getPropertyImage(listing, category)} alt={listing.title} width={400} height={250} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl" loading="lazy" quality={75} />
+    <Card className="sticky top-24">
+      <CardContent className="p-6">
+        <div className="text-right mb-4">
+          <div className="text-sm text-gray-600">A partir de</div>
+          <div className="text-3xl font-bold text-gray-900">{listing?.price_label || 'Consulte'}</div>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-2 border border-gray-300 rounded-lg p-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">{getFormLabel()}</label>
+              <input type="date" value={formData.checkIn} onChange={(e) => setFormData(p => ({ ...p, checkIn: e.target.value }))} className="w-full border-0 bg-transparent text-sm focus:outline-none" />
+            </div>
+            <div className="border-l border-gray-300 pl-3">
+              <label className="block text-xs font-medium text-gray-700 mb-1">{getCheckoutLabel()}</label>
+              <input type={category === 'taxi-aereo' || category === 'transfer' || category === 'escuna' || category === 'lanchas' ? 'time' : 'date'} value={formData.checkOut} onChange={(e) => setFormData(p => ({ ...p, checkOut: e.target.value }))} className="w-full border-0 bg-transparent text-sm focus:outline-none" />
+            </div>
           </div>
-          <div className="p-6 flex flex-col flex-grow">
-            <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">{listing.title}</h3>
-            {specifications.length > 0 && (
-              <div className="flex flex-wrap items-center text-sm text-gray-600 gap-x-4 gap-y-2 mb-4">
-                {specifications.slice(0, 3).map((spec, index) => (<div key={index}>{spec}</div>))}
-                {specifications.length > 3 && (<div className="text-gray-400">+{specifications.length - 3}</div>)}
+          <div className="border border-gray-300 rounded-lg p-3">
+            <label className="block text-xs font-medium text-gray-700 mb-1">{category === 'mansoes' ? 'Hóspedes' : 'Pessoas'}</label>
+            <Select value={formData.guests} onValueChange={(v) => setFormData(p => ({ ...p, guests: v }))}>
+              <SelectTrigger className="border-0 p-0 h-auto"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1</SelectItem><SelectItem value="2">2</SelectItem><SelectItem value="4">4</SelectItem><SelectItem value="6">6</SelectItem><SelectItem value="8">8+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {category === 'mansoes' && (
+            <div className="border border-gray-300 rounded-lg p-4 bg-gray-50/50">
+              <div className="flex items-center space-x-3">
+                <input type="checkbox" id="wantChef" checked={formData.wantChef} onChange={(e) => setFormData(p => ({ ...p, wantChef: e.target.checked }))} className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                <label htmlFor="wantChef" className="text-sm font-medium text-gray-800">👨‍🍳 Contratar Chef Exclusivo</label>
               </div>
-            )}
-            {specifications.length === 0 && listing.subtitle && (<p className="text-sm text-gray-600 mb-4">{listing.subtitle}</p>)}
-            <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-              <div><p className="text-sm text-gray-500">A partir de</p><p className="font-semibold text-gray-800">{listing.price_label || 'Consulte'}</p></div>
-              <Button variant="outline" size="sm" className="rounded-full transition-transform group-hover:bg-gray-800 group-hover:text-white">Detalhes</Button>
+              <p className="text-xs text-gray-500 mt-1 pl-8">Adicione um chef particular para sua estadia.</p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
-// Seção de Categoria
-const CategorySection = ({ title, description, listings, category, isLoading }) => {
-    // ... (código do carrossel e autoplay permanece o mesmo)
-    const plugin = React.useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
-    if (isLoading) { return <CategorySectionSkeleton />; }
-    if (!listings || listings.length === 0) return null;
-  return (
-    <section className="py-16 md:py-20 bg-white overflow-hidden">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 tracking-wide">{title}</h2>
-            <p className="text-gray-600 mb-6 md:mb-8 leading-relaxed text-sm md:text-base max-w-md mx-auto lg:mx-0">{description}</p>
-            <Link href={`/${category}`}><Button variant="outline" size="lg" className="rounded-full px-8 transition-transform hover:scale-105">Ver todas</Button></Link>
-          </div>
-          <div className="lg:col-span-7 w-full">
-            <div className="relative">
-              <Carousel plugins={[plugin.current]} opts={{ align: "start", loop: true, breakpoints: { '(min-width: 768px)': { slidesToScroll: 1 } } }} className="w-full" onMouseEnter={plugin.current.stop} onMouseLeave={plugin.current.reset}>
-                <CarouselContent className="-ml-2 md:-ml-4">{listings.map((listing) => (<CarouselItem key={listing.id} className="pl-2 md:pl-4 basis-[280px] md:basis-[320px] lg:basis-1/2"><div className="h-full"><PropertyCard listing={listing} category={category}/></div></CarouselItem>))}</CarouselContent>
-                <div className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10"><CarouselPrevious className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" /></div>
-                <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10"><CarouselNext className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" /></div>
-              </Carousel>
-              <div className="flex md:hidden justify-center mt-6 space-x-2">{Array.from({ length: Math.ceil(listings.length / 1) }).map((_, index) => (<div key={index} className="w-2 h-2 rounded-full bg-gray-300 transition-colors" />))}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// **NOVO** - Banner de Chamada para Ação
-const CtaBanner = () => (
-    <section className="py-16 md:py-20 bg-gray-50">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
-          <div className="max-w-xl text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-light tracking-wide mb-3">Sua Experiência Perfeita em Búzios Começa Aqui</h2>
-            <p className="text-gray-300 leading-relaxed">Deixe nossa equipe cuidar de todos os detalhes. Fale conosco e encontre a propriedade ou serviço ideal para sua viagem.</p>
-          </div>
-          <div className="flex-shrink-0">
-            <a href={`https://wa.me/5521976860759?text=${encodeURIComponent("Olá! Gostaria de planejar minha experiência em Búzios.")}`} target="_blank" rel="noopener noreferrer">
-               <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-200 rounded-full px-10 py-6 text-base font-semibold shadow-lg transition-transform hover:scale-105">Falar com um Especialista</Button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-
-// **NOVO** - Seção do Anfitrião
-const HostSection = () => (
-    <section className="py-16 md:py-20 bg-white">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2">
-              <Image
-                src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" // Imagem do Adson
-                alt="Adson Santos, seu anfitrião em Búzios"
-                width={500}
-                height={500}
-                className="rounded-2xl object-cover shadow-xl aspect-square"
-                quality={80}
-              />
-          </div>
-          <div className="lg:w-1/2 text-center lg:text-left">
-            <p className="text-blue-600 font-semibold mb-2">SEU ANFITRIÃO EM BÚZIOS</p>
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-wide">Adson Carlos</h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">"Com anos de experiência no mercado de luxo de Búzios, meu objetivo é garantir que sua estadia seja nada menos que extraordinária. Da escolha da propriedade perfeita aos passeios mais exclusivos, estou aqui para transformar seus sonhos em realidade."</p>
-            <div className="flex items-center justify-center lg:justify-start gap-4 text-gray-700">
-               <Award className="w-5 h-5 text-blue-600" />
-               <span>Especialista em aluguéis de alto padrão</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-
-// Seção de Avaliações do Google
-const GoogleReviewsSection = () => {
-  const reviews = [
-    { id: 1, name: "Julia Mendes", avatar: "https://randomuser.me/api/portraits/women/44.jpg", stars: 5, text: "Serviço impecável e propriedades deslumbrantes. A equipe da Wordmaster foi extremamente atenciosa e tornou nossa viagem a Búzios inesquecível. Recomendo fortemente!", date: "2 meses atrás" },
-    { id: 2, name: "Roberto Carlos", avatar: "https://randomuser.me/api/portraits/men/32.jpg", stars: 5, text: "Alugamos um iate para um passeio em família e foi a melhor decisão. Embarcação de luxo, tripulação profissional e um roteiro incrível. Experiência 10/10.", date: "5 meses atrás" },
-    { id: 3, name: "Ana Vitoria", avatar: "https://randomuser.me/api/portraits/women/65.jpg", stars: 5, text: "A mansão que ficamos era um sonho! Exatamente como nas fotos, com uma vista espetacular. Todo o processo de reserva foi simples. Voltaremos com certeza.", date: "10 meses atrás" }
-  ];
-  return (
-    <section className="bg-white py-16 md:py-20">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12"><h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-4 tracking-wide">O QUE NOSSOS CLIENTES DIZEM</h2><p className="text-gray-600 max-w-2xl mx-auto">Avaliações reais de clientes que viveram a experiência Wordmaster Beach Búzios.</p></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{reviews.map((review) => (<Card key={review.id} className="bg-gray-50/80 p-6 rounded-2xl shadow-lg border border-gray-200 flex flex-col transition-all hover:shadow-xl hover:-translate-y-1"><div className="flex items-center mb-4"><img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full mr-4" loading="lazy" /><div><p className="font-semibold text-gray-800">{review.name}</p><p className="text-sm text-gray-500">{review.date}</p></div></div><div className="flex items-center mb-4">{[...Array(review.stars)].map((_, i) => (<Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />))}</div><p className="text-gray-600 leading-relaxed">{review.text}</p></Card>))}</div>
-      </div>
-    </section>
-  );
-}
-
-// Rodapé
-const Footer = () => {
-  return (
-    <footer className="bg-gray-50 border-t border-gray-200">
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div><div className="mb-6"><Image src="/logo.png" alt="Wordmaster Logo Rodapé" width={160} height={45} /></div><p className="text-gray-600 mb-6">Experiências de luxo em Búzios.</p><p className="text-gray-500 text-sm">CNPJ: 22.269.571/0001-69</p></div>
-          <div><h4 className="text-lg font-medium text-gray-900 mb-6">Destinos</h4><div className="space-y-3"><Link href="/mansoes" className="block text-gray-600 hover:text-gray-900">Mansões</Link><Link href="/lanchas" className="block text-gray-600 hover:text-gray-900">Lanchas</Link><Link href="/taxi-aereo" className="block text-gray-600 hover:text-gray-900">Táxi Aéreo</Link><Link href="/transfer" className="block text-gray-600 hover:text-gray-900">Transfer</Link><Link href="/escuna" className="block text-gray-600 hover:text-gray-900">Escuna</Link></div></div>
-          <div><h4 className="text-lg font-medium text-gray-900 mb-6">Contato</h4><div className="space-y-3"><div className="text-gray-600"><div>+55 21 976860759</div></div><div className="text-gray-600"><div>wordmaster01@outlook.com</div></div><a href="https://www.instagram.com/wordmasterbeachbuzios" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 flex items-center"><Instagram className="w-4 h-4 mr-2" />wordmasterbeachbuzios</a></div></div>
-          <div><h4 className="text-lg font-medium text-gray-900 mb-6">Admin</h4><div className="space-y-3"><Link href="/admin" className="block text-blue-600 hover:text-blue-800">Painel Administrativo</Link></div></div>
-        </div>
-        <div className="border-t border-gray-200 mt-12 pt-8 text-center"><p className="text-gray-500">© 2025 Wordmaster Beach Búzios. Todos os direitos reservados.</p></div>
-      </div>
-    </footer>
+          )}
+          <Input type="email" placeholder="Seu e-mail" value={formData.email} onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))} className="border-gray-300" required />
+          <textarea placeholder="Mensagem" value={formData.message} onChange={(e) => setFormData(p => ({ ...p, message: e.target.value }))} className="w-full p-3 border border-gray-300 rounded-lg" rows={3}/>
+          <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-900 text-white">Entrar em contato</Button>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 
-// Componente Principal da Homepage
-export default function HomePage() {
-  const [allListings, setAllListings] = useState({ mansoes: [], lanchas: [], escuna: [], 'taxi-aereo': [], transfer: [], buggy: [] });
-  const [categoryLoading, setCategoryLoading] = useState({ mansoes: true, lanchas: true, escuna: true, 'taxi-aereo': true, transfer: true, buggy: true });
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const [selectedService, setSelectedService] = useState('mansoes');
-  const [currentFilters, setCurrentFilters] = useState({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
+// Loading Skeleton
+const PropertyDetailSkeleton = () => (
+  <div className="min-h-screen bg-white">
+    <Navbar />
+    <div className="container mx-auto px-6 py-8">
+      <div className="animate-pulse">
+        <div className="h-4 bg-gray-200 rounded w-64 mb-6" />
+        <div className="bg-gray-200 rounded-md h-96 mb-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-3/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
+            <div className="h-4 bg-gray-200 rounded w-full" />
+            <div className="h-4 bg-gray-200 rounded w-full" />
+          </div>
+          <div className="lg:col-span-1">
+            <div className="h-64 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-  const handleSearch = async (category, filters) => {
-    setIsSearching(true);
-    setSearchResults(null);
-    setCurrentFilters(filters);
-    try {
-      const query = new URLSearchParams({ category, limit: 50 });
-      Object.entries(filters).forEach(([key, value]) => { if (value) { query.append(key, value); } });
-      const response = await fetch(`/api/listings?${query.toString()}`);
-      if (!response.ok) throw new Error('A busca na API falhou');
-      const data = await response.json();
-      setSearchResults(data.listings || []);
-    } catch (error) { console.error('Erro na busca:', error); setSearchResults([]); } 
-    finally { setIsSearching(false); }
-  };
-
-  const clearSearch = () => {
-    setSearchResults(null);
-    setCurrentFilters({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
-  };
+export default function PropertyDetailPage() {
+  const params = useParams()
+  const { category, slug } = params
+  const [listing, setListing] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchAllListings = async () => {
-      const categories = ['mansoes', 'lanchas', 'escuna', 'taxi-aereo', 'transfer', 'buggy'];
-      const promises = categories.map(async (category) => {
+    if (slug) {
+      const fetchProperty = async () => {
+        setLoading(true);
         try {
-          const response = await fetch(`/api/listings?category=${category}&limit=8`);
-          if (!response.ok) throw new Error(`Falha ao buscar ${category}`);
-          return { category, listings: (await response.json()).listings || [] };
+          const response = await fetch(`/api/listings/${slug}`);
+          if (response.ok) {
+            const data = await response.json();
+            setListing(data);
+          } else {
+            setListing(null);
+          }
         } catch (error) {
-          console.warn(`Erro ao buscar ${category}:`, error);
-          return { category, listings: [] };
+          console.error('Error fetching property:', error);
+          setListing(null);
+        } finally {
+          setLoading(false);
         }
-      });
-      const results = await Promise.allSettled(promises);
-      const fetchedData = {};
-      results.forEach((result, index) => {
-        const category = categories[index];
-        if (result.status === 'fulfilled') { fetchedData[result.value.category] = result.value.listings; } 
-        else { fetchedData[category] = []; }
-        setCategoryLoading(prev => ({ ...prev, [category]: false }));
-      });
-      setAllListings(fetchedData);
-    };
-    fetchAllListings();
-  }, []);
+      };
+      fetchProperty();
+    }
+  }, [slug]);
 
-  const getCategoryListings = (category) => allListings[category] || [];
+  const getCategoryDisplayName = (category) => {
+    const names = {
+      'mansoes': 'Aluguel de Mansões',
+      'lanchas': 'Aluguel de Lanchas',
+      'escuna': 'Passeios de Escuna',
+      'taxi-aereo': 'Táxi Aéreo',
+      'transfer': 'Transfer',
+      'buggy': 'Aluguel de Buggy'
+    };
+    return names[category] || category;
+  };
+
+  if (loading) {
+    return <PropertyDetailSkeleton />;
+  }
+
+  if (!listing) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <div className="container mx-auto p-6 py-20 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Propriedade não encontrada</h1>
+          <p className="text-gray-600 mb-6">O item que você está procurando não existe ou foi removido.</p>
+          <Link href="/"><Button>Voltar ao início</Button></Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <main className="flex-grow">
-        <HeroSection onSearch={handleSearch} isSearching={isSearching} currentFilters={currentFilters} selectedService={selectedService} setSelectedService={setSelectedService} />
-        {searchResults !== null ? (
-          <SearchResults results={searchResults} onClearSearch={clearSearch} isLoading={isSearching} />
-        ) : (
-          <>
-            <CategorySection title="Mansões de Luxo em Búzios" description="Descubra as mais exclusivas mansões para aluguel, perfeitas para suas férias ou eventos especiais." listings={getCategoryListings('mansoes')} category="mansoes" isLoading={categoryLoading.mansoes} />
-            <CtaBanner />
-            <CategorySection title="Lanchas e Iates para Aluguel" description="Explore as belezas de Búzios pelo mar com nossa seleção de lanchas e iates de luxo." listings={getCategoryListings('lanchas')} category="lanchas" isLoading={categoryLoading.lanchas} />
-            <CategorySection title="Passeios de Escuna Inesquecíveis" description="Aproveite um dia relaxante navegando pelas águas cristalinas de Búzios em nossas escunas." listings={getCategoryListings('escuna')} category="escuna" isLoading={categoryLoading.escuna} />
-            <CategorySection title="Táxi Aéreo e Voos Panorâmicos" description="Chegue em Búzios com estilo ou desfrute de vistas aéreas deslumbrantes com nosso serviço de táxi aéreo." listings={getCategoryListings('taxi-aereo')} category="taxi-aereo" isLoading={categoryLoading['taxi-aereo']} />
-            <CategorySection title="Transfer Executivo e VIP" description="Garanta sua chegada e partida com conforto e segurança. Oferecemos transfer executivo para Búzios e região." listings={getCategoryListings('transfer')} category="transfer" isLoading={categoryLoading.transfer} />
-            <CategorySection title="Aventura de Buggy em Búzios" description="Explore as trilhas e praias escondidas de Búzios com nossos emocionantes passeios de buggy." listings={getCategoryListings('buggy')} category="buggy" isLoading={categoryLoading.buggy} />
-          </>
-        )}
-        <HostSection />
-        <GoogleReviewsSection />
-      </main>
-      <Footer />
+      <div className="container mx-auto px-6 py-8">
+        <nav className="mb-6 flex items-center space-x-2 text-sm text-gray-600">
+          <Link href="/" className="hover:text-gray-900">Home</Link>
+          <span>/</span>
+          <Link href={`/${category}`} className="hover:text-gray-900">{getCategoryDisplayName(category)}</Link>
+          <span>/</span>
+          <span className="text-gray-900">{listing.title}</span>
+        </nav>
+        
+        <VillasGallery title={listing.title} images={listing.media} />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+          <div className="lg:col-span-2">
+            <div className="mb-6 border-b pb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{listing.title.toUpperCase()}</h1>
+              <div className="flex items-center text-gray-600 mb-4">
+                <MapPin className="w-4 h-4 mr-1" />
+                <span>{listing.neighborhood}</span>
+              </div>
+              
+              <PropertySpecs listing={listing} category={category} />
+            </div>
+            
+            {listing.description && (
+              <div className="prose max-w-none mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  {category === 'lanchas' ? 'Sobre a lancha' : 
+                   category === 'escuna' ? 'Sobre o passeio' :
+                   category === 'taxi-aereo' ? 'Sobre o táxi aéreo' :
+                   category === 'transfer' ? 'Sobre o transfer' :
+                   category === 'buggy' ? 'Sobre o buggy' :
+                   'Sobre a propriedade'}
+                </h3>
+                <div className="text-gray-700 leading-relaxed whitespace-pre-line">{listing.description}</div>
+              </div>
+            )}
+          </div>
+          
+          <div className="lg:col-span-1">
+            <ContactForm listing={listing} category={category} />
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

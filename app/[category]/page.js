@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane, Bus } from "lucide-react"
+import { Bed, Users, Bath, Home, Anchor, Sailboat, Car, Plane, Bus, Maximize, Clock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
@@ -16,7 +16,7 @@ const WhatsAppButton = ({ listing }) => {
   return (<Button className="bg-green-600 hover:bg-green-700 text-white transition-transform hover:scale-105" onClick={(e) => { e.preventDefault(); window.open(whatsappUrl, '_blank')}}>WhatsApp</Button>)
 }
 
-// Esqueleto de Carregamento para os Cards
+// Esqueleto de Carregamento para os Cards de Propriedade
 const PropertyCardSkeleton = () => (
     <Card className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl animate-pulse">
       <CardContent className="p-0 flex flex-col flex-grow">
@@ -55,7 +55,6 @@ const PropertyCard = ({ listing, category }) => {
 
   return (
     <Link href={`/${category}/${listing.slug || listing.id}`}>
-      {/* MELHORIA: Adicionada transição de hover para o card "flutuar" */}
       <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full hover:-translate-y-1">
         <div className="relative overflow-hidden">
           <img
@@ -124,7 +123,7 @@ export default function CategoryPage() {
                     <div className="flex items-center justify-center">{currentCategory.icon}<h1 className="text-4xl font-light text-gray-800 tracking-wide">{currentCategory.title} em Búzios</h1></div>
                     <p className="mt-2 text-lg text-gray-600">Explore nossa seleção exclusiva.</p>
                 </div>
-                {/* MELHORIA: Usa o skeleton para uma melhor experiência de carregamento */}
+                
                 {loading && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {[...Array(8)].map((_, i) => <PropertyCardSkeleton key={i} />)}
@@ -137,3 +136,4 @@ export default function CategoryPage() {
         </div>
     );
 }
+
