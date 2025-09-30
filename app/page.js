@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from "react"
-import { Search, Star, MapPin, Phone, Instagram, Users, Bed, Bath, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus } from "lucide-react"
+import { Search, Star, MapPin, Phone, Instagram, Users, Bed, Bath, Anchor, Calendar, Clock, Car, Plane, Maximize, Bus, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -31,9 +31,53 @@ const WhatsAppButton = ({ listing, className = "" }) => {
   )
 }
 
-// Hero Section with FIXED Search Logic
+// Loading Skeleton Component
+const PropertyCardSkeleton = () => (
+  <Card className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl animate-pulse">
+    <CardContent className="p-0 flex flex-col flex-grow">
+      <div className="bg-gray-200 h-56 w-full rounded-t-2xl" />
+      <div className="p-6 flex flex-col flex-grow space-y-4">
+        <div className="h-5 bg-gray-200 rounded w-3/4" />
+        <div className="flex gap-4">
+          <div className="h-4 bg-gray-200 rounded w-16" />
+          <div className="h-4 bg-gray-200 rounded w-16" />
+        </div>
+        <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-3 bg-gray-200 rounded w-20" />
+            <div className="h-4 bg-gray-200 rounded w-24" />
+          </div>
+          <div className="h-8 bg-gray-200 rounded w-20" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+)
+
+// Category Loading Skeleton
+const CategorySectionSkeleton = () => (
+  <section className="py-16 md:py-20 bg-white overflow-hidden">
+    <div className="container mx-auto px-4 md:px-6">
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="lg:col-span-5 text-center lg:text-left mb-8 lg:mb-0 space-y-4 animate-pulse">
+          <div className="h-10 bg-gray-200 rounded w-3/4 mx-auto lg:mx-0" />
+          <div className="h-4 bg-gray-200 rounded w-full" />
+          <div className="h-4 bg-gray-200 rounded w-5/6" />
+          <div className="h-10 bg-gray-200 rounded-full w-32 mx-auto lg:mx-0" />
+        </div>
+        <div className="lg:col-span-7 w-full">
+          <div className="flex gap-4 overflow-hidden">
+            <div className="min-w-[280px]"><PropertyCardSkeleton /></div>
+            <div className="min-w-[280px] hidden md:block"><PropertyCardSkeleton /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+)
+
+// Hero Section with Search Logic
 const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, setSelectedService }) => {
-  // Estado local para os filtros que estão sendo editados
   const [localFilters, setLocalFilters] = useState({
     guests: '',
     bedrooms: '',
@@ -41,14 +85,12 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
     vehicle_type: '',
   });
 
-  // Sincroniza os filtros locais com os filtros atuais quando eles mudam (após uma busca)
   useEffect(() => {
     setLocalFilters(currentFilters);
   }, [currentFilters]);
 
   const handleServiceChange = (value) => {
     setSelectedService(value);
-    // Ao mudar de serviço, limpa apenas os filtros locais temporários
     setLocalFilters({
       guests: '',
       bedrooms: '',
@@ -62,7 +104,6 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
   };
 
   const handleSearch = () => {
-    // Passa os filtros locais para a busca, que então atualiza os currentFilters
     onSearch(selectedService, localFilters);
   };
 
@@ -231,6 +272,7 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
           fill
           style={{objectFit: "cover"}}
           priority
+          quality={85}
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
@@ -270,7 +312,14 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
                 onClick={handleSearch}
                 disabled={isSearching}
               >
-                {isSearching ? 'Buscando...' : 'Buscar'}
+                {isSearching ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Buscando...
+                  </>
+                ) : (
+                  'Buscar'
+                )}
               </Button>
             </div>
           </div>
@@ -281,9 +330,27 @@ const HeroSection = ({ onSearch, isSearching, currentFilters, selectedService, s
 }
 
 // Search Results Section
-const SearchResults = ({ results, onClearSearch }) => {
-  if (results === null) {
+const SearchResults = ({ results, onClearSearch, isLoading }) => {
+  if (results === null && !isLoading) {
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-center mb-8">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-600 mr-3" />
+            <h2 className="text-2xl font-bold text-gray-900">Buscando propriedades...</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <PropertyCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   }
 
   if (results.length === 0) {
@@ -549,13 +616,14 @@ const PropertyCard = ({ listing, category }) => {
       <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col rounded-2xl">
         <CardContent className="p-0 flex flex-col flex-grow">
           <div className="relative overflow-hidden">
-            {/* ESTA É A ÚNICA ALTERAÇÃO REALIZADA */}
             <Image
               src={getPropertyImage(listing, category)}
               alt={listing.title}
               width={400}
               height={250}
               className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl"
+              loading="lazy"
+              quality={75}
             />
           </div>
           <div className="p-6 flex flex-col flex-grow">
@@ -593,12 +661,16 @@ const PropertyCard = ({ listing, category }) => {
 }
 
 // Category Section Component
-const CategorySection = ({ title, description, listings, category }) => {
-  if (!listings || listings.length === 0) return null;
-
+const CategorySection = ({ title, description, listings, category, isLoading }) => {
   const plugin = React.useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
   );
+
+  if (isLoading) {
+    return <CategorySectionSkeleton />;
+  }
+
+  if (!listings || listings.length === 0) return null;
 
   return (
     <section className="py-16 md:py-20 bg-white overflow-hidden">
@@ -714,7 +786,7 @@ const GoogleReviewsSection = () => {
           {reviews.map((review) => (
             <Card key={review.id} className="bg-gray-50/80 p-6 rounded-2xl shadow-lg border border-gray-200 flex flex-col transition-all hover:shadow-xl hover:-translate-y-1">
               <div className="flex items-center mb-4">
-                <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full mr-4" />
+                <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full mr-4" loading="lazy" />
                 <div>
                   <p className="font-semibold text-gray-800">{review.name}</p>
                   <p className="text-sm text-gray-500">{review.date}</p>
@@ -776,10 +848,24 @@ const Footer = () => {
   )
 }
 
-// Main Homepage Component
+// Main Homepage Component - OTIMIZADO PARA VERCEL
 export default function HomePage() {
-  const [allListings, setAllListings] = useState({ mansoes: [], lanchas: [], escuna: [], 'taxi-aereo': [], transfer: [], buggy: [] });
-  const [loading, setLoading] = useState(true);
+  const [allListings, setAllListings] = useState({ 
+    mansoes: [], 
+    lanchas: [], 
+    escuna: [], 
+    'taxi-aereo': [], 
+    transfer: [], 
+    buggy: [] 
+  });
+  const [categoryLoading, setCategoryLoading] = useState({
+    mansoes: true,
+    lanchas: true,
+    escuna: true,
+    'taxi-aereo': true,
+    transfer: true,
+    buggy: true
+  });
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   
@@ -790,31 +876,6 @@ export default function HomePage() {
     bedrooms: '',
     boat_length: '',
     vehicle_type: '',
-  });
-
-  const getFallbackData = () => ({
-    mansoes: [
-      { id: '1', title: 'Villa paradisíaca em Geribá', category: 'mansoes', price_label: 'R$ 3.500,00', guests: 12, bedrooms: 6, bathrooms: 4, area_m2: 350, featured_image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=250&fit=crop&crop=center' },
-      { id: '2', title: 'Luxuosa cobertura no Centro', category: 'mansoes', price_label: 'R$ 2.500,00', guests: 8, bedrooms: 4, bathrooms: 3, area_m2: 280, featured_image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=250&fit=crop&crop=center' },
-    ],
-    lanchas: [
-      { id: '5', title: 'Lancha de luxo de 62 pés', category: 'lanchas', price_label: 'R$ 8.500,00', guests: 20, bedrooms: 4, boat_length: 62, boat_year: 2020, featured_image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop&crop=center' },
-      { id: '6', title: 'Lancha esportiva premium', category: 'lanchas', price_label: 'R$ 4.200,00', guests: 12, bedrooms: 2, boat_length: 45, boat_year: 2019, featured_image: 'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=250&fit=crop&crop=center' }
-    ],
-    escuna: [
-      { id: '7', title: 'Escuna Tradicional Búzios', category: 'escuna', price_label: 'R$ 180,00', guests: 40, duration: '4 horas', boat_length: 85, includes_meal: true, featured_image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop&crop=center' }
-    ],
-    'taxi-aereo': [
-      { id: '8', title: 'Helicóptero Robinson 44', category: 'taxi-aereo', price_label: 'R$ 2.500,00', guests: 4, vehicle_type: 'helicopter', vehicle_model: 'Robinson 44', duration: '45 min', featured_image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&h=250&fit=crop&crop=center' },
-      { id: '9', title: 'Bimotor Baron G58', category: 'taxi-aereo', price_label: 'R$ 3.500,00', guests: 6, vehicle_type: 'bimotor', vehicle_model: 'Baron G58', duration: '30 min', featured_image: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=400&h=250&fit=crop&crop=center' }
-    ],
-    transfer: [
-      { id: '10', title: 'Mercedes Sprinter Executive', category: 'transfer', price_label: 'R$ 800,00', guests: 15, vehicle_type: 'van', vehicle_model: 'Mercedes Sprinter', duration: '2 horas', featured_image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=250&fit=crop&crop=center' },
-      { id: '11', title: 'BMW 740i M Sport', category: 'transfer', price_label: 'R$ 500,00', guests: 4, vehicle_type: 'luxury_car', vehicle_model: 'BMW 740i', duration: '2 horas', featured_image: 'https://images.unsplash.com/photo-1555215858-91f61e11ce5f?w=400&h=250&fit=crop&crop=center' }
-    ],
-    buggy: [
-      { id: '12', title: 'Buggy Aventura Off-Road', category: 'buggy', price_label: 'R$ 350,00', guests: 4, vehicle_model: 'Fyber 2000', duration: 'Diária', featured_image: 'https://images.unsplash.com/photo-1558618666-fbd7c94d633d?w=400&h=250&fit=crop&crop=center'}
-    ]
   });
 
   const handleSearch = async (category, filters) => {
@@ -850,29 +911,41 @@ export default function HomePage() {
     setCurrentFilters({ guests: '', bedrooms: '', boat_length: '', vehicle_type: '' });
   };
 
+  // OTIMIZAÇÃO CRÍTICA: Fetch em paralelo com Promise.allSettled
   useEffect(() => {
     const fetchAllListings = async () => {
-      try {
-        const categories = ['mansoes', 'lanchas', 'escuna', 'taxi-aereo', 'transfer', 'buggy'];
-        const fetchedData = {};
-
-        for (const category of categories) {
-          const response = await fetch(`/api/listings?category=${category}&limit=50`);
+      const categories = ['mansoes', 'lanchas', 'escuna', 'taxi-aereo', 'transfer', 'buggy'];
+      
+      // Busca todas as categorias em paralelo ao invés de sequencial
+      const promises = categories.map(async (category) => {
+        try {
+          const response = await fetch(`/api/listings?category=${category}&limit=8`);
           if (!response.ok) {
-            console.warn(`Falha ao buscar ${category}, usando dados de fallback.`);
-            fetchedData[category] = getFallbackData()[category];
-          } else {
-            const data = await response.json();
-            fetchedData[category] = data.listings || [];
+            throw new Error(`Falha ao buscar ${category}`);
           }
+          const data = await response.json();
+          return { category, listings: data.listings || [] };
+        } catch (error) {
+          console.warn(`Erro ao buscar ${category}:`, error);
+          return { category, listings: [] };
         }
-        setAllListings(fetchedData);
-      } catch (error) {
-        console.error('Erro ao buscar todas as listagens:', error);
-        setAllListings(getFallbackData());
-      } finally {
-        setLoading(false);
-      }
+      });
+
+      const results = await Promise.allSettled(promises);
+      
+      const fetchedData = {};
+      results.forEach((result, index) => {
+        const category = categories[index];
+        if (result.status === 'fulfilled') {
+          fetchedData[result.value.category] = result.value.listings;
+        } else {
+          fetchedData[category] = [];
+        }
+        // Marcar como carregado individualmente
+        setCategoryLoading(prev => ({ ...prev, [category]: false }));
+      });
+      
+      setAllListings(fetchedData);
     };
 
     fetchAllListings();
@@ -892,7 +965,7 @@ export default function HomePage() {
           setSelectedService={setSelectedService}
         />
         {searchResults !== null ? (
-          <SearchResults results={searchResults} onClearSearch={clearSearch} />
+          <SearchResults results={searchResults} onClearSearch={clearSearch} isLoading={isSearching} />
         ) : (
           <>
             <CategorySection 
@@ -900,36 +973,42 @@ export default function HomePage() {
               description="Descubra as mais exclusivas mansões para aluguel, perfeitas para suas férias ou eventos especiais."
               listings={getCategoryListings('mansoes')}
               category="mansoes"
+              isLoading={categoryLoading.mansoes}
             />
             <CategorySection 
               title="Lanchas e Iates para Aluguel"
               description="Explore as belezas de Búzios pelo mar com nossa seleção de lanchas e iates de luxo."
               listings={getCategoryListings('lanchas')}
               category="lanchas"
+              isLoading={categoryLoading.lanchas}
             />
             <CategorySection 
               title="Passeios de Escuna Inesquecíveis"
               description="Aproveite um dia relaxante navegando pelas águas cristalinas de Búzios em nossas escunas."
               listings={getCategoryListings('escuna')}
               category="escuna"
+              isLoading={categoryLoading.escuna}
             />
             <CategorySection 
               title="Táxi Aéreo e Voos Panorâmicos"
               description="Chegue em Búzios com estilo ou desfrute de vistas aéreas deslumbrantes com nosso serviço de táxi aéreo."
               listings={getCategoryListings('taxi-aereo')}
               category="taxi-aereo"
+              isLoading={categoryLoading['taxi-aereo']}
             />
             <CategorySection 
               title="Transfer Executivo e VIP"
               description="Garanta sua chegada e partida com conforto e segurança. Oferecemos transfer executivo para Búzios e região."
               listings={getCategoryListings('transfer')}
               category="transfer"
+              isLoading={categoryLoading.transfer}
             />
             <CategorySection 
               title="Aventura de Buggy em Búzios"
               description="Explore as trilhas e praias escondidas de Búzios com nossos emocionantes passeios de buggy."
               listings={getCategoryListings('buggy')}
               category="buggy"
+              isLoading={categoryLoading.buggy}
             />
           </>
         )}
