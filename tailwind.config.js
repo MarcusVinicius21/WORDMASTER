@@ -18,6 +18,11 @@ module.exports = {
     	},
     	extend: {
     		colors: {
+          // ADIÇÃO DAS CORES DA MARCA
+          brand: {
+            yellow: '#f5a623', // Amarelo/Ouro do logo
+            teal: '#0d7f8b'    // Verde-azulado do logo
+          },
     			border: 'hsl(var(--border))',
     			input: 'hsl(var(--input))',
     			ring: 'hsl(var(--ring))',

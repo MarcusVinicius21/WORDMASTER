@@ -7,14 +7,34 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
-import Navbar from "@/components/Navbar" // Importa o componente centralizado
+import Navbar from "@/components/Navbar"
 
 const WhatsAppButton = ({ listing }) => {
   const whatsappNumber = "5521976860759"
   const message = `Olá! Tenho interesse em "${listing?.title || 'propriedade'}". Vi no site.`
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
-  return (<Button className="bg-green-600 hover:bg-green-700 text-white" onClick={(e) => { e.preventDefault(); window.open(whatsappUrl, '_blank')}}>WhatsApp</Button>)
+  return (<Button className="bg-green-600 hover:bg-green-700 text-white transition-transform hover:scale-105" onClick={(e) => { e.preventDefault(); window.open(whatsappUrl, '_blank')}}>WhatsApp</Button>)
 }
+
+// Esqueleto de Carregamento para os Cards
+const PropertyCardSkeleton = () => (
+    <Card className="bg-white border border-gray-200 overflow-hidden h-full flex flex-col rounded-2xl animate-pulse">
+      <CardContent className="p-0 flex flex-col flex-grow">
+        <div className="bg-gray-200 h-64 w-full" />
+        <div className="p-6 flex flex-col flex-grow space-y-4">
+          <div className="h-5 bg-gray-200 rounded w-3/4" />
+          <div className="h-4 bg-gray-200 rounded w-5/6" />
+          <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="h-3 bg-gray-200 rounded w-20" />
+              <div className="h-4 bg-gray-200 rounded w-24" />
+            </div>
+            <div className="h-10 bg-gray-200 rounded-full w-24" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+);
 
 const PropertyCard = ({ listing, category }) => {
   const getCategoryImage = (category) => {
@@ -35,7 +55,8 @@ const PropertyCard = ({ listing, category }) => {
 
   return (
     <Link href={`/${category}/${listing.slug || listing.id}`}>
-      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer">
+      {/* MELHORIA: Adicionada transição de hover para o card "flutuar" */}
+      <Card className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer h-full hover:-translate-y-1">
         <div className="relative overflow-hidden">
           <img
             src={imageUrl}
@@ -99,10 +120,18 @@ export default function CategoryPage() {
         <div className="min-h-screen bg-gray-50">
             <Navbar />
             <main className="container mx-auto px-6 py-12">
-                <div className="mb-10 text-center border-b pb-6"><div className="flex items-center justify-center">{currentCategory.icon}<h1 className="text-4xl font-light text-gray-800 tracking-wide">{currentCategory.title} em Búzios</h1></div><p className="mt-2 text-lg text-gray-600">Explore nossa seleção exclusiva.</p></div>
-                {loading && (<div className="text-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div><p className="mt-4 text-gray-600">Carregando...</p></div>)}
+                <div className="mb-10 text-center border-b pb-6">
+                    <div className="flex items-center justify-center">{currentCategory.icon}<h1 className="text-4xl font-light text-gray-800 tracking-wide">{currentCategory.title} em Búzios</h1></div>
+                    <p className="mt-2 text-lg text-gray-600">Explore nossa seleção exclusiva.</p>
+                </div>
+                {/* MELHORIA: Usa o skeleton para uma melhor experiência de carregamento */}
+                {loading && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {[...Array(8)].map((_, i) => <PropertyCardSkeleton key={i} />)}
+                  </div>
+                )}
                 {error && (<div className="text-center py-20"><p className="text-red-600 text-lg">Erro ao carregar: {error}</p></div>)}
-                {!loading && !error && listings.length === 0 && (<div className="text-center py-20"><p className="text-gray-700 text-lg">Nenhuma propriedade encontrada.</p><Link href="/" passHref><Button className="mt-4">Voltar</Button></Link></div>)}
+                {!loading && !error && listings.length === 0 && (<div className="text-center py-20"><p className="text-gray-700 text-lg">Nenhuma propriedade encontrada nesta categoria.</p><Link href="/" passHref><Button className="mt-4">Voltar</Button></Link></div>)}
                 {!loading && !error && listings.length > 0 && (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">{listings.map((listing) => (<PropertyCard key={listing.id} listing={listing} category={category} />))}</div>)}
             </main>
         </div>
