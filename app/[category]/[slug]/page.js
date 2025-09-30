@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { MapPin, Users, Bed, Bath, Maximize, X, Phone, Anchor, Calendar, Clock, Car, Plane, ArrowLeft, ArrowRight, Camera, ChevronLeft, ChevronRight } from "lucide-react"
+import { MapPin, Users, Bed, Bath, Maximize, X, Anchor, Calendar, Clock, Car, Plane, ChevronLeft, ChevronRight, Camera, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -12,40 +12,50 @@ import Link from "next/link"
 import Image from "next/image"
 
 const VillasNavbar = () => (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/logo.png"
-              alt="Wordmaster Beach Búzios Logo"
-              width={144}
-              height={40}
-              priority
-            />
-          </Link>
-          <div className="hidden lg:flex items-center space-x-8 text-sm">
-            <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
-            <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
-            <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
-            <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
-            <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
-            <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
-          </div>
+  <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <div className="container mx-auto px-6">
+      <div className="flex items-center justify-between h-20">
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/logo.png"
+            alt="Wordmaster Beach Búzios Logo"
+            width={144}
+            height={40}
+            priority
+          />
+        </Link>
+        <div className="hidden lg:flex items-center space-x-8 text-sm">
+          <Link href="/mansoes" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Mansões</Link>
+          <Link href="/lanchas" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Lanchas</Link>
+          <Link href="/escuna" className="text-gray-700 hover:text-gray-900 font-medium">Passeios de Escuna</Link>
+          <Link href="/taxi-aereo" className="text-gray-700 hover:text-gray-900 font-medium">Táxi Aéreo</Link>
+          <Link href="/transfer" className="text-gray-700 hover:text-gray-900 font-medium">Transfer</Link>
+          <Link href="/buggy" className="text-gray-700 hover:text-gray-900 font-medium">Aluguel de Buggy</Link>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 )
 
-// COMPONENTE DE GALERIA TOTALMENTE REFORMULADO E CORRIGIDO
+// GALERIA OTIMIZADA
 const VillasGallery = ({ images, title }) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [gridExpanded, setGridExpanded] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   const galleryImages = images && images.length > 0 
     ? images.map(img => img.url) 
     : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&crop=center"];
+
+  useEffect(() => {
+    // Preload primeira imagem
+    if (galleryImages[0]) {
+      const img = new window.Image();
+      img.src = galleryImages[0];
+      img.onload = () => setImagesLoaded(true);
+    }
+  }, [galleryImages]);
 
   const openLightbox = (index) => {
     setCurrentImageIndex(index);
@@ -66,17 +76,17 @@ const VillasGallery = ({ images, title }) => {
 
   const handleKeyDown = (e) => {
     if (lightboxOpen) {
-        if (e.key === 'ArrowLeft') goToPrevious(e);
-        if (e.key === 'ArrowRight') goToNext(e);
-        if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') goToPrevious(e);
+      if (e.key === 'ArrowRight') goToNext(e);
+      if (e.key === 'Escape') closeLightbox();
     }
   };
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    if (lightboxOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
   }, [lightboxOpen, currentImageIndex]);
 
   const remainingImagesCount = galleryImages.length - 5;
@@ -84,7 +94,19 @@ const VillasGallery = ({ images, title }) => {
   const renderGrid = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div className="relative cursor-pointer group" onClick={() => openLightbox(0)}>
-        <img src={galleryImages[0]} alt={title} className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity" />
+        {!imagesLoaded && (
+          <div className="w-full aspect-[4/3] bg-gray-200 rounded-md animate-pulse" />
+        )}
+        <Image
+          src={galleryImages[0]}
+          alt={title}
+          width={800}
+          height={600}
+          className="w-full h-full object-cover rounded-md aspect-[4/3] group-hover:opacity-90 transition-opacity"
+          priority
+          quality={85}
+          onLoadingComplete={() => setImagesLoaded(true)}
+        />
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
           <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
@@ -93,7 +115,15 @@ const VillasGallery = ({ images, title }) => {
         <div className="grid grid-cols-2 gap-2 h-full">
           {galleryImages.slice(1, 5).map((img, index) => (
             <div key={index} className="relative cursor-pointer group" onClick={() => openLightbox(index + 1)}>
-              <img src={img} alt={`${title} - ${index + 2}`} className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity" />
+              <Image
+                src={img}
+                alt={`${title} - ${index + 2}`}
+                width={400}
+                height={300}
+                className="w-full h-full object-cover rounded-md aspect-video group-hover:opacity-90 transition-opacity"
+                loading="lazy"
+                quality={75}
+              />
               {index === 3 && remainingImagesCount > 0 && (
                 <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white rounded-md hover:bg-opacity-70 transition-all cursor-pointer"
                   onClick={(e) => { e.stopPropagation(); setGridExpanded(true); }}>
@@ -127,7 +157,14 @@ const VillasGallery = ({ images, title }) => {
           </>
         )}
         <div className="relative w-full max-w-6xl max-h-[90vh] px-4">
-          <img src={galleryImages[currentImageIndex]} alt={`${title} - ${currentImageIndex + 1}`} className="max-w-full max-h-[85vh] object-contain mx-auto" />
+          <Image
+            src={galleryImages[currentImageIndex]}
+            alt={`${title} - ${currentImageIndex + 1}`}
+            width={1200}
+            height={800}
+            className="max-w-full max-h-[85vh] object-contain mx-auto"
+            quality={90}
+          />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-4 py-2 rounded-full text-sm">
             {currentImageIndex + 1} / {galleryImages.length}
           </div>
@@ -148,7 +185,15 @@ const VillasGallery = ({ images, title }) => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {galleryImages.map((img, index) => (
             <div key={index} className="relative cursor-pointer group aspect-video" onClick={() => openLightbox(index)}>
-              <img src={img} alt={`${title} - ${index + 1}`} className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity" />
+              <Image
+                src={img}
+                alt={`${title} - ${index + 1}`}
+                width={400}
+                height={300}
+                className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity"
+                loading="lazy"
+                quality={75}
+              />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center rounded-md">
                 <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -166,7 +211,7 @@ const VillasGallery = ({ images, title }) => {
       {galleryImages.length > 5 && (
         <div className="absolute bottom-4 right-4">
           <Button onClick={() => setGridExpanded(true)} variant="secondary" className="bg-white/90 hover:bg-white text-gray-800 shadow-lg">
-             Ver todas as {galleryImages.length} fotos
+            Ver todas as {galleryImages.length} fotos
           </Button>
         </div>
       )}
@@ -174,7 +219,6 @@ const VillasGallery = ({ images, title }) => {
     </div>
   );
 };
-
 
 const PropertySpecs = ({ listing, category }) => {
   const renderSpecs = () => {
@@ -341,6 +385,30 @@ const ContactForm = ({ listing, category }) => {
   )
 }
 
+// Loading Skeleton
+const PropertyDetailSkeleton = () => (
+  <div className="min-h-screen bg-white">
+    <VillasNavbar />
+    <div className="container mx-auto px-6 py-8">
+      <div className="animate-pulse">
+        <div className="h-4 bg-gray-200 rounded w-64 mb-6" />
+        <div className="bg-gray-200 rounded-md h-96 mb-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-3/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
+            <div className="h-4 bg-gray-200 rounded w-full" />
+            <div className="h-4 bg-gray-200 rounded w-full" />
+          </div>
+          <div className="lg:col-span-1">
+            <div className="h-64 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function PropertyDetailPage() {
   const params = useParams()
   const { category, slug } = params
@@ -383,27 +451,19 @@ export default function PropertyDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <VillasNavbar />
-        <div className="container mx-auto p-6 py-20 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
-        </div>
-      </div>
-    );
+    return <PropertyDetailSkeleton />;
   }
 
   if (!listing) {
     return (
-        <div className="min-h-screen bg-white">
-            <VillasNavbar />
-            <div className="container mx-auto p-6 py-20 text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Propriedade não encontrada</h1>
-                <p className="text-gray-600 mb-6">O item que você está procurando não existe ou foi removido.</p>
-                <Link href="/"><Button>Voltar ao início</Button></Link>
-            </div>
+      <div className="min-h-screen bg-white">
+        <VillasNavbar />
+        <div className="container mx-auto p-6 py-20 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Propriedade não encontrada</h1>
+          <p className="text-gray-600 mb-6">O item que você está procurando não existe ou foi removido.</p>
+          <Link href="/"><Button>Voltar ao início</Button></Link>
         </div>
+      </div>
     );
   }
 
