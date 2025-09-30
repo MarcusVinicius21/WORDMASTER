@@ -251,7 +251,6 @@ const SearchResults = ({ results, onClearSearch, isLoading }) => {
 
 // Card de Propriedade (com micro-interação)
 const PropertyCard = ({ listing, category }) => {
-    // ... (lógica do getPropertyImage e renderSpecifications permanece a mesma)
     const getPropertyImage = (listing, category) => {
         if (listing.featured_image) return listing.featured_image;
         if (listing.media && listing.media.length > 0) return listing.media[0].url;
@@ -352,7 +351,12 @@ const CategorySection = ({ title, description, listings, category, isLoading }) 
           </div>
           <div className="lg:col-span-7 w-full">
             <div className="relative">
-              <Carousel plugins={[plugin.current]} opts={{ align: "start", loop: true, breakpoints: { '(min-width: 768px)': { slidesToScroll: 1 } } }} className="w-full" onMouseEnter={plugin.current.stop} onMouseLeave={plugin.current.reset}>
+              <Carousel 
+                plugins={[plugin.current]} 
+                opts={{ align: "start", loop: true }} // <-- LOOP ADICIONADO AQUI
+                className="w-full" 
+                onMouseEnter={plugin.current.stop} 
+                onMouseLeave={plugin.current.reset}>
                 <CarouselContent className="-ml-2 md:-ml-4">{listings.map((listing) => (<CarouselItem key={listing.id} className="pl-2 md:pl-4 basis-[280px] md:basis-[320px] lg:basis-1/2"><div className="h-full"><PropertyCard listing={listing} category={category}/></div></CarouselItem>))}</CarouselContent>
                 <div className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10"><CarouselPrevious className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" /></div>
                 <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10"><CarouselNext className="w-12 h-12 border-2 border-gray-200 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-300" /></div>
@@ -385,22 +389,24 @@ const CtaBanner = () => (
     </section>
   );
 
-// **NOVO** - Seção do Anfitrião
+// **NOVO** - Seção do Anfitrião com Estilo Melhorado
 const HostSection = () => (
     <section className="py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2">
-              <Image
-                src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" // Imagem do Adson
-                alt="Adson Santos, seu anfitrião em Búzios"
-                width={500}
-                height={500}
-                className="rounded-2xl object-cover shadow-xl aspect-square"
-                quality={80}
-              />
+        <div className="flex flex-col lg:flex-row items-center gap-12 bg-gray-50 p-8 rounded-2xl">
+          <div className="lg:w-1/3">
+              <div className="relative aspect-square">
+                <Image
+                  src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg" // Imagem do Adson
+                  alt="Adson Carlos, seu anfitrião em Búzios"
+                  width={400}
+                  height={400}
+                  className="rounded-full object-cover shadow-xl mx-auto"
+                  quality={80}
+                />
+              </div>
           </div>
-          <div className="lg:w-1/2 text-center lg:text-left">
+          <div className="lg:w-2/3 text-center lg:text-left">
             <p className="text-brand-teal font-semibold mb-2">SEU ANFITRIÃO EM BÚZIOS</p>
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-wide">Adson Carlos</h2>
             <p className="text-gray-600 mb-6 leading-relaxed">"Com anos de experiência no mercado de luxo de Búzios, meu objetivo é garantir que sua estadia seja nada menos que extraordinária. Da escolha da propriedade perfeita aos passeios mais exclusivos, estou aqui para transformar seus sonhos em realidade."</p>

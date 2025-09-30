@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { MapPin, Users, Bed, Bath, Maximize, X, Anchor, Calendar, Clock, Car, Plane, ChevronLeft, ChevronRight, Camera, Loader2 } from "lucide-react"
+import { MapPin, Users, Bed, Bath, Maximize, X, Anchor, Calendar, Clock, Car, Plane, ChevronLeft, ChevronRight, Camera, Loader2, Award, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -358,7 +358,6 @@ const ContactForm = ({ listing, category }) => {
   )
 }
 
-// Loading Skeleton
 const PropertyDetailSkeleton = () => (
   <div className="min-h-screen bg-white">
     <Navbar />
@@ -381,6 +380,55 @@ const PropertyDetailSkeleton = () => (
     </div>
   </div>
 );
+
+const HostSection = () => (
+    <section className="py-16 md:py-20 bg-white">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex flex-col lg:flex-row items-center gap-12 bg-gray-50 p-8 rounded-2xl">
+          <div className="lg:w-1/3">
+              <div className="relative aspect-square">
+                <Image
+                  src="https://nechnbtmwrxu76ty.public.blob.vercel-storage.com/adsonprofile.jpeg"
+                  alt="Adson Carlos, seu anfitrião em Búzios"
+                  width={400}
+                  height={400}
+                  className="rounded-full object-cover shadow-xl mx-auto"
+                  quality={80}
+                />
+              </div>
+          </div>
+          <div className="lg:w-2/3 text-center lg:text-left">
+            <p className="text-brand-teal font-semibold mb-2">SEU ANFITRIÃO EM BÚZIOS</p>
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4 tracking-wide">Adson Carlos</h2>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              "Com anos de experiência no mercado de luxo de Búzios, meu objetivo é garantir que sua estadia seja nada menos que extraordinária. Da escolha da propriedade perfeita aos passeios mais exclusivos, estou aqui para transformar seus sonhos em realidade."
+            </p>
+            <div className="flex items-center justify-center lg:justify-start gap-4 text-gray-700">
+               <Award className="w-5 h-5 text-brand-teal" />
+               <span>Especialista em aluguéis de alto padrão</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+
+const Footer = () => {
+  return (
+    <footer className="bg-gray-50 border-t border-gray-200">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div><div className="mb-6"><Image src="/logo.png" alt="Wordmaster Logo Rodapé" width={160} height={45} /></div><p className="text-gray-600 mb-6">Experiências de luxo em Búzios.</p><p className="text-gray-500 text-sm">CNPJ: 22.269.571/0001-69</p></div>
+          <div><h4 className="text-lg font-medium text-gray-900 mb-6">Destinos</h4><div className="space-y-3"><Link href="/mansoes" className="block text-gray-600 hover:text-gray-900">Mansões</Link><Link href="/lanchas" className="block text-gray-600 hover:text-gray-900">Lanchas</Link><Link href="/taxi-aereo" className="block text-gray-600 hover:text-gray-900">Táxi Aéreo</Link><Link href="/transfer" className="block text-gray-600 hover:text-gray-900">Transfer</Link><Link href="/escuna" className="block text-gray-600 hover:text-gray-900">Escuna</Link></div></div>
+          <div><h4 className="text-lg font-medium text-gray-900 mb-6">Contato</h4><div className="space-y-3"><div className="text-gray-600"><div>+55 21 976860759</div></div><div className="text-gray-600"><div>wordmaster01@outlook.com</div></div><a href="https://www.instagram.com/wordmasterbeachbuzios" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900 flex items-center"><Instagram className="w-4 h-4 mr-2" />wordmasterbeachbuzios</a></div></div>
+          <div><h4 className="text-lg font-medium text-gray-900 mb-6">Admin</h4><div className="space-y-3"><Link href="/admin" className="block text-blue-600 hover:text-blue-800">Painel Administrativo</Link></div></div>
+        </div>
+        <div className="border-t border-gray-200 mt-12 pt-8 text-center"><p className="text-gray-500">© 2025 Wordmaster Beach Búzios. Todos os direitos reservados.</p></div>
+      </div>
+    </footer>
+  )
+}
+
 
 export default function PropertyDetailPage() {
   const params = useParams()
@@ -485,7 +533,9 @@ export default function PropertyDetailPage() {
             <ContactForm listing={listing} category={category} />
           </div>
         </div>
+        <HostSection />
       </div>
+      <Footer />
     </div>
   )
 }
